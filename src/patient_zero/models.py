@@ -26,12 +26,16 @@ def independent_cascade(G: nx.Graph, patient_zero: int, r: float, max_steps: int
     print(f"Infected {len(all_infected)} node(s) in {step} step(s)")
     return all_infected
 
-def sir_model(G: nx.graph, patient_zero: int, r_infect: float, r_recover):
+def sir_model(G: nx.graph, patient_zero: int, r_infect: float, r_recover, max_steps: int = None):
     infected_nodes = {patient_zero}
     susceptible_nodes = set(G.nodes()) - infected_nodes
     recovered_nodes = set()
+    step = 0
 
     while infected_nodes:
+        if max_steps is not None and step >= max_steps:
+            break
+
         new_infected = set()
 
         for node in infected_nodes:
@@ -47,7 +51,7 @@ def sir_model(G: nx.graph, patient_zero: int, r_infect: float, r_recover):
         infected_nodes.difference_update(recovered_nodes)
         recovered_nodes.update(recovered_nodes)
 
-    return recovered_nodes, 
+    return susceptible_nodes, infected_nodes, recovered_nodes
 
 
 

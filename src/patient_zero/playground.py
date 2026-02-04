@@ -8,4 +8,7 @@ from models import sir_model as sir
 
 
 G = create_tree_graph(3, 4)
-print(sir(G, 0, 0.1, 0.2))
+susceptible, infected, recovered = sir(G, 0, 0.3, 0.2, 10)
+print(f"Susceptible: {len(susceptible)}")
+print(f"Infected: {len(infected)}")
+print(f"Recovered: {len(recovered)}")
