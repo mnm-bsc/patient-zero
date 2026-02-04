@@ -13,3 +13,5 @@ def create_tree_graph(children, depth):
         return print("Not a possible graph")
     
     return nx.balanced_tree(children, depth) # Create a balanced tree graph
+
+
