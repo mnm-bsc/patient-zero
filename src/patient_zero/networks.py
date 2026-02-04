@@ -14,3 +14,12 @@ def create_simple_graph():
     print("Edges: " , G.edges()) # Print all edges
 
 create_simple_graph()
+
+def create_tree_graph(children, depth):
+    if depth < 0: # Return if depth is negative
+        return print("Not a possible graph")
+    
+    return nx.balanced_tree(children, depth) # Create a balanced tree graph
+    
+tree_graph = create_tree_graph(1,2)
+print(tree_graph)
