@@ -50,6 +50,7 @@ def sir_model(G: nx.graph, patient_zero: int, r_infect: float, r_recover, max_st
         infected_nodes.update(new_infected)
         infected_nodes.difference_update(recovered_nodes)
         recovered_nodes.update(recovered_nodes)
+        step += 1
 
     return susceptible_nodes, infected_nodes, recovered_nodes
 
