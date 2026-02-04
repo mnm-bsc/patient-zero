@@ -3,23 +3,14 @@
 # Import networkx library
 import networkx as nx
 
-# Create an empty graph
-G=nx.Graph()
+def create_simple_graph():
+    G=nx.Graph() # Create an empty graph
+    G.add_nodes_from([1,2,3,4]) # Add nodes from 1-4    
+    G.add_edges_from([(1,2),(1,3),(1,4)]) # Add edges
 
-# Add nodes from 1-4
-G.add_nodes_from([1,2,3,4])
+    print("Number of nodes: " , G.number_of_nodes()) # Print number of nodes
+    print("Number of edges: " , G.number_of_edges()) # Print number of edges
+    print("Nodes: " , G.nodes()) # Print all nodes
+    print("Edges: " , G.edges()) # Print all edges
 
-# Add edges
-G.add_edges_from([(1,2),(1,3),(1,4)])
-
-# Print number of nodes
-print("Number of nodes: " , G.number_of_nodes())
-
-# Print number of edges
-print("Number of edges: " , G.number_of_edges())
-
-# Print all nodes
-print("Nodes: " , G.nodes())
-
-# Print all edges
-print("Edges: " , G.edges())
+create_simple_graph()
