@@ -1,4 +1,4 @@
-from networks import create_tree_graph
+from networks import create_tree_graph, create_random_graph
 from models import independent_cascade as ic
 from models import susceptible_infected_recovered as sir
 
@@ -19,3 +19,7 @@ susceptible, infected, recovered = sir(G, 0, 0.3, 0.2)
 print(f"Susceptible nodes: {len(susceptible)}")
 print(f"Infected nodes: {len(infected)}")
 print(f"Recovered nodes: {len(recovered)}")
+
+print("Created a random graph:")
+G = create_random_graph(10, 0.2)
+print(G)

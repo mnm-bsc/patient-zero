@@ -16,4 +16,7 @@ def create_tree_graph(children, depth):
     
     return nx.balanced_tree(children, depth) # Create a balanced tree graph
 
-
+def create_random_graph(nodes, probability):
+    """Creates a random graph with a specified number of nodes and random edges"""
+    
+    return nx.erdos_renyi_graph(nodes,probability)
