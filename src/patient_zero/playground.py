@@ -9,8 +9,8 @@ print(f"Infected nodes: {len(infected)}")
 
 
 print("\nSIR Model Simulation:")
-G = create_tree_graph(3, 4)
-susceptible, infected, recovered = sir(G, 0, 0.3, 0.2, 2)
+G = create_tree_graph(12, 5)
+susceptible, infected, recovered = sir(G, 0, 0.3, 0.2)
 print(f"Susceptible nodes: {len(susceptible)}")
 print(f"Infected nodes: {len(infected)}")
 print(f"Recovered nodes: {len(recovered)}")
