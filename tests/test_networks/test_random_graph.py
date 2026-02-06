@@ -34,7 +34,7 @@ class TestCreateRandomGraph:
         """Test the create_random_graph() function to create a graph with no edges"""
 
         # Arrange
-        g = crg(4,0.0)
+        g = crg(5,0.0)
 
         # Act
         num_edges = g.number_of_edges()
@@ -46,14 +46,12 @@ class TestCreateRandomGraph:
         """Test the create_random_graph() function to create a graph with all possible edges"""
 
         # Arrange
-        g = crg(4,1.0)
+        g = crg(10,1.0)
 
         # Act
         num_nodes = g.number_of_nodes()
-        nodes = list(g.nodes())
+        num_edges = g.number_of_edges()
 
-        print(g)
-        print(nodes)
         # Assert
-        assert num_nodes == 4
-        assert nodes == [0, 1, 2, 3]
+        assert num_nodes == 10
+        assert num_edges == 45
