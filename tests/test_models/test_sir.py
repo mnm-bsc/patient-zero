@@ -1,6 +1,6 @@
 """Tests for the susceptible infected recovered cascade model"""
 import networkx as nx
-from models import sir
+from patient_zero.models import sir
 
 class TestSusceptibleInfectedRecovered:
     """Test SIR model"""

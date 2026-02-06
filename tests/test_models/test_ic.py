@@ -1,6 +1,6 @@
 """Tests for the independent cascade model"""
 import networkx as nx
-from models import ic
+from patient_zero.models import ic
 
 class TestIndependentCascade:
     """Test independent cascade model"""
