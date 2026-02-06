@@ -5,7 +5,7 @@ Implementation of cascade models for simulating spreading processes.
 import random
 import networkx as nx
 
-def independent_cascade(G: nx.Graph, patient_zero: int, r: float, max_steps: int = None):
+def independent_cascade(g: nx.Graph, patient_zero: int, r: float, max_steps: int = None):
     """Implementation of IC model"""
     infected_nodes = {patient_zero}
     all_infected = set(infected_nodes)
@@ -19,7 +19,7 @@ def independent_cascade(G: nx.Graph, patient_zero: int, r: float, max_steps: int
         new_infected = set()
 
         for node in infected_nodes:
-            for neighbor in G.neighbors(node):
+            for neighbor in g.neighbors(node):
                 if neighbor not in all_infected:
                     if random.random() < r:
                         new_infected.add(neighbor)
@@ -30,10 +30,10 @@ def independent_cascade(G: nx.Graph, patient_zero: int, r: float, max_steps: int
     
     return all_infected, step
 
-def susceptible_infected_recovered(G: nx.graph, patient_zero: int, r_infect: float, r_recover, max_steps: int = None):
+def susceptible_infected_recovered(g: nx.graph, patient_zero: int, r_infect: float, r_recover, max_steps: int = None):
     """Implementation of SIR model"""
     infected_nodes = {patient_zero}
-    susceptible_nodes = set(G.nodes()) - infected_nodes
+    susceptible_nodes = set(g.nodes()) - infected_nodes
     recovered_nodes = set()
     step = 1
 
@@ -44,7 +44,7 @@ def susceptible_infected_recovered(G: nx.graph, patient_zero: int, r_infect: flo
         new_infected = set()
 
         for node in infected_nodes:
-            for neighbor in G.neighbors(node):
+            for neighbor in g.neighbors(node):
                 if neighbor in susceptible_nodes and random.random() < r_infect:
                     susceptible_nodes.remove(neighbor)
                     new_infected.add(neighbor)
