@@ -1,4 +1,4 @@
-# Import networkx library
+"""Module for creating network graphs for simulations"""
 import networkx as nx
 
 def create_simple_graph():

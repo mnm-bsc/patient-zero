@@ -9,12 +9,12 @@ class TestIndependentCascade:
         """Test patient zero is always infected"""
 
         # Arrange
-        G = nx.balanced_tree(1, 0)
+        g = nx.balanced_tree(1, 0)
         patient_zero = 0
         r = 0.1
 
         # Act
-        infected_nodes, _ = ic(G, patient_zero, r)
+        infected_nodes, _ = ic(g, patient_zero, r)
         
         # Assert
         assert 0 in infected_nodes
@@ -23,17 +23,17 @@ class TestIndependentCascade:
         """Test patient zero can spread to neighboring nodes"""
 
         # Arrange
-        G = nx.balanced_tree(2, 2)
+        g = nx.balanced_tree(2, 2)
         patient_zero = 0
         r = 1.0
 
         # Act
-        infected_nodes, _ = ic(G, patient_zero, r)
+        infected_nodes, _ = ic(g, patient_zero, r)
         
         # Assert
         assert patient_zero in infected_nodes
 
-        neighbors = list(G.neighbors(patient_zero))
+        neighbors = list(g.neighbors(patient_zero))
         for n in neighbors:
             assert n in infected_nodes
 
@@ -41,17 +41,17 @@ class TestIndependentCascade:
         """Test that patient zero wont spread to neighboring nodes when r value is 0"""
 
         # Arrange
-        G = nx.balanced_tree(2, 2)
+        g = nx.balanced_tree(2, 2)
         patient_zero = 0
         r = 0.0
 
         # Act
-        infected_nodes, _ = ic(G, patient_zero, r)
+        infected_nodes, _ = ic(g, patient_zero, r)
         
         # Assert
         assert patient_zero in infected_nodes
 
-        neighbors = list(G.neighbors(patient_zero))
+        neighbors = list(g.neighbors(patient_zero))
         for n in neighbors:
             assert n not in infected_nodes
 
@@ -59,13 +59,13 @@ class TestIndependentCascade:
         """Test that patient zero wont spread to neighboring nodes when r value is 0"""
 
         # Arrange
-        G = nx.balanced_tree(3, 3)
+        g = nx.balanced_tree(3, 3)
         patient_zero = 0
         r = 0.2
         max_steps = 2
 
         # Act
-        _, step = ic(G, patient_zero, r, max_steps)
+        _, step = ic(g, patient_zero, r, max_steps)
         
         # Assert
         assert step == max_steps
