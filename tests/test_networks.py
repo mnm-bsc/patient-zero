@@ -1,6 +1,5 @@
 """Tests for creating graphs"""
 from patient_zero.networks import (create_tree_graph as ctg)
-import networkx as nx
 
 class TestCreateTreeGraph:
     """Test the create_tree_graph function"""
@@ -9,10 +8,10 @@ class TestCreateTreeGraph:
         """Test the create_tree_graph() for a empty tree"""
 
         # Arrange
-        Tree = ctg(0,0)
+        tree = ctg(0,0)
 
         # Act
-        nodes = list(Tree.nodes())
+        nodes = list(tree.nodes())
 
         # Assert
         assert nodes == [0]

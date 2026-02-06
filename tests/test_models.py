@@ -9,50 +9,36 @@ class TestIndependentCascade:
 
     def test_patient_zero_is_infected(self):
         """Test patient zero is always infected"""
-
-        # Arrange
         g = nx.balanced_tree(1, 0)
         patient_zero = 0
         r = 0.1
 
-        # Act
         infected_nodes, _ = ic(g, patient_zero, r)
-        
-        # Assert
+
         assert 0 in infected_nodes
 
     def test_patient_zero_can_infect_neighbors(self):
         """Test patient zero can spread to neighboring nodes"""
-
-        # Arrange
         g = nx.balanced_tree(2, 2)
         patient_zero = 0
         r = 1.0
 
-        # Act
         infected_nodes, _ = ic(g, patient_zero, r)
-        
-        # Assert
-        assert patient_zero in infected_nodes
 
+        assert patient_zero in infected_nodes
         neighbors = list(g.neighbors(patient_zero))
         for n in neighbors:
             assert n in infected_nodes
 
     def test_r_value_zero(self):
         """Test that patient zero wont spread to neighboring nodes when r value is 0"""
-
-        # Arrange
         g = nx.balanced_tree(2, 2)
         patient_zero = 0
         r = 0.0
 
-        # Act
         infected_nodes, _ = ic(g, patient_zero, r)
-        
-        # Assert
-        assert patient_zero in infected_nodes
 
+        assert patient_zero in infected_nodes
         neighbors = list(g.neighbors(patient_zero))
         for n in neighbors:
             assert n not in infected_nodes
@@ -68,7 +54,7 @@ class TestIndependentCascade:
 
         # Act
         _, step = ic(g, patient_zero, r, max_steps)
-        
+
         # Assert
         assert step == max_steps
 
@@ -79,18 +65,25 @@ class TestSusceptibleInfectedRecovered:
         return create_tree_graph(6, 3)
 
     def test_all_recover_after_simulation(self):
-        """Testing if all nodes is in the recovered list after the simulation when giving a 100% infection rate"""
+        """
+        Testing if all nodes is in the recovered list 
+        after the simulation when giving a 100% infection rate
+        """
         tree = self.create_tree()
         _, _, recovered = sir(tree, 0, 1.0, 0.2)
         assert len(recovered) == len(tree.nodes())
 
     def test_susceptible_infected_recovered_adds_up_to_all_nodes(self):
-        """Testing if all the nodes in the susceptible, infected and recovered list covers all the nodes in the tree"""
+        """
+        Testing if all the nodes in the 
+        susceptible, infected and recovered list 
+        covers all the nodes in the tree
+        """
         tree = self.create_tree()
         susceptible, infected, recovered = sir(tree, 0, 0.3, 0.2, 2)
         assert len(susceptible) < len(tree.nodes())
         assert len(susceptible) + len(infected) + len(recovered) == len(tree.nodes())
-    
+
     def test_no_infected_after_simulation(self):
         """Testing if the list with the infected is empty after a simulation"""
         tree = self.create_tree()
@@ -98,7 +91,10 @@ class TestSusceptibleInfectedRecovered:
         assert len(infected) == 0
 
     def test_more_than_0_infected_after_few_steps(self):
-        """Testing if there are more nodes than the root which is in the infected list with a 100% infection rate"""
+        """
+        Testing if there are more nodes than the root
+        which is in the infected list with a 100% infection rate
+        """
         tree = self.create_tree()
         _, infected, _ = sir(tree, 0, 1.0, 0.2, 2)
         assert len(infected) > 1
@@ -120,3 +116,4 @@ class TestSusceptibleInfectedRecovered:
         tree = self.create_tree()
         _, _, recovered = sir(tree, 0, 0.3, 0.0, 0)
         assert len(recovered) == 0
+        
