@@ -1,3 +1,17 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "patient-zero"
+version = "0.1.0"
+description = "A project for modeling infection spread"
+requires-python = ">=3.8"
+
+[tool.setuptools]
+packages = ["src"]
+package-dir = {"" = "."}
+
 [tool.pytest.ini_options]
 pythonpath = [
     "src"

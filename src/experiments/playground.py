@@ -1,8 +1,6 @@
 """Playground for testing the models and networks"""
-from networks import create_tree_graph, create_random_graph
-from models import independent_cascade as ic
-from models import susceptible_infected_recovered as sir
-
+from src.networks import create_tree_graph, create_random_graph
+from src.models import ic, sir
 
 print("Independent Cascade Model Simulation:")
 g = create_tree_graph(2, 2)
