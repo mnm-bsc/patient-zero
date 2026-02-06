@@ -1,5 +1,5 @@
-"""Tests for creating graphs"""
-from patient_zero.networks import (create_tree_graph as ctg)
+"""Tests for creating tree graphs"""
+from patient_zero.networks import create_tree_graph as ctg
 
 class TestCreateTreeGraph:
     """Test the create_tree_graph function"""

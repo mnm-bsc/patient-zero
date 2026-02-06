@@ -1,4 +1,21 @@
-[tool.pytest.ini_options]
-pythonpath = [
-    "src"
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "patient-zero"
+version = "0.1.0"
+description = "A project for modeling infection spread"
+requires-python = ">=3.8"
+dependencies = [
+  "networkx",
 ]
+
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "pylint",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
