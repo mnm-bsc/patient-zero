@@ -29,7 +29,7 @@ jobs:
 
       - name: Lint code with Pylint
         run: |
-          pylint src tests
+          pylint .
 
       - name: Run tests
         run: |
