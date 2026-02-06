@@ -1,12 +1,18 @@
-import networkx as nx
+"""
+Implementation of cascade models for simulating spreading processes.
+"""
+
 import random
+import networkx as nx
 
 def independent_cascade(G: nx.Graph, patient_zero: int, r: float, max_steps: int = None):
+    """Implementation of IC model"""
     infected_nodes = {patient_zero}
     all_infected = set(infected_nodes)
-    step = 0
+    step = 1
 
     while infected_nodes:
+        print(infected_nodes)
         if max_steps is not None and step >= max_steps:
             break
 
@@ -14,7 +20,7 @@ def independent_cascade(G: nx.Graph, patient_zero: int, r: float, max_steps: int
 
         for node in infected_nodes:
             for neighbor in G.neighbors(node):
-                if neighbor not in infected_nodes:
+                if neighbor not in all_infected:
                     if random.random() < r:
                         new_infected.add(neighbor)
                         all_infected.add(neighbor)
@@ -22,13 +28,14 @@ def independent_cascade(G: nx.Graph, patient_zero: int, r: float, max_steps: int
         infected_nodes = new_infected
         step += 1
     
-    return all_infected
+    return all_infected, step
 
 def susceptible_infected_recovered(G: nx.graph, patient_zero: int, r_infect: float, r_recover, max_steps: int = None):
+    """Implementation of SIR model"""
     infected_nodes = {patient_zero}
     susceptible_nodes = set(G.nodes()) - infected_nodes
     recovered_nodes = set()
-    step = 0
+    step = 1
 
     while infected_nodes:
         if max_steps is not None and step >= max_steps:
