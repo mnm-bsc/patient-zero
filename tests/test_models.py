@@ -1,6 +1,7 @@
-def func(x):
-    return x + 1
+class TestIndependentCascade:
+    def some_test(self):
+        pass
 
-
-def test_answer():
-    assert func(3) == 4
+class TestSusceptibleInfectedRecovered:
+    def some_test(self):
+        pass
