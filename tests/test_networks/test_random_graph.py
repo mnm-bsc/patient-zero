@@ -5,7 +5,7 @@ class TestCreateRandomGraph:
     """Test the create_random_graph function"""
 
     def test_create_random_graph_for_an_empty_graph(self):
-        """Test the create_random_graph() function for an empty graph"""
+        """Test the create_random_graph() function to create an empty graph"""
 
         # Arrange
         g = crg(0,0)
