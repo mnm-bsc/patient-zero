@@ -1,21 +1,19 @@
 [build-system]
-requires = ["setuptools>=61"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "patient-zero"
 version = "0.1.0"
-description = "A project for modeling infection spread"
-requires-python = ">=3.8"
-dependencies = [
-  "networkx",
-]
+dependencies = ["networkx"]
 
 [project.optional-dependencies]
-dev = [
-  "pytest",
-  "pylint",
-]
+dev = ["pytest", "pylint"]
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = "src"
+python_files = "test_*.py"
+
+[tool.pylint]
+disable = ["C0114", "C0115", "C0116", "C0301", "C0303", "C0304", "C0305", "R0903", "R0801"]
