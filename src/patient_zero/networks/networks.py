@@ -20,3 +20,13 @@ def create_random_graph(nodes, probability):
     """Creates a random graph with a specified number of nodes and random edges"""
     
     return nx.erdos_renyi_graph(nodes,probability)
+
+def create_small_world_graph(nodes, neighbors, probability):
+    """Creates a small-world graph with a specified number of nodes and neighbors, and a probability of rewiring an edge to a random node"""
+
+    return nx.watts_strogatz_graph(nodes, neighbors, probability)
+
+def create_scale_free_graph(nodes, edges):
+    """Creates a scale-free graph with a specified number of nodes and edges for each node"""
+    
+    return nx.barabasi_albert_graph(nodes, edges)
