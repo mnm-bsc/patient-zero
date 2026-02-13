@@ -27,6 +27,6 @@ def create_small_world_graph(nodes, neighbors, probability):
     return nx.watts_strogatz_graph(nodes, neighbors, probability)
 
 def create_scale_free_graph(nodes, edges):
-    """Creates a scale-free graph with a specified number of nodes and edges"""
+    """Creates a scale-free graph with a specified number of nodes and edges for each node"""
     
     return nx.barabasi_albert_graph(nodes, edges)
