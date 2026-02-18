@@ -1,7 +1,7 @@
 {
   "graphs": [
     {
-      "graph_type": "erdos_renyi",
+      "type": "erdos_renyi",
       "params": {
         "nodes": 500,
         "probability": 0.2,
@@ -9,7 +9,7 @@
        }
     },
     {
-      "graph_type": "watts_strogatz",
+      "type": "watts_strogatz",
       "params": {
         "nodes": 500,
         "neighbors": 2,
@@ -18,7 +18,7 @@
       }
     },
     {
-      "graph_type": "barabasi_albert",
+      "type": "barabasi_albert",
       "params": {
         "nodes": 500,
         "edges": 3,
@@ -26,7 +26,7 @@
       }
     },
     {
-      "graph_type": "balanced_tree",
+      "type": "balanced_tree",
       "params": {
         "children": 3,
         "depth": 10
@@ -36,13 +36,13 @@
   "spreading_models": [
     {
       "model": "IC",
-      "parameters": {
+      "params": {
         "r_values": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
       }
     },
     {
       "model": "SIR",
-      "parameters": {
+      "params": {
         "r_infect_values": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
         "r_recover_values": [0.1, 0.2, 0.3]
       }
