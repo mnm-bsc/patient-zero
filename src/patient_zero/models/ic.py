@@ -22,8 +22,8 @@ def independent_cascade(g: nx.Graph, patient_zero: int, r: float, max_size: int 
             for neighbor in sorted(g.neighbors(node)):
                 if neighbor not in all_infected and rng.random() < r:
                     if size >= max_size:
-                        break
-                    
+                        return all_infected, cascade_edges
+
                     new_infected.add(neighbor)
                     all_infected.add(neighbor)
                     cascade_edges.append((node, neighbor))
