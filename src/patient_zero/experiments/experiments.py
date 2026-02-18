@@ -9,6 +9,7 @@ from patient_zero.models import ic, sir
 from patient_zero.networks.utils import get_random_node
 from patient_zero.enums import NetworkType, ModelType
 
+BASE_PATH = "src/patient_zero/experiments"
 
 def run_ic_simulation(
         graph: nx.Graph, 
@@ -89,7 +90,7 @@ def results_to_pkl(experiment_name: str, path, results: list):
         pickle.dump(results, f)
 
 def main():
-    with open("src/patient_zero/experiments/experiments_metadata.json", "r", encoding="utf-8") as metadata_json:
+    with open(f"{BASE_PATH}/experiments_metadata.json", "r", encoding="utf-8") as metadata_json:
         metadata = json.load(metadata_json)
         seeds = metadata.get("seeds", {})
 
@@ -130,7 +131,7 @@ def main():
                 else: 
                     raise ValueError(f"Unknown model type: type={model_type}")
                 
-                path = f"src/patient_zero/experiments/data/{graph_name}/{model["type"]}"
+                path = f"{BASE_PATH}/data/{graph_name}/{model["type"]}"
                 os.makedirs(path, exist_ok=True)
 
                 metadata_to_json(experiment_name, path, experiment_metadata)
