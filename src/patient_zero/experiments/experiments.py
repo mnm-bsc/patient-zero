@@ -1,9 +1,9 @@
 """Playground for testing the models and networks"""
 
-import json
-import networkx as nx
-import pickle
 import os
+import json
+import pickle
+import networkx as nx
 from patient_zero.networks import create_tree_graph, create_random_graph, create_scale_free_graph, create_small_world_graph
 from patient_zero.models import ic, sir
 from patient_zero.networks.utils import get_random_node
@@ -77,7 +77,7 @@ def run_sir_simulation(
             "nodes_infected": list(infected_nodes),
             "cascade_edges": cascade_edges
         })
-        
+
     return metadata, results
     
 
