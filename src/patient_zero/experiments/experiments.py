@@ -89,26 +89,25 @@ def get_graph(type: NetworkType, graph_seed: int, **params: any) -> nx.Graph:
             probability=params.get("probability"),
             seed=graph_seed
         )
-    elif type == NetworkType.SMALL_WORLD:
+    if type == NetworkType.SMALL_WORLD:
         return create_small_world_graph(
             nodes=params.get("nodes"),
             neighbors=params.get("neighbors"),
             probability=params.get("probability"),
             seed=graph_seed
         )
-    elif type == NetworkType.SCALE_FREE:
+    if type == NetworkType.SCALE_FREE:
         return create_scale_free_graph(
             nodes=params.get("nodes"),
             edges=params.get("edges"),
             seed=graph_seed
         )
-    elif type == NetworkType.TREE:
+    if type == NetworkType.TREE:
         return create_tree_graph(
             children=params.get("children"),
             depth=params.get("depth"),
         )
-    else: 
-        raise ValueError(f"Unknown graph type: type={type}")
+    raise ValueError(f"Unknown graph type: type={type}")
 
 def metadata_to_json(experiment_name: str, path, experiment_metadata: list):
     filename = f"{experiment_name}.json"
