@@ -1,0 +1,54 @@
+{
+  "graphs": [
+    {
+      "type": "erdos_renyi",
+      "params": {
+        "nodes": 500,
+        "probability": 0.2,
+        "seed": 42
+       }
+    },
+    {
+      "type": "watts_strogatz",
+      "params": {
+        "nodes": 500,
+        "neighbors": 2,
+        "probability": 0.2,
+        "seed": 42
+      }
+    },
+    {
+      "type": "barabasi_albert",
+      "params": {
+        "nodes": 500,
+        "edges": 3,
+        "seed": 42
+      }
+    },
+    {
+      "type": "balanced_tree",
+      "params": {
+        "children": 3,
+        "depth": 10
+      }
+    }
+  ],
+  "spreading_models": [
+    {
+      "model": "IC",
+      "params": {
+        "r_values": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+      }
+    },
+    {
+      "model": "SIR",
+      "params": {
+        "r_infect_values": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+        "r_recover_values": [0.1, 0.2, 0.3]
+      }
+    }
+  ],
+  "cascade_parameters": {
+    "size_limits": [10, 20, 50, 100]
+  }
+}
