@@ -81,28 +81,27 @@ def run_sir_simulation(
     return metadata, results
     
 
-def get_graph(graph_type: NetworkType, graph_seed: int, **params: any) -> nx.Graph:
-
-    if graph_type == NetworkType.RANDOM:
+def get_graph(graph_type: str, graph_seed: int, **params: any) -> nx.Graph:
+    if graph_type == NetworkType.RANDOM.value:
         return create_random_graph(
             nodes=params.get("nodes"),
             probability=params.get("probability"),
             seed=graph_seed
         )
-    if graph_type == NetworkType.SMALL_WORLD:
+    if graph_type == NetworkType.SMALL_WORLD.value:
         return create_small_world_graph(
             nodes=params.get("nodes"),
             neighbors=params.get("neighbors"),
             probability=params.get("probability"),
             seed=graph_seed
         )
-    if graph_type == NetworkType.SCALE_FREE:
+    if graph_type == NetworkType.SCALE_FREE.value:
         return create_scale_free_graph(
             nodes=params.get("nodes"),
             edges=params.get("edges"),
             seed=graph_seed
         )
-    if graph_type == NetworkType.TREE:
+    if graph_type == NetworkType.TREE.value:
         return create_tree_graph(
             children=params.get("children"),
             depth=params.get("depth"),
@@ -127,28 +126,28 @@ def main():
         seeds = metadata.get("seeds", {})
 
     for graph in metadata["graphs"]:
-        graph_name = graph["type"]
+        graph_type = graph["type"]
         graph_params = graph.get("params", {})
         graph_seed = seeds.get("graph_seed")
         patient_zero_seed = seeds.get("patient_zero_seed")
 
-        g = get_graph(NetworkType(graph_name), graph_seed, **graph_params)
+        g = get_graph(graph_type, graph_seed, **graph_params)
 
         patient_zero = get_random_node(g, patient_zero_seed)
 
         for model in metadata["spreading_models"]:
-            model_type = ModelType(model["type"])
+            model_type = model["type"]
             model_params = model.get("params", {})
 
             for cascade_size in metadata["cascade_size_limits"]:
-                experiment_name = f"{graph_name}_{model["type"]}_cascade{cascade_size}"
+                experiment_name = f"{graph_type}_{model_type}_cascade{cascade_size}"
                 experiment_metadata = {
                     "graph_type": graph["type"],
                     "graph_seed": graph_seed,
                     "patient_zero_seed": patient_zero_seed
                 }
                 results = []
-                if model_type == ModelType.IC:
+                if model_type == ModelType.IC.value:
                     experiment_metadata, results = run_ic_simulation(
                         graph=g, 
                         seed=seeds.get("ic_seed"), 
@@ -158,7 +157,7 @@ def main():
                         experiment_name=experiment_name,
                         **model_params
                     )
-                elif model_type == ModelType.SIR:
+                elif model_type == ModelType.SIR.value:
                     experiment_metadata, results = run_sir_simulation(
                         graph=g, 
                         seed=seeds.get("sir_seed"), 
@@ -171,7 +170,7 @@ def main():
                 else: 
                     raise ValueError(f"Unknown model type: type={model_type}")
                 
-                path = f"{BASE_PATH}/data/{graph_name}/{model["type"]}"
+                path = f"{BASE_PATH}/data/{graph_type}/{model_type}"
                 os.makedirs(path, exist_ok=True)
 
                 metadata_to_json(experiment_name, path, experiment_metadata)
