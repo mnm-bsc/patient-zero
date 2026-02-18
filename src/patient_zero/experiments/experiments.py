@@ -103,7 +103,7 @@ def main():
             model_params = model.get("params", {})
 
             for cascade_size in metadata["cascade_size_limits"]:
-                experiment_name = f"{graph_name}_{model["type"]}_cascade_{cascade_size}"
+                experiment_name = f"{graph_name}_{model["type"]}_cascade{cascade_size}"
                 experiment_metadata = {
                     "graph_type": graph["type"],
                     "graph_seed": graph_seed,
