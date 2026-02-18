@@ -8,18 +8,18 @@ from patient_zero.networks.utils import get_random_node
 
 def run_ic_simulation(graph, r, max_steps=None):
     start = time.perf_counter()
-    patient_zero = get_random_node(graph)
+    patient_zero = get_random_node(graph, seed=12)
     print(f"Patient zero: {patient_zero}")
-    infected_nodes = ic(graph, patient_zero, r, max_steps)
+    infected_nodes = ic(graph, patient_zero, r, max_steps, seed=42)
     duration = time.perf_counter() - start
     return infected_nodes, duration
 
 
 def run_sir_simulation(graph, r, recovery, max_steps=None):
     start = time.perf_counter()
-    patient_zero = get_random_node(graph)
+    patient_zero = get_random_node(graph, seed=12)
     print(f"Patient zero: {patient_zero}")
-    s, i, r = sir(graph, patient_zero, r, recovery, max_steps)
+    s, i, r = sir(graph, patient_zero, r, recovery, max_steps, seed=42)
     duration = time.perf_counter() - start
     return s, i, r, duration
 
