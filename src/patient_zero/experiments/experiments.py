@@ -10,7 +10,6 @@ from patient_zero.enums import NetworkType, ModelType
 
 
 def run_ic_simulation(graph: nx.Graph, seed: int, patient_zero: int, cascade_size_limit: int, experiment_metadata: object, **params: any):
-    seed = params.get("seed")
     rs = params.get("r_values")
     results = []
     metadata = []
@@ -96,8 +95,15 @@ def main():
                     "patient_zero_seed": patient_zero_seed
                 }
                 if model_type == ModelType.IC:
-                    metadata, results = run_ic_simulation(g, seeds.get("ic_seed"), patient_zero, cascade_size, experiment_metadata, **model_params)
-                    print(metadata)
+                    experiment_metadata, results = run_ic_simulation(
+                        graph=g, 
+                        seed=seeds.get("ic_seed"), 
+                        patient_zero=patient_zero, 
+                        cascade_size_limit=cascade_size, 
+                        experiment_metadata=experiment_metadata, 
+                        **model_params
+                    )
+                    print(experiment_metadata)
 
                 elif model_type == ModelType.SIR:
                     run_sir_simulation(g, seeds.get("sir_seed"), patient_zero, cascade_size, experiment_metadata, **model_params)
