@@ -8,18 +8,20 @@ from patient_zero.networks.utils import get_random_node
 from patient_zero.enums import NetworkType, ModelType
 
 
-def run_ic_simulation(graph: nx.Graph, seed: int, patient_zero: int, **params: any):
+def run_ic_simulation(graph: nx.Graph, seed: int, patient_zero: int, cascade_size_limit: int, **params: any):
     seed = params.get("seed")
     rs = params.get("r_values")
 
     for r in rs:
-        infected_nodes = ic(g=graph, patient_zero=patient_zero, r=r, seed=seed)
+        infected_nodes, cascade_edges = ic(g=graph, patient_zero=patient_zero, r=r, max_size=cascade_size_limit, seed=seed)
+
         print(infected_nodes)
+        print(cascade_edges)
 
     
-def run_sir_simulation(graph: nx.Graph, seed: int, patient_zero: int, **params: any):
-    print(graph)
-    print(params)
+def run_sir_simulation(graph: nx.Graph, seed: int, patient_zero: int, cascade_size_limit: int, **params: any):
+    print("sir not implemented")
+    #print(params)
 
 def get_graph(type: NetworkType, graph_seed: int, **params: any) -> nx.Graph:
 
@@ -69,12 +71,14 @@ def main():
             model_type = ModelType(model["type"])
             model_params = model.get("params", {})
 
-            if model_type == ModelType.IC:
-                run_ic_simulation(g, seeds.get("ic_seed"), patient_zero, **model_params)
-            elif model_type == ModelType.SIR:
-                run_sir_simulation(g, seeds.get("sir_seed"), patient_zero, **model_params)
-            else: 
-                raise ValueError(f"Unknown model type: type={model_type}")
+            for cascade_size in metadata["cascade_size_limits"]:
+
+                if model_type == ModelType.IC:
+                    run_ic_simulation(g, seeds.get("ic_seed"), patient_zero, cascade_size, **model_params)
+                elif model_type == ModelType.SIR:
+                    run_sir_simulation(g, seeds.get("sir_seed"), patient_zero, cascade_size, **model_params)
+                else: 
+                    raise ValueError(f"Unknown model type: type={model_type}")
 
    
 

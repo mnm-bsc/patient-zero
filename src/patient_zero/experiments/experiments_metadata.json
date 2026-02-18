@@ -45,9 +45,7 @@
       }
     }
   ],
-  "cascade_parameters": {
-    "size_limits": [10, 20, 50, 100]
-  },
+  "cascade_size_limits": [10, 20, 50, 100],
   "seeds": {
     "patient_zero_seed": 21,
     "graph_seed": 42,
