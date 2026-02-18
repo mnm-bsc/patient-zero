@@ -11,12 +11,17 @@ from patient_zero.networks.utils import get_random_node
     
 
 #def run_sir_simulation(graph, r, recovery, max_steps=None):
-    
+
+def get_graph(params: any):
+    params.g
+
 
 def main():
     with open("src/patient_zero/experiments/experiments_metadata.json", "r") as metadata_json:
         metadata = json.load(metadata_json)
         print(metadata)
+    for graph in metadata.graphs:
+        get_graph(graph)
    
 
 if __name__ == "__main__":

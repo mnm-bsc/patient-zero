@@ -2,27 +2,35 @@
   "graphs": [
     {
       "graph_type": "erdos_renyi",
-      "nodes": 500,
-      "probability": 0.2,
-      "seed": 42
+      "params": {
+        "nodes": 500,
+        "probability": 0.2,
+        "seed": 42
+       }
     },
     {
       "graph_type": "watts_strogatz",
-      "nodes": 500,
-      "neighbors": 2,
-      "probability": 0.2,
-      "seed": 42
+      "params": {
+        "nodes": 500,
+        "neighbors": 2,
+        "probability": 0.2,
+        "seed": 42
+      }
     },
     {
       "graph_type": "barabasi_albert",
-      "nodes": 500,
-      "edges": 3,
-      "seed": 42
+      "params": {
+        "nodes": 500,
+        "edges": 3,
+        "seed": 42
+      }
     },
     {
       "graph_type": "balanced_tree",
-      "children": 3,
-      "depth": 10
+      "params": {
+        "children": 3,
+        "depth": 10
+      }
     }
   ],
   "spreading_models": [
