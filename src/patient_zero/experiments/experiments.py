@@ -81,12 +81,12 @@ def main():
         seeds = metadata.get("seeds", {})
 
     for graph in metadata["graphs"]:
-        graph_type = NetworkType(graph["type"])
+        graph_name = graph["type"]
         graph_params = graph.get("params", {})
         graph_seed = seeds.get("graph_seed")
         patient_zero_seed = seeds.get("patient_zero_seed")
 
-        g = get_graph(graph_type, graph_seed, **graph_params)
+        g = get_graph(NetworkType(graph_name), graph_seed, **graph_params)
 
         patient_zero = get_random_node(g, patient_zero_seed)
 
@@ -95,7 +95,7 @@ def main():
             model_params = model.get("params", {})
 
             for cascade_size in metadata["cascade_size_limits"]:
-                experiment_name = f"{graph_type}_{model_type}_cascade_{cascade_size}"
+                experiment_name = f"{graph_name}_{model_type}_cascade_{cascade_size}"
                 experiment_metadata = {
                     "graph_type": graph["type"],
                     "graph_seed": graph_seed,

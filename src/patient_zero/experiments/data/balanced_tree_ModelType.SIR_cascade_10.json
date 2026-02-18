@@ -1,0 +1,5 @@
+{
+    "graph_type": "balanced_tree",
+    "graph_seed": 42,
+    "patient_zero_seed": 20
+}
