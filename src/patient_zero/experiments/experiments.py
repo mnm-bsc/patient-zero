@@ -14,9 +14,7 @@ from patient_zero.networks.utils import get_random_node
     
 
 def main():
-    print("hey")
-    print(os.getcwd())
-    with open("/src/patient_zero/experiments/experiments_metadata.json", "r") as metadata_json:
+    with open("src/patient_zero/experiments/experiments_metadata.json", "r") as metadata_json:
         metadata = json.load(metadata_json)
         print(metadata)
    
