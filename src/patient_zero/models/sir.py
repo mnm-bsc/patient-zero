@@ -5,8 +5,17 @@ Suceptible Infected Recovered model
 import random
 import networkx as nx
 
-def susceptible_infected_recovered(g: nx.graph, patient_zero: int, r_infect: float, r_recover, max_steps: int = None):
+def susceptible_infected_recovered(
+        g: nx.graph,
+        patient_zero: int,
+        r_infect: float,
+        r_recover,
+        max_steps: int = None, 
+        seed: int = None
+    ):
     """Implementation of SIR model"""
+    rng = random.Random(seed)
+
     susceptible = set(g.nodes())
     infected = {patient_zero}
     recovered = set()
@@ -18,12 +27,12 @@ def susceptible_infected_recovered(g: nx.graph, patient_zero: int, r_infect: flo
         new_infected = set()
         new_recovered = set()
 
-        for node in infected:
-            for neighbor in g.neighbors(node):
-                if neighbor in susceptible and random.random() < r_infect:
+        for node in sorted(infected):
+            for neighbor in sorted(g.neighbors(node)):
+                if neighbor in susceptible and rng.random() < r_infect:
                     new_infected.add(neighbor)
                     
-            if random.random() < r_recover:
+            if rng.random() < r_recover:
                 new_recovered.add(node)
 
         infected.update(new_infected)
@@ -32,8 +41,3 @@ def susceptible_infected_recovered(g: nx.graph, patient_zero: int, r_infect: flo
         recovered.update(new_recovered)
 
     return susceptible, infected, recovered
-
-
-
-    
-    

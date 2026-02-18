@@ -5,8 +5,10 @@ Independent cascade model
 import random
 import networkx as nx
 
-def independent_cascade(g: nx.Graph, patient_zero: int, r: float, max_steps: int = None):
+def independent_cascade(g: nx.Graph, patient_zero: int, r: float, max_steps: int = None, seed: int = None):
     """Implementation of IC model"""
+    rng = random.Random(seed)
+
     infected = {patient_zero}
     all_infected = set(infected)
     step = 0
@@ -16,8 +18,8 @@ def independent_cascade(g: nx.Graph, patient_zero: int, r: float, max_steps: int
 
         new_infected = set()
         for node in infected:
-            for neighbor in g.neighbors(node):
-                if neighbor not in all_infected and random.random() < r:
+            for neighbor in sorted(g.neighbors(node)):
+                if neighbor not in all_infected and rng.random() < r:
                     new_infected.add(neighbor)
                     all_infected.add(neighbor)
         infected = new_infected
