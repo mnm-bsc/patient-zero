@@ -82,6 +82,12 @@ def metadata_to_json(experiment_name: str, path, experiment_metadata: list):
     with open(f"{path}/{filename}", "w", encoding="utf-8") as f:
         json.dump(experiment_metadata, f, indent=4)
 
+def results_to_pkl(experiment_name: str, path, results: list):
+    filename = f"{experiment_name}.pkl"
+
+    with open(f"{path}/{filename}", "wb") as f:
+        pickle.dump(results, f)
+
 def main():
     with open("src/patient_zero/experiments/experiments_metadata.json", "r", encoding="utf-8") as metadata_json:
         metadata = json.load(metadata_json)
@@ -108,6 +114,7 @@ def main():
                     "graph_seed": graph_seed,
                     "patient_zero_seed": patient_zero_seed
                 }
+                results = []
                 if model_type == ModelType.IC:
                     experiment_metadata, results = run_ic_simulation(
                         graph=g, 
@@ -127,7 +134,7 @@ def main():
                 os.makedirs(path, exist_ok=True)
 
                 metadata_to_json(experiment_name, path, experiment_metadata)
-                #results_to_pkl(experiment_name, results)
+                results_to_pkl(experiment_name, path, results)
 
    
 
