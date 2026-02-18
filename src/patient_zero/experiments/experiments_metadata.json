@@ -4,8 +4,7 @@
       "type": "erdos_renyi",
       "params": {
         "nodes": 500,
-        "probability": 0.2,
-        "seed": 42
+        "probability": 0.2
        }
     },
     {
@@ -13,23 +12,21 @@
       "params": {
         "nodes": 500,
         "neighbors": 2,
-        "probability": 0.2,
-        "seed": 42
+        "probability": 0.2
       }
     },
     {
       "type": "barabasi_albert",
       "params": {
         "nodes": 500,
-        "edges": 3,
-        "seed": 42
+        "edges": 3
       }
     },
     {
       "type": "balanced_tree",
       "params": {
         "children": 3,
-        "depth": 10
+        "depth": 4
       }
     }
   ],
@@ -50,5 +47,11 @@
   ],
   "cascade_parameters": {
     "size_limits": [10, 20, 50, 100]
+  },
+  "seeds": {
+    "patient_zero_seed": 21,
+    "graph_seed": 42,
+    "ic_seed": 67,
+    "sir_seed": 101
   }
 }

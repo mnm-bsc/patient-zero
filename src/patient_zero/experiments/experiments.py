@@ -8,34 +8,36 @@ from patient_zero.enums import NetworkType, ModelType
 import networkx as nx
 
 
-def run_ic_simulation(graph: nx.Graph, **params: any):
-    print(graph)
-    print(params)
+def run_ic_simulation(graph: nx.Graph, seed: int, patient_zero: int, **params: any):
+    seed = params.get("seed")
+    rs = params.get("r_values")
+    patient_zero = get_random_node(graph, seed)
+
     
-def run_sir_simulation(graph: nx.Graph, **params: any):
+def run_sir_simulation(graph: nx.Graph, seed: int, patient_zero: int, **params: any):
     print(graph)
     print(params)
 
-def get_graph(type: NetworkType, **params: any) -> nx.Graph:
+def get_graph(type: NetworkType, graph_seed: int, **params: any) -> nx.Graph:
 
     if type == NetworkType.RANDOM:
         return create_random_graph(
             nodes=params.get("nodes"),
             probability=params.get("probability"),
-            seed=params.get("seed")
+            seed=graph_seed
         )
     elif type == NetworkType.SMALL_WORLD:
         return create_small_world_graph(
             nodes=params.get("nodes"),
             neighbors=params.get("neighbors"),
             probability=params.get("probability"),
-            seed=params.get("seed")
+            seed=graph_seed
         )
     elif type == NetworkType.SCALE_FREE:
         return create_scale_free_graph(
             nodes=params.get("nodes"),
             edges=params.get("edges"),
-            seed=params.get("seed")
+            seed=graph_seed
         )
     elif type == NetworkType.TREE:
         return create_tree_graph(
@@ -50,21 +52,24 @@ def get_graph(type: NetworkType, **params: any) -> nx.Graph:
 def main():
     with open("src/patient_zero/experiments/experiments_metadata.json", "r") as metadata_json:
         metadata = json.load(metadata_json)
+        seeds = metadata.get("seeds", {})
         print(metadata)
     for graph in metadata["graphs"]:
         graph_type = NetworkType(graph["type"])
         graph_params = graph.get("params", {})
 
-        g = get_graph(graph_type, **graph_params)
+        g = get_graph(graph_type, seeds.get("graph_seed"), **graph_params)
+
+        patient_zero = get_random_node(g, seeds.get("patient_zero_seed"))
 
         for model in metadata["spreading_models"]:
             model_type = ModelType(model["type"])
             model_params = model.get("params", {})
 
             if model_type == ModelType.IC:
-                run_ic_simulation(g, **model_params)
+                run_ic_simulation(g, seeds.get("ic_seed"), patient_zero, **model_params)
             elif model_type == ModelType.SIR:
-                run_sir_simulation(g, **model_params)
+                run_sir_simulation(g, seeds.get("sir_seed"), patient_zero, **model_params)
             else: 
                 raise ValueError(f"Unknown model type: type={model_type}")
 
