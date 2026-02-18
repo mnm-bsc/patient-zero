@@ -44,9 +44,40 @@ def run_ic_simulation(
 
 
     
-def run_sir_simulation(graph: nx.Graph, seed: int, patient_zero: int, cascade_size_limit: int, experiment_metadata: object, **params: any):
-    print("sir not implemented")
-    #print(params)
+def run_sir_simulation(
+        graph: nx.Graph, 
+        seed: int, 
+        patient_zero: int, 
+        cascade_size_limit: int, 
+        experiment_metadata: object, 
+        experiment_name: str, 
+        **params: any
+    ):
+    
+    rs = params.get("r_infect_values")
+    results = []
+    metadata = []
+
+    for r in rs:
+        # r_recover is hardcoded to 0.1
+        infected_nodes, cascade_edges = sir(g=graph, patient_zero=patient_zero, r_infect=r, r_recover=0.1, max_size=cascade_size_limit, seed=seed)
+        metadata.append({
+            "id": f"{experiment_name}_r{r}",
+            **experiment_metadata,
+            "r_infect": r,
+            "r_recover": 0.1, #hardcoded
+            "patient_zero": patient_zero,
+            "model_seed": seed,
+            "cascade_size_limit": cascade_size_limit
+        })
+        results.append({
+            "id": r,
+            "nodes_infected": list(infected_nodes),
+            "cascade_edges": cascade_edges
+        })
+        
+    return metadata, results
+    
 
 def get_graph(type: NetworkType, graph_seed: int, **params: any) -> nx.Graph:
 
@@ -127,7 +158,15 @@ def main():
                         **model_params
                     )
                 elif model_type == ModelType.SIR:
-                    run_sir_simulation(g, seeds.get("sir_seed"), patient_zero, cascade_size, experiment_metadata, **model_params)
+                    experiment_metadata, results = run_sir_simulation(
+                        graph=g, 
+                        seed=seeds.get("sir_seed"), 
+                        patient_zero=patient_zero, 
+                        cascade_size_limit=cascade_size, 
+                        experiment_metadata=experiment_metadata,
+                        experiment_name=experiment_name,
+                        **model_params
+                        )
                 else: 
                     raise ValueError(f"Unknown model type: type={model_type}")
                 
