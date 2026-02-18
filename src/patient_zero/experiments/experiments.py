@@ -29,6 +29,7 @@ def run_ic_simulation(
         metadata.append({
             "id": f"{experiment_name}_r{r}",
             **experiment_metadata,
+            "model": "IC",
             "r": r,
             "patient_zero": patient_zero,
             "model_seed": seed,
@@ -64,6 +65,7 @@ def run_sir_simulation(
         metadata.append({
             "id": f"{experiment_name}_r{r}",
             **experiment_metadata,
+            "model": "SIR",
             "r_infect": r,
             "r_recover": 0.1, #hardcoded
             "patient_zero": patient_zero,
