@@ -3,6 +3,7 @@
 import json
 import networkx as nx
 import pickle
+import os
 from patient_zero.networks import create_tree_graph, create_random_graph, create_scale_free_graph, create_small_world_graph
 from patient_zero.models import ic, sir
 from patient_zero.networks.utils import get_random_node
@@ -67,10 +68,15 @@ def get_graph(type: NetworkType, graph_seed: int, **params: any) -> nx.Graph:
     else: 
         raise ValueError(f"Unknown graph type: type={type}")
 
-
+def metadata_to_json(experiment_name: str, experiment_metadata: list):
+    filename = f"{experiment_name}.json"
+    dir = "data"
+    os.makedirs(dir, exist_ok=True)
+    with open(f"{dir}/{filename}", "w", encoding="utf-8") as f:
+        json.dump(experiment_metadata, f)
 
 def main():
-    with open("src/patient_zero/experiments/experiments_metadata.json", "r") as metadata_json:
+    with open("src/patient_zero/experiments/experiments_metadata.json", "r", encoding="utf-8") as metadata_json:
         metadata = json.load(metadata_json)
         seeds = metadata.get("seeds", {})
 
@@ -89,6 +95,7 @@ def main():
             model_params = model.get("params", {})
 
             for cascade_size in metadata["cascade_size_limits"]:
+                experiment_name = f"{graph_type}_{model_type}_cascade_{cascade_size}"
                 experiment_metadata = {
                     "graph_type": graph["type"],
                     "graph_seed": graph_seed,
@@ -103,12 +110,12 @@ def main():
                         experiment_metadata=experiment_metadata, 
                         **model_params
                     )
-                    print(experiment_metadata)
-
                 elif model_type == ModelType.SIR:
                     run_sir_simulation(g, seeds.get("sir_seed"), patient_zero, cascade_size, experiment_metadata, **model_params)
                 else: 
                     raise ValueError(f"Unknown model type: type={model_type}")
+                metadata_to_json(experiment_name, experiment_metadata)
+                results_to_pkl(experiment_name, results)
 
    
 
