@@ -10,7 +10,15 @@ from patient_zero.networks.utils import get_random_node
 from patient_zero.enums import NetworkType, ModelType
 
 
-def run_ic_simulation(graph: nx.Graph, seed: int, patient_zero: int, cascade_size_limit: int, experiment_metadata: object, **params: any):
+def run_ic_simulation(
+        graph: nx.Graph, 
+        seed: int, patient_zero: int, 
+        cascade_size_limit: int, 
+        experiment_metadata: object, 
+        experiment_name: str,
+        **params: any
+    ):
+
     rs = params.get("r_values")
     results = []
     metadata = []
@@ -18,7 +26,7 @@ def run_ic_simulation(graph: nx.Graph, seed: int, patient_zero: int, cascade_siz
     for r in rs:
         infected_nodes, cascade_edges = ic(g=graph, patient_zero=patient_zero, r=r, max_size=cascade_size_limit, seed=seed)
         metadata.append({
-            "id": r,
+            "id": f"{experiment_name}_r{r}",
             **experiment_metadata,
             "r": r,
             "patient_zero": patient_zero,
@@ -95,7 +103,7 @@ def main():
             model_params = model.get("params", {})
 
             for cascade_size in metadata["cascade_size_limits"]:
-                experiment_name = f"{graph_name}_{model_type}_cascade_{cascade_size}"
+                experiment_name = f"{graph_name}_{model["type"]}_cascade_{cascade_size}"
                 experiment_metadata = {
                     "graph_type": graph["type"],
                     "graph_seed": graph_seed,
@@ -108,6 +116,7 @@ def main():
                         patient_zero=patient_zero, 
                         cascade_size_limit=cascade_size, 
                         experiment_metadata=experiment_metadata, 
+                        experiment_name=experiment_name,
                         **model_params
                     )
                 elif model_type == ModelType.SIR:

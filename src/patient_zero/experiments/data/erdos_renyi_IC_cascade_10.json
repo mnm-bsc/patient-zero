@@ -1,7 +1,7 @@
 [
     {
-        "id": 0.1,
-        "graph_type": "watts_strogatz",
+        "id": "erdos_renyi_IC_cascade_10_r0.1",
+        "graph_type": "erdos_renyi",
         "graph_seed": 42,
         "patient_zero_seed": 20,
         "r": 0.1,
@@ -10,8 +10,8 @@
         "cascade_size_limit": 10
     },
     {
-        "id": 0.2,
-        "graph_type": "watts_strogatz",
+        "id": "erdos_renyi_IC_cascade_10_r0.2",
+        "graph_type": "erdos_renyi",
         "graph_seed": 42,
         "patient_zero_seed": 20,
         "r": 0.2,
@@ -20,8 +20,8 @@
         "cascade_size_limit": 10
     },
     {
-        "id": 0.3,
-        "graph_type": "watts_strogatz",
+        "id": "erdos_renyi_IC_cascade_10_r0.3",
+        "graph_type": "erdos_renyi",
         "graph_seed": 42,
         "patient_zero_seed": 20,
         "r": 0.3,
@@ -30,8 +30,8 @@
         "cascade_size_limit": 10
     },
     {
-        "id": 0.4,
-        "graph_type": "watts_strogatz",
+        "id": "erdos_renyi_IC_cascade_10_r0.4",
+        "graph_type": "erdos_renyi",
         "graph_seed": 42,
         "patient_zero_seed": 20,
         "r": 0.4,
@@ -40,8 +40,8 @@
         "cascade_size_limit": 10
     },
     {
-        "id": 0.5,
-        "graph_type": "watts_strogatz",
+        "id": "erdos_renyi_IC_cascade_10_r0.5",
+        "graph_type": "erdos_renyi",
         "graph_seed": 42,
         "patient_zero_seed": 20,
         "r": 0.5,
@@ -50,8 +50,8 @@
         "cascade_size_limit": 10
     },
     {
-        "id": 0.6,
-        "graph_type": "watts_strogatz",
+        "id": "erdos_renyi_IC_cascade_10_r0.6",
+        "graph_type": "erdos_renyi",
         "graph_seed": 42,
         "patient_zero_seed": 20,
         "r": 0.6,
@@ -60,8 +60,8 @@
         "cascade_size_limit": 10
     },
     {
-        "id": 0.7,
-        "graph_type": "watts_strogatz",
+        "id": "erdos_renyi_IC_cascade_10_r0.7",
+        "graph_type": "erdos_renyi",
         "graph_seed": 42,
         "patient_zero_seed": 20,
         "r": 0.7,
@@ -70,8 +70,8 @@
         "cascade_size_limit": 10
     },
     {
-        "id": 0.8,
-        "graph_type": "watts_strogatz",
+        "id": "erdos_renyi_IC_cascade_10_r0.8",
+        "graph_type": "erdos_renyi",
         "graph_seed": 42,
         "patient_zero_seed": 20,
         "r": 0.8,
@@ -80,8 +80,8 @@
         "cascade_size_limit": 10
     },
     {
-        "id": 0.9,
-        "graph_type": "watts_strogatz",
+        "id": "erdos_renyi_IC_cascade_10_r0.9",
+        "graph_type": "erdos_renyi",
         "graph_seed": 42,
         "patient_zero_seed": 20,
         "r": 0.9,
@@ -90,8 +90,8 @@
         "cascade_size_limit": 10
     },
     {
-        "id": 1.0,
-        "graph_type": "watts_strogatz",
+        "id": "erdos_renyi_IC_cascade_10_r1.0",
+        "graph_type": "erdos_renyi",
         "graph_seed": 42,
         "patient_zero_seed": 20,
         "r": 1.0,
