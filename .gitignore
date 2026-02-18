@@ -206,5 +206,7 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
-# Ignore pickle pkl files
+# Ignore data files from experiments
 *.pkl
+data/*.pkl
+data/*.json
