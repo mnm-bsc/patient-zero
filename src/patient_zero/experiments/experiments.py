@@ -76,11 +76,10 @@ def get_graph(type: NetworkType, graph_seed: int, **params: any) -> nx.Graph:
     else: 
         raise ValueError(f"Unknown graph type: type={type}")
 
-def metadata_to_json(experiment_name: str, experiment_metadata: list):
+def metadata_to_json(experiment_name: str, path, experiment_metadata: list):
     filename = f"{experiment_name}.json"
-    dir = "src/patient_zero/experiments/data"
-    os.makedirs(dir, exist_ok=True)
-    with open(f"{dir}/{filename}", "w", encoding="utf-8") as f:
+
+    with open(f"{path}/{filename}", "w", encoding="utf-8") as f:
         json.dump(experiment_metadata, f, indent=4)
 
 def main():
@@ -123,7 +122,11 @@ def main():
                     run_sir_simulation(g, seeds.get("sir_seed"), patient_zero, cascade_size, experiment_metadata, **model_params)
                 else: 
                     raise ValueError(f"Unknown model type: type={model_type}")
-                metadata_to_json(experiment_name, experiment_metadata)
+                
+                path = f"src/patient_zero/experiments/data/{graph_name}/{model["type"]}"
+                os.makedirs(path, exist_ok=True)
+
+                metadata_to_json(experiment_name, path, experiment_metadata)
                 #results_to_pkl(experiment_name, results)
 
    
