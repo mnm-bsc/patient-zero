@@ -90,7 +90,7 @@ def main():
 
             for cascade_size in metadata["cascade_size_limits"]:
                 experiment_metadata = {
-                    "graph_type": graph_type,
+                    "graph_type": graph["type"],
                     "graph_seed": graph_seed,
                     "patient_zero_seed": patient_zero_seed
                 }
