@@ -70,10 +70,10 @@ def get_graph(type: NetworkType, graph_seed: int, **params: any) -> nx.Graph:
 
 def metadata_to_json(experiment_name: str, experiment_metadata: list):
     filename = f"{experiment_name}.json"
-    dir = "data"
+    dir = "src/patient_zero/experiments/data"
     os.makedirs(dir, exist_ok=True)
     with open(f"{dir}/{filename}", "w", encoding="utf-8") as f:
-        json.dump(experiment_metadata, f)
+        json.dump(experiment_metadata, f, indent=4)
 
 def main():
     with open("src/patient_zero/experiments/experiments_metadata.json", "r", encoding="utf-8") as metadata_json:
@@ -115,7 +115,7 @@ def main():
                 else: 
                     raise ValueError(f"Unknown model type: type={model_type}")
                 metadata_to_json(experiment_name, experiment_metadata)
-                results_to_pkl(experiment_name, results)
+                #results_to_pkl(experiment_name, results)
 
    
 
