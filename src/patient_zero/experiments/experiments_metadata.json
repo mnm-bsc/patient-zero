@@ -35,13 +35,13 @@
   ],
   "spreading_models": [
     {
-      "model": "IC",
+      "type": "IC",
       "params": {
         "r_values": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
       }
     },
     {
-      "model": "SIR",
+      "type": "SIR",
       "params": {
         "r_infect_values": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
         "r_recover_values": [0.1, 0.2, 0.3]

@@ -8,10 +8,13 @@ from patient_zero.enums import NetworkType, ModelType
 import networkx as nx
 
 
-#def run_ic_simulation(graph, r, max_steps=None):
+def run_ic_simulation(graph: nx.Graph, **params: any):
+    print(graph)
+    print(params)
     
-
-#def run_sir_simulation(graph, r, recovery, max_steps=None):
+def run_sir_simulation(graph: nx.Graph, **params: any):
+    print(graph)
+    print(params)
 
 def get_graph(type: NetworkType, **params: any) -> nx.Graph:
 
@@ -50,11 +53,20 @@ def main():
         print(metadata)
     for graph in metadata["graphs"]:
         graph_type = NetworkType(graph["type"])
-        params = graph.get("params", {})
+        graph_params = graph.get("params", {})
 
-        print(graph)
-        g = get_graph(graph_type, **params)
-        print(g.number_of_nodes())
+        g = get_graph(graph_type, **graph_params)
+
+        for model in metadata["spreading_models"]:
+            model_type = ModelType(model["type"])
+            model_params = model.get("params", {})
+
+            if model_type == ModelType.IC:
+                run_ic_simulation(g, **model_params)
+            elif model_type == ModelType.SIR:
+                run_sir_simulation(g, **model_params)
+            else: 
+                raise ValueError(f"Unknown model type: type={model_type}")
 
    
 
