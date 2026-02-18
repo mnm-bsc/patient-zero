@@ -1,17 +1,20 @@
 """Playground for testing the models and networks"""
 
 import json
+import networkx as nx
 from patient_zero.networks import create_tree_graph, create_random_graph, create_scale_free_graph, create_small_world_graph
 from patient_zero.models import ic, sir
 from patient_zero.networks.utils import get_random_node
 from patient_zero.enums import NetworkType, ModelType
-import networkx as nx
 
 
 def run_ic_simulation(graph: nx.Graph, seed: int, patient_zero: int, **params: any):
     seed = params.get("seed")
     rs = params.get("r_values")
-    patient_zero = get_random_node(graph, seed)
+
+    for r in rs:
+        infected_nodes = ic(g=graph, patient_zero=patient_zero, r=r, seed=seed)
+        print(infected_nodes)
 
     
 def run_sir_simulation(graph: nx.Graph, seed: int, patient_zero: int, **params: any):
@@ -53,7 +56,7 @@ def main():
     with open("src/patient_zero/experiments/experiments_metadata.json", "r") as metadata_json:
         metadata = json.load(metadata_json)
         seeds = metadata.get("seeds", {})
-        print(metadata)
+
     for graph in metadata["graphs"]:
         graph_type = NetworkType(graph["type"])
         graph_params = graph.get("params", {})

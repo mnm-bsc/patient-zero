@@ -20,6 +20,10 @@ def susceptible_infected_recovered(
     infected = {patient_zero}
     recovered = set()
     susceptible.remove(patient_zero)
+
+    all_infected = {patient_zero}
+    cascade_edges = []
+    
     step = 0
 
     while infected and (max_steps is None or step < max_steps):
@@ -31,6 +35,8 @@ def susceptible_infected_recovered(
             for neighbor in sorted(g.neighbors(node)):
                 if neighbor in susceptible and rng.random() < r_infect:
                     new_infected.add(neighbor)
+                    all_infected.add(neighbor)
+                    cascade_edges.append((node, neighbor))
                     
             if rng.random() < r_recover:
                 new_recovered.add(node)
@@ -40,4 +46,4 @@ def susceptible_infected_recovered(
         susceptible.difference_update(new_infected)
         recovered.update(new_recovered)
 
-    return susceptible, infected, recovered
+    return all_infected, cascade_edges
