@@ -20,6 +20,9 @@ def run_ic_simulation(
         simulations_name: str,
         **params: any
     ):
+    """
+    Method for running IC simulations.
+    """
 
     rs = params.get("r_values")
     results = []
@@ -60,6 +63,7 @@ def run_sir_simulation(
         simulations_name: str, 
         **params: any
     ):
+    """Method for running SIR simulations."""
     
     rs = params.get("r_infect_values")
     results = []
@@ -93,6 +97,9 @@ def run_sir_simulation(
     
 
 def get_graph(graph_type: str, graph_seed: int, **params: any) -> nx.Graph:
+    """
+    Get graph of type graph_type.
+    """
     if graph_type == NetworkType.RANDOM.value:
         return create_random_graph(
             nodes=params.get("nodes"),
