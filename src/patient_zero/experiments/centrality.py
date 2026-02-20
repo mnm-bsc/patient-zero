@@ -2,7 +2,6 @@
 Centrality measures
 """
 import networkx as nx
-from patient_zero.experiments.utils import pkl_to_cascade
 
 def rumor_centrality():
     print("rumor")

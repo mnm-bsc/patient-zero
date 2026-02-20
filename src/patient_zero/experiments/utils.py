@@ -19,14 +19,14 @@ def pkl_to_cascade(path):
         edges = simulation.get("cascade_edges", [])
         graph.add_edges_from(edges)
 
-        id = simulation.get("id")
+        simulation_id = simulation.get("id")
 
         metadata = {
             key: value for key, value in simulation.items()
             if key not in {"nodes_infected", "cascade_edges"}
         }
 
-        cascades[id] = {
+        cascades[simulation_id] = {
             "cascade": graph,
             "metadata": metadata
         }

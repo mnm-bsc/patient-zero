@@ -1,8 +1,7 @@
+from pathlib import Path
+from collections.abc import Callable
 import networkx as nx
 import pandas as pd
-import json
-from collections.abc import Callable
-from pathlib import Path
 from patient_zero.experiments.utils import pkl_to_cascade
 from patient_zero.experiments.centrality import degree_centrality, eigenvector_centrality, distance_centrality
 
@@ -24,14 +23,14 @@ def main():
     for pkl_file in DATA_DIR.rglob("*.pkl"):
         cascades = pkl_to_cascade(pkl_file)
         
-        for id, data in cascades.items():
+        for simulation_id, data in cascades.items():
             cascade = data.get("cascade")
             metadata = data.get("metadata")
 
             for cm in centrality_measures:
                 guess, diff = calculate_centrality(cm, cascade, metadata["patient_zero"])
                 results.append({
-                    "id": id,
+                    "id": simulation_id,
                     "centrality": cm.__name__,
                     "guess": guess,
                     "diff": diff,

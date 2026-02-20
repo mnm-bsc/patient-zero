@@ -2,9 +2,9 @@
 
 import os
 import json
+from pathlib import Path
 import pickle
 import networkx as nx
-from pathlib import Path
 from patient_zero.networks import create_tree_graph, create_random_graph, create_scale_free_graph, create_small_world_graph
 from patient_zero.models import ic, sir
 from patient_zero.networks.utils import get_random_node
