@@ -1,182 +1,51 @@
-"""Playground for testing the models and networks"""
-
-import os
-import json
-import pickle
+"""
+Experiments for guessing patient zero based on centrality measures.
+"""
+from pathlib import Path
+from collections.abc import Callable
 import networkx as nx
-from patient_zero.networks import create_tree_graph, create_random_graph, create_scale_free_graph, create_small_world_graph
-from patient_zero.models import ic, sir
-from patient_zero.networks.utils import get_random_node
-from patient_zero.enums import NetworkType, ModelType
+import pandas as pd
+from patient_zero.experiments.utils import pkl_to_cascade
+from patient_zero.experiments.centrality import degree_centrality, eigenvector_centrality, distance_centrality
 
-BASE_PATH = "src/patient_zero/experiments"
+DATA_DIR = Path("simulations")
 
-def run_ic_simulation(
-        graph: nx.Graph, 
-        seed: int, patient_zero: int, 
-        cascade_size_limit: int, 
-        experiment_metadata: object, 
-        experiment_name: str,
-        **params: any
-    ):
+def calculate_centrality(centrality_function: Callable, cascade: nx.Graph, patient_zero: int):
+    """
+    Calculates the centrality of all nodes in a cascade.
+    """
+    result = centrality_function(cascade)
+    guess = max(result, key=result.get)
 
-    rs = params.get("r_values")
-    results = []
-    metadata = []
+    diff = nx.shortest_path_length(cascade, guess, patient_zero)
+    return guess, diff
 
-    for r in rs:
-        infected_nodes, cascade_edges = ic(g=graph, patient_zero=patient_zero, r=r, max_size=cascade_size_limit, seed=seed)
-        metadata.append({
-            "id": f"{experiment_name}_r{r}",
-            **experiment_metadata,
-            "model": "IC",
-            "r": r,
-            "patient_zero": patient_zero,
-            "model_seed": seed,
-            "cascade_size_limit": cascade_size_limit
-        })
-        results.append({
-            "id": r,
-            "nodes_infected": list(infected_nodes),
-            "cascade_edges": cascade_edges
-        })
-    
-    return metadata, results
-
-
-    
-def run_sir_simulation(
-        graph: nx.Graph, 
-        seed: int, 
-        patient_zero: int, 
-        cascade_size_limit: int, 
-        experiment_metadata: object, 
-        experiment_name: str, 
-        **params: any
-    ):
-    
-    rs = params.get("r_infect_values")
-    results = []
-    metadata = []
-
-    for r in rs:
-        # r_recover is hardcoded to 0.1
-        infected_nodes, cascade_edges = sir(g=graph, patient_zero=patient_zero, r_infect=r, r_recover=0.1, max_size=cascade_size_limit, seed=seed)
-        metadata.append({
-            "id": f"{experiment_name}_r{r}",
-            **experiment_metadata,
-            "model": "SIR",
-            "r_infect": r,
-            "r_recover": 0.1, #hardcoded
-            "patient_zero": patient_zero,
-            "model_seed": seed,
-            "cascade_size_limit": cascade_size_limit
-        })
-        results.append({
-            "id": r,
-            "nodes_infected": list(infected_nodes),
-            "cascade_edges": cascade_edges
-        })
-
-    return metadata, results
-    
-
-def get_graph(graph_type: str, graph_seed: int, **params: any) -> nx.Graph:
-    if graph_type == NetworkType.RANDOM.value:
-        return create_random_graph(
-            nodes=params.get("nodes"),
-            probability=params.get("probability"),
-            seed=graph_seed
-        )
-    if graph_type == NetworkType.SMALL_WORLD.value:
-        return create_small_world_graph(
-            nodes=params.get("nodes"),
-            neighbors=params.get("neighbors"),
-            probability=params.get("probability"),
-            seed=graph_seed
-        )
-    if graph_type == NetworkType.SCALE_FREE.value:
-        return create_scale_free_graph(
-            nodes=params.get("nodes"),
-            edges=params.get("edges"),
-            seed=graph_seed
-        )
-    if graph_type == NetworkType.TREE.value:
-        return create_tree_graph(
-            children=params.get("children"),
-            depth=params.get("depth"),
-        )
-    raise ValueError(f"Unknown graph type: type={graph_type}")
-
-def metadata_to_json(experiment_name: str, path, experiment_metadata: list):
-    filename = f"{experiment_name}.json"
-
-    with open(f"{path}/{filename}", "w", encoding="utf-8") as f:
-        json.dump(experiment_metadata, f, indent=4)
-
-def results_to_pkl(experiment_name: str, path, results: list):
-    filename = f"{experiment_name}.pkl"
-
-    with open(f"{path}/{filename}", "wb") as f:
-        pickle.dump(results, f)
 
 def main():
-    with open(f"{BASE_PATH}/experiments_metadata.json", "r", encoding="utf-8") as metadata_json:
-        metadata = json.load(metadata_json)
-        seeds = metadata.get("seeds", {})
+    # new centrality measures can be added below
+    centrality_measures = [degree_centrality, eigenvector_centrality, distance_centrality]
+    results = []
 
-    for graph in metadata["graphs"]:
-        graph_type = graph["type"]
-        graph_params = graph.get("params", {})
-        graph_seed = seeds.get("graph_seed")
-        patient_zero_seed = seeds.get("patient_zero_seed")
+    for pkl_file in DATA_DIR.rglob("*.pkl"):
+        cascades = pkl_to_cascade(pkl_file)
+        
+        for simulation_id, data in cascades.items():
+            cascade = data.get("cascade")
+            metadata = data.get("metadata")
 
-        g = get_graph(graph_type, graph_seed, **graph_params)
+            for cm in centrality_measures:
+                guess, diff = calculate_centrality(cm, cascade, metadata["patient_zero"])
+                results.append({
+                    "id": simulation_id,
+                    "centrality": cm.__name__,
+                    "guess": guess,
+                    "diff": diff,
+                    **metadata
+                })
 
-        patient_zero = get_random_node(g, patient_zero_seed)
-
-        for model in metadata["spreading_models"]:
-            model_type = model["type"]
-            model_params = model.get("params", {})
-
-            for cascade_size in metadata["cascade_size_limits"]:
-                experiment_name = f"{graph_type}_{model_type}_cascade{cascade_size}"
-                experiment_metadata = {
-                    "graph_type": graph["type"],
-                    "graph_seed": graph_seed,
-                    "patient_zero_seed": patient_zero_seed
-                }
-                results = []
-                if model_type == ModelType.IC.value:
-                    experiment_metadata, results = run_ic_simulation(
-                        graph=g, 
-                        seed=seeds.get("ic_seed"), 
-                        patient_zero=patient_zero, 
-                        cascade_size_limit=cascade_size, 
-                        experiment_metadata=experiment_metadata, 
-                        experiment_name=experiment_name,
-                        **model_params
-                    )
-                elif model_type == ModelType.SIR.value:
-                    experiment_metadata, results = run_sir_simulation(
-                        graph=g, 
-                        seed=seeds.get("sir_seed"), 
-                        patient_zero=patient_zero, 
-                        cascade_size_limit=cascade_size, 
-                        experiment_metadata=experiment_metadata,
-                        experiment_name=experiment_name,
-                        **model_params
-                        )
-                else: 
-                    raise ValueError(f"Unknown model type: type={model_type}")
-                
-                path = f"{BASE_PATH}/data/{graph_type}/{model_type}"
-                os.makedirs(path, exist_ok=True)
-
-                metadata_to_json(experiment_name, path, experiment_metadata)
-                results_to_pkl(experiment_name, path, results)
-
-   
+    # save to csv
+    df = pd.DataFrame(data=results, columns=results[0].keys())
+    df.to_csv("results.csv", index=False)   
 
 if __name__ == "__main__":
     main()
