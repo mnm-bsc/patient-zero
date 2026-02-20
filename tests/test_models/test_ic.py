@@ -11,9 +11,11 @@ class TestIndependentCascade:
         patient_zero = 0
         r = 0.1
 
-        infected = ic(g, patient_zero, r)
+        infected, edges = ic(g, patient_zero, r)
 
         assert 0 in infected
+        assert not edges
+        
 
     def test_patient_zero_can_infect_neighbors(self):
         """Test patient zero can spread to neighboring nodes"""
@@ -21,12 +23,13 @@ class TestIndependentCascade:
         patient_zero = 0
         r = 1.0
 
-        infected = ic(g, patient_zero, r)
+        infected, edges = ic(g, patient_zero, r)
 
         assert patient_zero in infected
         neighbors = list(g.neighbors(patient_zero))
         for n in neighbors:
             assert n in infected
+        assert edges == [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)]
 
     def test_r_value_zero(self):
         """Test that patient zero wont spread to neighboring nodes when r value is 0"""
@@ -34,10 +37,11 @@ class TestIndependentCascade:
         patient_zero = 0
         r = 0.0
 
-        infected = ic(g, patient_zero, r)
+        infected, edges = ic(g, patient_zero, r)
 
         assert patient_zero in infected
         neighbors = list(g.neighbors(patient_zero))
         for n in neighbors:
             assert n not in infected
+        assert not edges
             
