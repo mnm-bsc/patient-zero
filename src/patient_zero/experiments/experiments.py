@@ -8,7 +8,7 @@ import pandas as pd
 from patient_zero.experiments.utils import pkl_to_cascade
 from patient_zero.experiments.centrality import degree_centrality, eigenvector_centrality, distance_centrality
 
-DATA_DIR = Path(__file__).resolve().parent
+DATA_DIR = Path(__file__).resolve().parent / "simulations"
 
 def calculate_centrality(centrality_function: Callable, cascade: nx.Graph, patient_zero: int):
     """
