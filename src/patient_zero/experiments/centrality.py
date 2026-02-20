@@ -17,7 +17,7 @@ def eigenvector_centrality(cascade: nx.Graph) -> list:
     """
     Returns the eigenvector centrality for all nodes in a graph.
     """
-    return nx.eigenvector_centrality(cascade)
+    return nx.eigenvector_centrality(cascade, max_iter=5000, tol=1e-08)
 
 def distance_centrality(cascade: nx.Graph) -> dict:
     """

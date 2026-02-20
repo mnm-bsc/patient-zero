@@ -31,7 +31,7 @@ def run_ic_simulation(
             "id": f"{simulations_name}_r{r}",
             **simulations_metadata,
             "model": "IC",
-            "r": r,
+            "r_infect": r,
             "patient_zero": patient_zero,
             "model_seed": seed,
             "cascade_size_limit": cascade_size_limit
@@ -40,7 +40,11 @@ def run_ic_simulation(
             "id": f"{simulations_name}_r{r}",
             "nodes_infected": list(infected_nodes),
             "cascade_edges": cascade_edges,
-            "patient_zero": patient_zero
+            "patient_zero": patient_zero,
+            "cascade_size_limit": cascade_size_limit,
+            "model": "IC",
+            "r_infect": r
+
         })
     
     return metadata, results
@@ -78,7 +82,11 @@ def run_sir_simulation(
             "id": f"{simulations_name}_r{r}",
             "nodes_infected": list(infected_nodes),
             "cascade_edges": cascade_edges,
-            "patient_zero": patient_zero
+            "patient_zero": patient_zero,
+            "cascade_size_limit": cascade_size_limit,
+            "model": "IC",
+            "r_infect": r,
+            "r_recover": 0.1 #hardcoded
         })
 
     return metadata, results
