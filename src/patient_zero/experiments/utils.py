@@ -1,12 +1,26 @@
 import pickle
-import json
+import networkx as nx
 
 def pkl_to_cascade(path):
+    """
+    Unpacks pkl file into NetworkX graph. Path is the relative path.
+    """
     with open(path, 'rb') as f:
-        data = pickle.load(f)
+        simulations = pickle.load(f)
 
-    print(json.dumps(data, indent=4))
+    graphs = {}
 
+    for simulation in simulations:
+        graph = nx.Graph()
 
-if __name__ == "__main__":
-    pkl_to_cascade("simulations/balanced_tree/IC/balanced_tree_IC_cascade10.pkl")
+        id = simulation.get("id")
+
+        nodes = simulation.get("nodes_infected", [])
+        graph.add_nodes_from(nodes)
+
+        edges = simulation.get("cascade_edges", [])
+        graph.add_edges_from(edges)
+
+        graphs[id] = graph
+
+    return graphs
