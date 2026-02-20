@@ -39,7 +39,8 @@ def run_ic_simulation(
         results.append({
             "id": f"{simulations_name}_r{r}",
             "nodes_infected": list(infected_nodes),
-            "cascade_edges": cascade_edges
+            "cascade_edges": cascade_edges,
+            "patient_zero": patient_zero
         })
     
     return metadata, results
@@ -76,7 +77,8 @@ def run_sir_simulation(
         results.append({
             "id": f"{simulations_name}_r{r}",
             "nodes_infected": list(infected_nodes),
-            "cascade_edges": cascade_edges
+            "cascade_edges": cascade_edges,
+            "patient_zero": patient_zero
         })
 
     return metadata, results

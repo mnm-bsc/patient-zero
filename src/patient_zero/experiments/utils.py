@@ -1,7 +1,7 @@
 import pickle
 import networkx as nx
 
-def pkl_to_cascade(path):
+def pkl_to_cascade(path) -> dict:
     """
     Unpacks pkl file into NetworkX graph. Path is the relative path.
     """
@@ -14,6 +14,7 @@ def pkl_to_cascade(path):
         graph = nx.Graph()
 
         id = simulation.get("id")
+        patient_zero = simulation.get("patient_zero")
 
         nodes = simulation.get("nodes_infected", [])
         graph.add_nodes_from(nodes)
@@ -21,6 +22,6 @@ def pkl_to_cascade(path):
         edges = simulation.get("cascade_edges", [])
         graph.add_edges_from(edges)
 
-        graphs[id] = graph
+        graphs[id] = {"cascade": graph, "patient_zero": patient_zero}
 
     return graphs
