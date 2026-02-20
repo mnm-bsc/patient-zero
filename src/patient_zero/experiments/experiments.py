@@ -45,7 +45,8 @@ def main():
 
     # save to csv
     df = pd.DataFrame(data=results, columns=results[0].keys())
-    df.to_csv("results.csv", index=False)   
+    output_file = Path(__file__).resolve().parent / "results.csv"
+    df.to_csv(output_file, index=False)   
 
 if __name__ == "__main__":
     main()
