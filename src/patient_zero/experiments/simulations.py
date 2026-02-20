@@ -4,19 +4,20 @@ import os
 import json
 import pickle
 import networkx as nx
+from pathlib import Path
 from patient_zero.networks import create_tree_graph, create_random_graph, create_scale_free_graph, create_small_world_graph
 from patient_zero.models import ic, sir
 from patient_zero.networks.utils import get_random_node
 from patient_zero.enums import NetworkType, ModelType
 
-BASE_PATH = "src/patient_zero/experiments"
+BASE_PATH = Path(__file__).resolve().parent # base path relative to where script is launched
 
 def run_ic_simulation(
         graph: nx.Graph, 
         seed: int, patient_zero: int, 
         cascade_size_limit: int, 
-        experiment_metadata: object, 
-        experiment_name: str,
+        simulations_metadata: object, 
+        simulations_name: str,
         **params: any
     ):
 
@@ -27,8 +28,8 @@ def run_ic_simulation(
     for r in rs:
         infected_nodes, cascade_edges = ic(g=graph, patient_zero=patient_zero, r=r, max_size=cascade_size_limit, seed=seed)
         metadata.append({
-            "id": f"{experiment_name}_r{r}",
-            **experiment_metadata,
+            "id": f"{simulations_name}_r{r}",
+            **simulations_metadata,
             "model": "IC",
             "r": r,
             "patient_zero": patient_zero,
@@ -36,7 +37,7 @@ def run_ic_simulation(
             "cascade_size_limit": cascade_size_limit
         })
         results.append({
-            "id": r,
+            "id": f"{simulations_name}_r{r}",
             "nodes_infected": list(infected_nodes),
             "cascade_edges": cascade_edges
         })
@@ -50,8 +51,8 @@ def run_sir_simulation(
         seed: int, 
         patient_zero: int, 
         cascade_size_limit: int, 
-        experiment_metadata: object, 
-        experiment_name: str, 
+        simulations_metadata: object, 
+        simulations_name: str, 
         **params: any
     ):
     
@@ -63,8 +64,8 @@ def run_sir_simulation(
         # r_recover is hardcoded to 0.1
         infected_nodes, cascade_edges = sir(g=graph, patient_zero=patient_zero, r_infect=r, r_recover=0.1, max_size=cascade_size_limit, seed=seed)
         metadata.append({
-            "id": f"{experiment_name}_r{r}",
-            **experiment_metadata,
+            "id": f"{simulations_name}_r{r}",
+            **simulations_metadata,
             "model": "SIR",
             "r_infect": r,
             "r_recover": 0.1, #hardcoded
@@ -73,7 +74,7 @@ def run_sir_simulation(
             "cascade_size_limit": cascade_size_limit
         })
         results.append({
-            "id": r,
+            "id": f"{simulations_name}_r{r}",
             "nodes_infected": list(infected_nodes),
             "cascade_edges": cascade_edges
         })
@@ -108,20 +109,20 @@ def get_graph(graph_type: str, graph_seed: int, **params: any) -> nx.Graph:
         )
     raise ValueError(f"Unknown graph type: type={graph_type}")
 
-def metadata_to_json(experiment_name: str, path, experiment_metadata: list):
-    filename = f"{experiment_name}.json"
+def metadata_to_json(simulations_name: str, path, simulations_metadata: list):
+    filename = f"{simulations_name}.json"
 
     with open(f"{path}/{filename}", "w", encoding="utf-8") as f:
-        json.dump(experiment_metadata, f, indent=4)
+        json.dump(simulations_metadata, f, indent=4)
 
-def results_to_pkl(experiment_name: str, path, results: list):
-    filename = f"{experiment_name}.pkl"
+def results_to_pkl(simulations_name: str, path, results: list):
+    filename = f"{simulations_name}.pkl"
 
     with open(f"{path}/{filename}", "wb") as f:
         pickle.dump(results, f)
 
 def main():
-    with open(f"{BASE_PATH}/experiments_metadata.json", "r", encoding="utf-8") as metadata_json:
+    with open(f"{BASE_PATH}/simulations_metadata.json", "r", encoding="utf-8") as metadata_json:
         metadata = json.load(metadata_json)
         seeds = metadata.get("seeds", {})
 
@@ -140,41 +141,41 @@ def main():
             model_params = model.get("params", {})
 
             for cascade_size in metadata["cascade_size_limits"]:
-                experiment_name = f"{graph_type}_{model_type}_cascade{cascade_size}"
-                experiment_metadata = {
+                simulations_name = f"{graph_type}_{model_type}_cascade{cascade_size}"
+                simulations_metadata = {
                     "graph_type": graph["type"],
                     "graph_seed": graph_seed,
                     "patient_zero_seed": patient_zero_seed
                 }
                 results = []
                 if model_type == ModelType.IC.value:
-                    experiment_metadata, results = run_ic_simulation(
+                    simulations_metadata, results = run_ic_simulation(
                         graph=g, 
                         seed=seeds.get("ic_seed"), 
                         patient_zero=patient_zero, 
                         cascade_size_limit=cascade_size, 
-                        experiment_metadata=experiment_metadata, 
-                        experiment_name=experiment_name,
+                        simulations_metadata=simulations_metadata, 
+                        simulations_name=simulations_name,
                         **model_params
                     )
                 elif model_type == ModelType.SIR.value:
-                    experiment_metadata, results = run_sir_simulation(
+                    simulations_metadata, results = run_sir_simulation(
                         graph=g, 
                         seed=seeds.get("sir_seed"), 
                         patient_zero=patient_zero, 
                         cascade_size_limit=cascade_size, 
-                        experiment_metadata=experiment_metadata,
-                        experiment_name=experiment_name,
+                        simulations_metadata=simulations_metadata,
+                        simulations_name=simulations_name,
                         **model_params
                         )
                 else: 
                     raise ValueError(f"Unknown model type: type={model_type}")
                 
-                path = f"{BASE_PATH}/data/{graph_type}/{model_type}"
+                path = f"{BASE_PATH}/simulations/{graph_type}/{model_type}"
                 os.makedirs(path, exist_ok=True)
 
-                metadata_to_json(experiment_name, path, experiment_metadata)
-                results_to_pkl(experiment_name, path, results)
+                metadata_to_json(simulations_name, path, simulations_metadata)
+                results_to_pkl(simulations_name, path, results)
 
    
 
