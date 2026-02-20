@@ -6,58 +6,31 @@ class TestSusceptibleInfectedRecovered:
     """Test SIR model"""
     def create_tree(self):
         """Creates the tree used for the test cases"""
-        return nx.balanced_tree(6, 3)
+        return nx.balanced_tree(3, 2)
 
-    def test_all_recover_after_simulation(self):
+    def test_all_infected_after_simulation(self):
         """
         Testing if all nodes is in the recovered list 
         after the simulation when giving a 100% infection rate
         """
         tree = self.create_tree()
-        _, _, recovered = sir(tree, 0, 1.0, 0.2)
+        recovered, edges = sir(tree, 0, 1.0, 0.2)
         assert len(recovered) == len(tree.nodes())
+        assert edges == [(0, 1), (0, 2), (0, 3), (1, 4), (1, 5), (1, 6), (2, 7), (2, 8), (2, 9), (3, 10), (3, 11), (3, 12)]
 
-    def test_susceptible_infected_recovered_adds_up_to_all_nodes(self):
-        """
-        Testing if all the nodes in the 
-        susceptible, infected and recovered list 
-        covers all the nodes in the tree
-        """
+    def test_one_infected_after_simulation(self):
+        """Testing if the list with the infected is one after a simulation with a r value of 0"""
         tree = self.create_tree()
-        susceptible, infected, recovered = sir(tree, 0, 0.3, 0.2, 2)
-        assert len(susceptible) < len(tree.nodes())
-        assert len(susceptible) + len(infected) + len(recovered) == len(tree.nodes())
+        infected, edges = sir(tree, 0, 0, 0.2)
+        assert len(infected) == 1
+        assert not edges
 
-    def test_no_infected_after_simulation(self):
-        """Testing if the list with the infected is empty after a simulation"""
-        tree = self.create_tree()
-        _, infected, _ = sir(tree, 0, 0.3, 0.2)
-        assert len(infected) == 0
-
-    def test_more_than_0_infected_after_few_steps(self):
+    def test_more_than_one_infected_after_few_steps(self):
         """
         Testing if there are more nodes than the root
         which is in the infected list with a 100% infection rate
         """
         tree = self.create_tree()
-        _, infected, _ = sir(tree, 0, 1.0, 0.2, 2)
+        infected, edges = sir(tree, 0, 1.0, 0.2, 2)
         assert len(infected) > 1
-
-    def test_is_first_node_infected(self):
-        """Testing if the root node is in the infected list"""
-        tree = self.create_tree()
-        _, infected, _ = sir(tree, 0, 0.3, 0.2, 0)
-        assert len(infected) == 1
-
-    def test_only_patient_zero_recovered_with_no_infection(self):
-        """Testing if there is only 1 in the recovered list with a 0% infection rate"""
-        tree = self.create_tree()
-        _, _, recovered = sir(tree, 0, 0.0, 0.2)
-        assert len(recovered) == 1
-
-    def test_no_recovered_nodes(self):
-        """Testing if no one is in the recovered list on step 0"""
-        tree = self.create_tree()
-        _, _, recovered = sir(tree, 0, 0.3, 0.0, 0)
-        assert len(recovered) == 0
-        
+        assert len(edges) != 0
