@@ -12,3 +12,6 @@ From the root directory:
 
 - Run lint
   `pylint .`
+
+- Run simulations and experiments
+  `python3 src/patient_zero/experiments/simulations.py && python3 src/patient_zero/experiments/experiments.py`
