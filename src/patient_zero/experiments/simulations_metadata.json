@@ -1,55 +1,69 @@
 {
-  "graphs": [
-    {
-      "type": "erdos_renyi",
-      "params": {
-        "nodes": 500,
-        "probability": 0.2
-       }
+  "defaults": {
+    "cascade_size_limits": [10, 50, 100, 500],
+    "n_experiments_per_p": 100,
+    "seeds": {
+      "graph": 42,
+      "patient_zero_base_seed": 20,
+      "model_base_seed": 67
     },
-    {
-      "type": "watts_strogatz",
-      "params": {
-        "nodes": 500,
-        "neighbors": 2,
-        "probability": 0.2
-      }
-    },
-    {
-      "type": "barabasi_albert",
-      "params": {
-        "nodes": 500,
-        "edges": 3
-      }
-    },
-    {
-      "type": "balanced_tree",
-      "params": {
-        "children": 3,
-        "depth": 4
+    "models": {
+      "IC": {
+        "type": "IC",
+        "params": {
+          "p_values": {
+            "start": 0.01,
+            "stop": 1.0,
+            "num": 100
+          }
+        }
+      },
+      "SIR": {
+        "type": "SIR",
+        "params": {
+          "p_values": {
+            "start": 0.01,
+            "stop": 1.0,
+            "num": 100
+          },
+          "p_recover": 0.2
+        }
       }
     }
-  ],
-  "spreading_models": [
+  },
+
+  "experiments": [
     {
-      "type": "IC",
-      "params": {
-        "r_values": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
-      }
+      "name": "k_regular",
+      "graph": {
+        "type": "k_regular",
+        "params": { "degree": 3, "nodes": 1000 }
+      },
+      "models": ["IC", "SIR"]
     },
     {
-      "type": "SIR",
-      "params": {
-        "r_infect_values": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
-        "r_recover_values": [0.1, 0.2, 0.3]
-      }
+      "name": "watts_strogatz",
+      "graph": {
+        "type": "watts_strogatz",
+        "params": { "nodes": 1000, "neighbors": 2, "probability": 0.2 }
+      },
+      "models": ["IC", "SIR"]
+    },
+    {
+      "name": "erdos_renyi",
+      "graph": {
+        "type": "erdos_renyi",
+        "params": { "nodes": 1000, "probability": 0.2 }
+      },
+      "models": ["IC", "SIR"]
+    },
+    {
+      "name": "barabasi_albert",
+      "graph": {
+        "type": "barabasi_albert",
+        "params": { "nodes": 1000, "edges": 3 }
+      },
+      "models": ["IC", "SIR"]
     }
-  ],
-  "cascade_size_limits": [10, 20, 50, 100],
-  "seeds": {
-    "patient_zero_seed": 20,
-    "graph_seed": 42,
-    "ic_seed": 67,
-    "sir_seed": 101
-  }
+  ]
 }

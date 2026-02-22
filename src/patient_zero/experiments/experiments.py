@@ -2,6 +2,7 @@
 Experiments for guessing patient zero based on centrality measures.
 """
 from pathlib import Path
+from time import perf_counter
 from collections.abc import Callable
 import networkx as nx
 import pandas as pd
@@ -22,14 +23,18 @@ def calculate_centrality(centrality_function: Callable, cascade: nx.Graph, patie
 
 
 def main():
+    print("Starting centrality calculations...")
+    start = perf_counter()
     # new centrality measures can be added below
-    centrality_measures = [degree_centrality, eigenvector_centrality, distance_centrality]
+    centrality_measures = [degree_centrality, distance_centrality]
     results = []
 
     for pkl_file in DATA_DIR.rglob("*.pkl"):
         cascades = pkl_to_cascade(pkl_file)
         
         for simulation_id, data in cascades.items():
+            print(f"Processing {simulation_id}...")
+            
             cascade = data.get("cascade")
             metadata = data.get("metadata")
 
@@ -47,6 +52,8 @@ def main():
     df = pd.DataFrame(data=results, columns=results[0].keys())
     output_file = Path(__file__).resolve().parent / "results.csv"
     df.to_csv(output_file, index=False)   
+    end = perf_counter()
+    print(f"Centrality calculations completed in {end - start} seconds.")
 
 if __name__ == "__main__":
     main()
