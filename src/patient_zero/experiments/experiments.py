@@ -10,6 +10,7 @@ from patient_zero.experiments.utils import pkl_to_cascade
 from patient_zero.experiments.centrality import degree_centrality, eigenvector_centrality, distance_centrality
 
 DATA_DIR = Path(__file__).resolve().parent / "simulations"
+NUM_PKL_FILES = 4 * 2 * 4 # graph types * models * cascade size limits 
 
 def calculate_centrality(centrality_function: Callable, cascade: nx.Graph, patient_zero: int):
     """
@@ -21,7 +22,6 @@ def calculate_centrality(centrality_function: Callable, cascade: nx.Graph, patie
     diff = nx.shortest_path_length(cascade, guess, patient_zero)
     return guess, diff
 
-
 def main():
     print("Starting centrality calculations...")
     start = perf_counter()
@@ -29,12 +29,13 @@ def main():
     centrality_measures = [degree_centrality, distance_centrality]
     results = []
 
+    files_processed = 0
+
     for pkl_file in DATA_DIR.rglob("*.pkl"):
         cascades = pkl_to_cascade(pkl_file)
         
         for simulation_id, data in cascades.items():
-            print(f"Processing {simulation_id}...")
-            
+
             cascade = data.get("cascade")
             metadata = data.get("metadata")
 
@@ -47,6 +48,10 @@ def main():
                     "diff": diff,
                     **metadata
                 })
+            
+        files_processed += 1
+        print(f"{files_processed}/{NUM_PKL_FILES} files processed...")
+
 
     # save to csv
     df = pd.DataFrame(data=results, columns=results[0].keys())

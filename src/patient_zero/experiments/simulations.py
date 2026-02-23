@@ -15,13 +15,13 @@ from patient_zero.enums import NetworkType
 
 BASE_PATH = Path(__file__).resolve().parent
 
-def run_ic_simulation(graph, patient_zero_base_seed, cascade_size, n_experiments, seed, p_values, experiment_metadata, simulations_name):
+def run_ic_simulation(graph, patient_zero_base_seed, cascade_size, n_experiments, model_base_seed, p_values, experiment_metadata, simulations_name):
     results, metadata = [], []
     for p_infect in p_values:
         for sim_id in range(n_experiments):
             patient_zero_seed = patient_zero_base_seed + sim_id
             patient_zero = get_random_node(graph, patient_zero_seed)
-            model_seed = seed + sim_id
+            model_seed = model_base_seed + sim_id
 
             sim_name = f"{simulations_name}_r{p_infect:.3f}_exp{sim_id}"
             infected_nodes, cascade_edges = ic(
@@ -50,13 +50,13 @@ def run_ic_simulation(graph, patient_zero_base_seed, cascade_size, n_experiments
     return metadata, results
 
 
-def run_sir_simulation(graph, patient_zero_base_seed, cascade_size, n_experiments, seed, p_values, p_recover, experiment_metadata, simulations_name):
+def run_sir_simulation(graph, patient_zero_base_seed, cascade_size, n_experiments, model_base_seed, p_values, p_recover, experiment_metadata, simulations_name):
     results, metadata = [], []
     for p_infect in p_values:
         for sim_id in range(n_experiments):
             patient_zero_seed = patient_zero_base_seed + sim_id
             patient_zero = get_random_node(graph, patient_zero_seed)
-            model_seed = seed + sim_id
+            model_seed = model_base_seed + sim_id
 
             sim_name = f"{simulations_name}_r{p_infect:.3f}_exp{sim_id}"
             infected_nodes, cascade_edges = sir(
@@ -126,10 +126,10 @@ def main():
     seeds = defaults["seeds"]
     models_defaults = defaults["models"]
 
-    for exp in metadata["experiments"]:
-        graph_type = exp["graph"]["type"]
-        graph_params = exp["graph"]["params"]
-        models_to_run = exp["models"]
+    for simulation in metadata["simulations"]:
+        graph_type = simulation["graph"]["type"]
+        graph_params = simulation["graph"]["params"]
+        models_to_run = simulation["models"]
 
         graph_seed = seeds["graph"]
         patient_zero_base_seed = seeds["patient_zero_base_seed"]
@@ -185,7 +185,7 @@ def main():
                 save_results(path, f"{sim_name}.pkl", res)
                 print("Completed simulation:", sim_name)
     end = perf_counter()
-    print(f"All simulations completed in {end - start:.2f} seconds.")
+    print(f"All simulations completed in {end - start} seconds.")
 
 
 if __name__ == "__main__":

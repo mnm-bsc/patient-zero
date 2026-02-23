@@ -32,7 +32,7 @@
     }
   },
 
-  "experiments": [
+  "simulations": [
     {
       "name": "k_regular",
       "graph": {
