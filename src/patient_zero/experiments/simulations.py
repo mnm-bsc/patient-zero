@@ -3,6 +3,7 @@ Playground for testing the models and networks using the new JSON structure.
 """
 import os
 import json
+import datetime
 from time import perf_counter
 from pathlib import Path
 import pickle
@@ -185,7 +186,7 @@ def main():
                 save_results(path, f"{sim_name}.pkl", res)
                 print("Completed simulation:", sim_name)
     end = perf_counter()
-    print(f"All simulations completed in {end - start} seconds.")
+    print(f"All simulations completed in {datetime.timedelta(end - start)}.")
 
 
 if __name__ == "__main__":

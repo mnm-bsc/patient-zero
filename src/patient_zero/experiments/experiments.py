@@ -2,6 +2,7 @@
 Experiments for guessing patient zero based on centrality measures.
 """
 from pathlib import Path
+import datetime
 from time import perf_counter
 from collections.abc import Callable
 import networkx as nx
@@ -58,7 +59,7 @@ def main():
     output_file = Path(__file__).resolve().parent / "results.csv"
     df.to_csv(output_file, index=False)   
     end = perf_counter()
-    print(f"Centrality calculations completed in {end - start} seconds.")
+    print(f"Centrality calculations completed in {datetime.timedelta(end - start)}.")
 
 if __name__ == "__main__":
     main()
