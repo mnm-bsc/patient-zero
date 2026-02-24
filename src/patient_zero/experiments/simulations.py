@@ -3,11 +3,9 @@ Playground for testing the models and networks using the new JSON structure.
 """
 import os
 import json
-import time
 from time import perf_counter
 from pathlib import Path
 import pickle
-import networkx as nx
 import numpy as np
 from patient_zero.networks import create_tree_graph, create_k_regular_graph, create_random_graph, create_scale_free_graph, create_small_world_graph
 from patient_zero.models import ic, sir
@@ -117,7 +115,8 @@ def save_results(path, filename, data):
 
 def main():
     print("Started simulations...")
-    start = perf_counter()
+    time_start = perf_counter()
+
     with open(BASE_PATH / "simulations_metadata.json", "r", encoding="utf-8") as f:
         metadata = json.load(f)
 
@@ -185,10 +184,12 @@ def main():
                 save_metadata(path, f"{sim_name}.json", meta)
                 save_results(path, f"{sim_name}.pkl", res)
                 print("Completed simulation:", sim_name)
-    end = perf_counter()
-    elapsed = end - start
-    minutes, seconds = divmod(elapsed, 60)
-    print(f"All simulations completed in {int(minutes)}m {seconds:05.2f}s")
+
+    time_end = perf_counter()
+    duration = time_end - time_start
+    minutes, seconds = divmod(int(duration), 60)
+
+    print(f"All simulations completed in {minutes}m {seconds}s")
 
 
 if __name__ == "__main__":
