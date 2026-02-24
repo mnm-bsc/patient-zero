@@ -3,7 +3,6 @@ Experiments for guessing patient zero based on centrality measures.
 """
 from pathlib import Path
 from time import perf_counter
-import datetime
 from collections.abc import Callable
 import networkx as nx
 import pandas as pd
@@ -58,10 +57,12 @@ def main():
     df = pd.DataFrame(data=results, columns=results[0].keys())
     output_file = Path(__file__).resolve().parent / "results.csv"
     df.to_csv(output_file, index=False)   
+    
     end = perf_counter()
-
     duration = end - start
-    print(f"All experiments completed in {int(duration // 60)}m {int(duration % 60)}s")
+    minutes, seconds = divmod(int(duration), 60)
+
+    print(f"All experiments completed in {minutes}m {seconds}s")
 
 if __name__ == "__main__":
     main()
