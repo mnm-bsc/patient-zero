@@ -59,7 +59,10 @@ def main():
     output_file = Path(__file__).resolve().parent / "results.csv"
     df.to_csv(output_file, index=False)   
     end = perf_counter()
-    print(f"Centrality calculations completed in {datetime.timedelta(end - start)}.")
+
+    elapsed = end - start
+    minutes, seconds = divmod(elapsed, 60)
+    print(f"All experiments completed in {int(minutes)}m {seconds:05.2f}s")
 
 if __name__ == "__main__":
     main()
