@@ -12,7 +12,8 @@ class TestRumorCentrality:
         ])
 
         BFS_tree = nx.bfs_tree(G, 0)
-        subtree_size_root = dfs(0, None, BFS_tree)
+        subtree_size = {}
+        subtree_size_root = dfs(0, None, BFS_tree, subtree_size)
         assert subtree_size_root == 5
 
     def test_rumor_centrality_score_nodes(self):
@@ -40,10 +41,6 @@ class TestRumorCentrality:
         scores = rumor_centrality(G)
         leaves = [2, 3, 4]
         center = [0, 1]
-        print(scores[3])
-        print(scores[4])
 
         for leaf in leaves:
-            print(leaf)
-            print(scores[leaf])
             assert scores[leaf] < max(scores[c] for c in center)
