@@ -6,11 +6,10 @@ import math
 
 def dfs(u, parent, BFS_tree):
     subtree_size = 1
-    size = 1
     for v in BFS_tree.neighbors(u):
         if v != parent:
-            dfs(v, u, BFS_tree)
-            subtree_size += size
+            child_size = dfs(v, u, BFS_tree)
+            subtree_size += child_size
     return subtree_size
 
 def rumor_centrality(cascade: nx.Graph):
