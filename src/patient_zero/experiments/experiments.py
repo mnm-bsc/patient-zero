@@ -30,6 +30,7 @@ def process_file(pkl_file):
     """
     Processes a pkl file and calculates the centrality measures.
     """
+    print(pkl_file)
     results = []
     cascades = pkl_to_cascade(pkl_file)
     for simulation_id, data in cascades.items():
