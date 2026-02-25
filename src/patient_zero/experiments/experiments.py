@@ -15,18 +15,6 @@ DATA_DIR = Path(__file__).resolve().parent / "simulations"
 OUTPUT_FILE = Path(__file__).resolve().parent / "results.csv"
 NUM_PKL_FILES = 4 * 2 * 4 # graph types * models * cascade size limits 
 CENTRALITY_MEASURES = [degree_centrality, distance_centrality, rumor_centrality] # new centrality measures can be added here
-COLUMNS = [
-    "id",
-    "centrality",
-    "guess",
-    "diff",
-    "graph_type",
-    "patient_zero",
-    "cascade_size_limit",
-    "model",
-    "r_infect",
-    "r_recovery"
-]
 
 def calculate_centrality(centrality_function: Callable, cascade: nx.Graph, patient_zero: int):
     """
@@ -75,7 +63,7 @@ def main():
             df = pd.DataFrame(data=result)
             with lock:
                 if not header_written:
-                    df.to_csv(OUTPUT_FILE, index=False, mode='w', columns=COLUMNS)
+                    df.to_csv(OUTPUT_FILE, index=False, mode='w', columns=result[0].keys())
                     header_written = True
                 else:
                     df.to_csv(OUTPUT_FILE, index=False, mode='a', header=False)
