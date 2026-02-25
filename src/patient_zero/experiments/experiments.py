@@ -55,8 +55,8 @@ def main():
     lock = Lock()
 
     with ProcessPoolExecutor() as executor:
-        futures = [executor.submit(process_file, f) for f in pkl_files]
-        for i, future in enumerate(as_completed(futures)):
+        futures = [executor.submit(process_file, f) for f in pkl_files] # submit tasks
+        for i, future in enumerate(as_completed(futures)): # process results as soon as they are ready
             result = future.result()
 
             # save to csv

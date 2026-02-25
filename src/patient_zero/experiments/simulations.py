@@ -22,7 +22,7 @@ def run_ic_simulation(graph, patient_zero_base_seed, cascade_size, n_experiments
             patient_zero = get_random_node(graph, patient_zero_seed)
             model_seed = model_base_seed + sim_id
 
-            sim_name = f"{simulations_name}_r{p_infect:.3f}_exp{sim_id}"
+            sim_name = f"{simulations_name}_r{p_infect:.2f}_exp{sim_id}"
             infected_nodes, cascade_edges = ic(
                 g=graph, patient_zero=patient_zero, p_infect=p_infect, max_size=cascade_size, seed=model_seed
             )
@@ -57,7 +57,7 @@ def run_sir_simulation(graph, patient_zero_base_seed, cascade_size, n_experiment
             patient_zero = get_random_node(graph, patient_zero_seed)
             model_seed = model_base_seed + sim_id
 
-            sim_name = f"{simulations_name}_r{p_infect:.3f}_exp{sim_id}"
+            sim_name = f"{simulations_name}_r{p_infect:.2f}_exp{sim_id}"
             infected_nodes, cascade_edges = sir(
                 g=graph, patient_zero=patient_zero, p_infect=p_infect, p_recover=p_recover,
                 max_size=cascade_size, seed=model_seed
@@ -138,10 +138,10 @@ def main():
 
         for model_name in models_to_run:
             model_defaults = models_defaults[model_name]
-            # returns an array of p values evenly spaced between start and stop
 
             p_values = model_defaults["params"]["p_values"]
             start, stop, num = p_values["start"], p_values["stop"], p_values["num"]
+            # returns an array of p values evenly spaced between start and stop
             p_values = np.linspace(start, stop, num).tolist()
 
             p_recover = model_defaults["params"].get("p_recover", None)
