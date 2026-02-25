@@ -33,17 +33,17 @@ def process_file(pkl_file):
     results = []
     cascades = pkl_to_cascade(pkl_file)
     for simulation_id, data in cascades.items():
-            cascade = data.get("cascade")
-            metadata = data.get("metadata")
-            for cm in CENTRALITY_MEASURES:
-                guess, diff = calculate_centrality(cm, cascade, metadata["patient_zero"])
-                results.append({
-                    "id": simulation_id,
-                    "centrality": cm.__name__,
-                    "guess": guess,
-                    "diff": diff,
-                    **metadata
-                })
+        cascade = data.get("cascade")
+        metadata = data.get("metadata")
+        for cm in CENTRALITY_MEASURES:
+            guess, diff = calculate_centrality(cm, cascade, metadata["patient_zero"])
+            results.append({
+                "id": simulation_id,
+                "centrality": cm.__name__,
+                "guess": guess,
+                "diff": diff,
+                **metadata
+            })
     return results
 
 def main():
