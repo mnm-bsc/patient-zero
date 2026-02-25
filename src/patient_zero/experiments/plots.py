@@ -60,4 +60,4 @@ for graph_type in graph_types:
 
     fig.suptitle(f"Graph type: {graph_type}", fontsize=14, weight="bold")
     plt.tight_layout(rect=[0, 0.08, 1, 1])
-    plt.show()
+    plt.savefig(f"{DATA_DIR}/plots/{graph_type}")
