@@ -1,7 +1,5 @@
 import pickle
 import networkx as nx
-from pathlib import Path
-
 
 def pkl_to_cascade(path):
     """

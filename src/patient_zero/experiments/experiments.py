@@ -5,11 +5,11 @@ from pathlib import Path
 from threading import Lock
 from time import perf_counter
 from collections.abc import Callable
+from concurrent.futures import ProcessPoolExecutor, as_completed
 import networkx as nx
 import pandas as pd
-from concurrent.futures import ProcessPoolExecutor, as_completed
 from patient_zero.experiments.utils import pkl_to_cascade
-from patient_zero.experiments.centrality import degree_centrality, eigenvector_centrality, distance_centrality
+from patient_zero.experiments.centrality import degree_centrality, distance_centrality
 
 DATA_DIR = Path(__file__).resolve().parent / "simulations"
 OUTPUT_FILE = Path(__file__).resolve().parent / "results.csv"
