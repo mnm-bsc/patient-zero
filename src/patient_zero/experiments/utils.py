@@ -41,6 +41,8 @@ def get_centrality_title(key):
         return "Distance Centrality"
     elif key == CentralityMeasure.RUMOR.value: 
         return "Rumor Centrality"
+    else:
+        raise ValueError(f"Unknown centrality: {key}")
 
 def get_network_title(key):
     if key == NetworkType.REGULAR.value: 
@@ -53,3 +55,5 @@ def get_network_title(key):
         return "Small World"
     elif key == NetworkType.TREE.value: 
         return "Balanced Tree"
+    else:
+        raise ValueError(f"Unknown network: {key}")
