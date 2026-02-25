@@ -1,8 +1,8 @@
 """
 Centrality measures
 """
-import networkx as nx
 import math
+import networkx as nx
 
 def dfs(node, parent, BFS_tree, subtree_size):
     """
