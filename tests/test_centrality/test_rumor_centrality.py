@@ -12,7 +12,8 @@ class TestRumorCentrality:
         ])
 
         BFS_tree = nx.bfs_tree(G, 0)
-        subtree_size_root = dfs(0, None, BFS_tree)
+        subtree_size = {}
+        subtree_size_root = dfs(0, None, BFS_tree, subtree_size)
         assert subtree_size_root == 5
 
     def test_rumor_centrality_score_nodes(self):

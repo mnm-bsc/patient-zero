@@ -4,21 +4,29 @@ Centrality measures
 import networkx as nx
 import math
 
-def dfs(u, parent, BFS_tree):
-    subtree_size = 1
-    for v in BFS_tree.neighbors(u):
-        if v != parent:
-            child_size = dfs(v, u, BFS_tree)
-            subtree_size += child_size
-    return subtree_size
+def dfs(node, parent, BFS_tree, subtree_size):
+    subtree_size[node] = 1
+    for neighbor in BFS_tree.neighbors(node):
+        if neighbor != parent:
+            dfs(neighbor, node, BFS_tree, subtree_size)
+            subtree_size[node] += subtree_size[neighbor]
+    return subtree_size[node]
 
 def rumor_centrality(cascade: nx.Graph):
     node_scores = {}
+    cascade_size = len(cascade.nodes)
     for node in list(cascade.nodes):
         BFS_tree = nx.bfs_tree(cascade, node)
-        subtree_size = dfs(node, None, BFS_tree)
-        rumor_score = math.factorial(len(cascade.nodes)) / subtree_size
-        node_scores[node] = rumor_score
+        subtree_size = {}
+        dfs(node, None, BFS_tree, subtree_size)
+
+        prod = 1
+        for tree_node in BFS_tree.nodes: #Computes the product of all subtree sizes.
+            prod *= subtree_size[tree_node]
+        
+        rumor_score = {}
+        rumor_score[node] = math.factorial(cascade_size) / prod
+        node_scores[node] = rumor_score[node]
     return node_scores
 
 
