@@ -32,3 +32,9 @@ def pkl_to_cascade(path):
         }
 
     return cascades
+
+def main():
+    pkl_to_cascade("src/patient_zero/experiments/simulations/k_regular/IC/k_regular_IC_cascade100.pkl")
+
+if __name__ == "__main__":
+    main()

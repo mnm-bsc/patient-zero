@@ -8,6 +8,12 @@ def create_tree_graph(children, depth):
     
     return nx.balanced_tree(children, depth) # Create a balanced tree graph
 
+def create_k_regular_graph(nodes, degree, seed=None):
+    """Creates a k-regular graph with a specified number of nodes and degree (k)"""
+
+    return nx.random_regular_graph(degree, nodes, seed=seed)
+
+
 def create_random_graph(nodes, probability, seed=None):
     """Creates a random graph with a specified number of nodes and random edges"""
     

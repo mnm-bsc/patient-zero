@@ -2,13 +2,19 @@
 Experiments for guessing patient zero based on centrality measures.
 """
 from pathlib import Path
+from threading import Lock
+from time import perf_counter
 from collections.abc import Callable
+from concurrent.futures import ProcessPoolExecutor, as_completed
 import networkx as nx
 import pandas as pd
 from patient_zero.experiments.utils import pkl_to_cascade
-from patient_zero.experiments.centrality import degree_centrality, eigenvector_centrality, distance_centrality
+from patient_zero.experiments.centrality import degree_centrality, distance_centrality
 
 DATA_DIR = Path(__file__).resolve().parent / "simulations"
+OUTPUT_FILE = Path(__file__).resolve().parent / "results.csv"
+NUM_PKL_FILES = 4 * 2 * 4 # graph types * models * cascade size limits 
+CENTRALITY_MEASURES = [degree_centrality, distance_centrality] # new centrality measures can be added here
 
 def calculate_centrality(centrality_function: Callable, cascade: nx.Graph, patient_zero: int):
     """
@@ -20,33 +26,56 @@ def calculate_centrality(centrality_function: Callable, cascade: nx.Graph, patie
     diff = nx.shortest_path_length(cascade, guess, patient_zero)
     return guess, diff
 
+def process_file(pkl_file):
+    """
+    Processes a pkl file and calculates the centrality measures.
+    """
+    results = []
+    cascades = pkl_to_cascade(pkl_file)
+    for simulation_id, data in cascades.items():
+        cascade = data.get("cascade")
+        metadata = data.get("metadata")
+        for cm in CENTRALITY_MEASURES:
+            guess, diff = calculate_centrality(cm, cascade, metadata["patient_zero"])
+            results.append({
+                "id": simulation_id,
+                "centrality": cm.__name__,
+                "guess": guess,
+                "diff": diff,
+                **metadata
+            })
+    return results
 
 def main():
-    # new centrality measures can be added below
-    centrality_measures = [degree_centrality, eigenvector_centrality, distance_centrality]
-    results = []
+    print("Starting centrality calculations...")
+    start = perf_counter()
 
-    for pkl_file in DATA_DIR.rglob("*.pkl"):
-        cascades = pkl_to_cascade(pkl_file)
-        
-        for simulation_id, data in cascades.items():
-            cascade = data.get("cascade")
-            metadata = data.get("metadata")
+    pkl_files = list(DATA_DIR.rglob("*.pkl"))
+    header_written = False
+    lock = Lock()
 
-            for cm in centrality_measures:
-                guess, diff = calculate_centrality(cm, cascade, metadata["patient_zero"])
-                results.append({
-                    "id": simulation_id,
-                    "centrality": cm.__name__,
-                    "guess": guess,
-                    "diff": diff,
-                    **metadata
-                })
+    with ProcessPoolExecutor() as executor:
+        futures = [executor.submit(process_file, f) for f in pkl_files] # submit tasks
+        for i, future in enumerate(as_completed(futures)): # process results as soon as they are ready
+            result = future.result()
 
-    # save to csv
-    df = pd.DataFrame(data=results, columns=results[0].keys())
-    output_file = Path(__file__).resolve().parent / "results.csv"
-    df.to_csv(output_file, index=False)   
+            # save to csv
+            df = pd.DataFrame(data=result)
+            with lock:
+                if not header_written:
+                    df.to_csv(OUTPUT_FILE, index=False, mode='w', columns=result[0].keys())
+                    header_written = True
+                else:
+                    df.to_csv(OUTPUT_FILE, index=False, mode='a', header=False)
+                 
+
+            print(f"{i+1}/{len(pkl_files)} files processed...")
+    
+    end = perf_counter()
+    duration = end - start
+    minutes, seconds = divmod(int(duration), 60)
+
+    print(f"All experiments completed in {minutes}m {seconds}s")
 
 if __name__ == "__main__":
     main()

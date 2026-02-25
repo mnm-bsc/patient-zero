@@ -8,8 +8,8 @@ import networkx as nx
 def susceptible_infected_recovered(
         g: nx.graph,
         patient_zero: int,
-        r_infect: float,
-        r_recover,
+        p_infect: float,
+        p_recover,
         max_size: int = None, 
         seed: int = None
     ):
@@ -30,7 +30,7 @@ def susceptible_infected_recovered(
 
         for node in sorted(infected):
             for neighbor in sorted(g.neighbors(node)):
-                if neighbor in susceptible and rng.random() < r_infect:
+                if neighbor in susceptible and rng.random() < p_infect:
                     if (max_size is not None and len(all_infected) >= max_size):
                         return all_infected, cascade_edges
                     
@@ -38,7 +38,7 @@ def susceptible_infected_recovered(
                     all_infected.add(neighbor)
                     cascade_edges.append((node, neighbor))
                     
-            if rng.random() < r_recover:
+            if rng.random() < p_recover:
                 new_recovered.add(node)
 
         infected.update(new_infected)
