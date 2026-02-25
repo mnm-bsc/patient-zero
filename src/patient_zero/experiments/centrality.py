@@ -23,7 +23,8 @@ def rumor_centrality(cascade: nx.Graph):
     
     for node in list(cascade.nodes): # Loops through every node in the cascade and calculates the rumor score for that node.
         BFS_tree = nx.bfs_tree(cascade, node) # Creates a BFS tree for that specific node.
-        subtree_size = dfs(node, None, BFS_tree, subtree_size) # Uses Depth-First-Search on the node with the BFS tree to calculate subtree sizes.
+        subtree_size = {}
+        dfs(node, None, BFS_tree, subtree_size) # Uses Depth-First-Search on the node with the BFS tree to calculate subtree sizes.
 
         prod = 1
         for tree_node in BFS_tree.nodes: # Computes the product of all subtree sizes.
