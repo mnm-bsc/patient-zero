@@ -63,7 +63,7 @@ def main():
             df = pd.DataFrame(data=result)
             with lock:
                 if not header_written:
-                    df.to_csv(OUTPUT_FILE, index=False, mode='w', columns=[**result[0].keys(), "r_recover"])
+                    df.to_csv(OUTPUT_FILE, index=False, mode='w', columns=result[0].keys())
                     header_written = True
                 else:
                     df.to_csv(OUTPUT_FILE, index=False, mode='a', header=False)
