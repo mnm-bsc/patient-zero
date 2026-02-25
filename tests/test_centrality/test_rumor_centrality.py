@@ -41,10 +41,6 @@ class TestRumorCentrality:
         scores = rumor_centrality(G)
         leaves = [2, 3, 4]
         center = [0, 1]
-        print(scores[3])
-        print(scores[4])
 
         for leaf in leaves:
-            print(leaf)
-            print(scores[leaf])
             assert scores[leaf] < max(scores[c] for c in center)
