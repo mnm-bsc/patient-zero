@@ -8,5 +8,7 @@ __all__ = [
     "get_centrality_title", 
     "degree_centrality", 
     "eigenvector_centrality", 
-    "distance_centrality"
+    "distance_centrality",
+    "rumor_centrality",
+    "dfs"
     ]

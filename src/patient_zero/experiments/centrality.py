@@ -2,9 +2,25 @@
 Centrality measures
 """
 import networkx as nx
+import math
 
-def rumor_centrality():
-    print("rumor")
+def dfs(u, parent, BFS_tree):
+    subtree_size = 1
+    for v in BFS_tree.neighbors(u):
+        if v != parent:
+            child_size = dfs(v, u, BFS_tree)
+            subtree_size += child_size
+    return subtree_size
+
+def rumor_centrality(cascade: nx.Graph):
+    node_scores = {}
+    for node in list(cascade.nodes):
+        BFS_tree = nx.bfs_tree(cascade, node)
+        subtree_size = dfs(node, None, BFS_tree)
+        rumor_score = math.factorial(len(cascade.nodes)) / subtree_size
+        node_scores[node] = rumor_score
+    return node_scores
+
 
 def degree_centrality(cascade: nx.Graph) -> dict:
     """
