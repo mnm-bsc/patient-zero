@@ -1,5 +1,6 @@
 import pickle
 import networkx as nx
+from patient_zero.enums import CentralityMeasure, NetworkType
 
 def pkl_to_cascade(path):
     """
@@ -33,8 +34,24 @@ def pkl_to_cascade(path):
 
     return cascades
 
-def main():
-    pkl_to_cascade("src/patient_zero/experiments/simulations/k_regular/IC/k_regular_IC_cascade100.pkl")
+def get_centrality_title(key):
+    if key == CentralityMeasure.DEGREE.value: 
+        return "Degree Centrality"
+    if key == CentralityMeasure.DISTANCE.value: 
+        return "Distance Centrality"
+    if key == CentralityMeasure.RUMOR.value: 
+        return "Rumor Centrality"
+    raise ValueError(f"Unknown centrality: {key}")
 
-if __name__ == "__main__":
-    main()
+def get_network_title(key):
+    if key == NetworkType.REGULAR.value: 
+        return "K-Regular"
+    if key == NetworkType.RANDOM.value: 
+        return "Random"
+    if key == NetworkType.SCALE_FREE.value: 
+        return "Scale-free"
+    if key == NetworkType.SMALL_WORLD.value: 
+        return "Small World"
+    if key == NetworkType.TREE.value: 
+        return "Balanced Tree"
+    raise ValueError(f"Unknown network: {key}")
