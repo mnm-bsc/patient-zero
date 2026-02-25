@@ -35,13 +35,21 @@ def pkl_to_cascade(path):
     return cascades
 
 def get_centrality_title(key):
-    if key == CentralityMeasure.DEGREE.value: return "Degree Centrality"
-    elif key == CentralityMeasure.DISTANCE.value: return "Distance Centrality"
-    elif key == CentralityMeasure.RUMOR.value: return "Rumor Centrality"
+    if key == CentralityMeasure.DEGREE.value: 
+        return "Degree Centrality"
+    elif key == CentralityMeasure.DISTANCE.value: 
+        return "Distance Centrality"
+    elif key == CentralityMeasure.RUMOR.value: 
+        return "Rumor Centrality"
 
 def get_network_title(key):
-    if key == NetworkType.REGULAR.value: return "K-Regular"
-    elif key == NetworkType.RANDOM.value: return "Random"
-    elif key == NetworkType.SCALE_FREE.value: return "Scale-free"
-    elif key == NetworkType.SMALL_WORLD.value: return "Small World"
-    elif key == NetworkType.TREE.value: return "Balanced Tree"
+    if key == NetworkType.REGULAR.value: 
+        return "K-Regular"
+    elif key == NetworkType.RANDOM.value: 
+        return "Random"
+    elif key == NetworkType.SCALE_FREE.value: 
+        return "Scale-free"
+    elif key == NetworkType.SMALL_WORLD.value: 
+        return "Small World"
+    elif key == NetworkType.TREE.value: 
+        return "Balanced Tree"
