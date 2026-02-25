@@ -36,6 +36,10 @@ for graph_type in graph_types:
     for row, model in enumerate(MODELS):
         for col, centrality in enumerate(CENTRALITY_MEASURES):
             ax = axes[row, col]
+            
+            ax.tick_params(width=1.5) # sets line width of ticks
+            for spine in ax.spines.values():
+                spine.set_linewidth(1.5) # sets line width of plot edges
 
             df_plot = df_graph[
                 (df_graph["model"] == model) &
@@ -44,7 +48,7 @@ for graph_type in graph_types:
 
             for cascade_size in sorted(df_plot["cascade_size_limit"].unique()):
                 s = df_plot[df_plot["cascade_size_limit"] == cascade_size].sort_values("r_infect") # get df for one cascade size
-                ax.plot(s["r_infect"], s["avg_diff"], label=f"Cascade {cascade_size}") # plots 
+                ax.plot(s["r_infect"], s["avg_diff"], label=cascade_size, linewidth=2.5) # plots 
 
             if row == 0: # only add title to left plot
                 ax.set_title(get_centrality_title(centrality))
@@ -57,9 +61,21 @@ for graph_type in graph_types:
             ax.set_xticks([0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]) # to avoid weird p values on x axis
             ax.margins(x=0) # remove margin on x axis
 
-    handles, labels = axes[0, 0].get_legend_handles_labels() # get label of all lines in plot
-    fig.legend(handles, labels, loc="lower center", ncol=len(handles), frameon=False) # add the labels to a legends in bottom center
+    left  = axes[0, 0].get_position().x0
+    right = axes[0, -1].get_position().x1
+    x_center = (left + right) / 2
+
+    handles, labels = axes[0, 0].get_legend_handles_labels()
+
+    fig.legend(
+        handles, labels,
+        loc="lower center",
+        bbox_to_anchor=(x_center, -0.04),
+        bbox_transform=fig.transFigure,
+        ncol=len(handles),
+        frameon=True, fancybox=False,
+        title="Cascade size",
+    )# add the labels to a legends in bottom center
 
     fig.suptitle(get_network_title(graph_type), fontsize=14, weight="bold")
-    plt.tight_layout(rect=[0, 0.08, 1, 1]) # squeezes plots a bit together
-    plt.savefig(f"{DATA_DIR}/plots/{graph_type}") # save plots to png
+    plt.savefig(f"{DATA_DIR}/plots/{graph_type}", bbox_inches="tight", pad_inches=0.2) # save plots to png
