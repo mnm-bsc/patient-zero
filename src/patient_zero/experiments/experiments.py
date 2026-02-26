@@ -3,6 +3,7 @@ Experiments for guessing patient zero based on centrality measures.
 """
 from pathlib import Path
 from threading import Lock
+import signal
 from time import perf_counter
 from collections.abc import Callable
 from concurrent.futures import ProcessPoolExecutor, as_completed
@@ -14,7 +15,19 @@ from patient_zero.experiments.centrality import degree_centrality, distance_cent
 DATA_DIR = Path(__file__).resolve().parent / "simulations"
 OUTPUT_FILE = Path(__file__).resolve().parent / "results.csv"
 NUM_PKL_FILES = 4 * 2 * 4 # graph types * models * cascade size limits 
-CENTRALITY_MEASURES = [degree_centrality, distance_centrality, rumor_centrality] # new centrality measures can be added here
+CENTRALITY_MEASURES = [degree_centrality, distance_centrality] # new centrality measures can be added here
+COLUMNS = [
+    'id',
+    'centrality',
+    'guess',
+    'diff',
+    'graph_type',
+    'patient_zero',
+    'cascade_size_limit',
+    'model',
+    'r_infect',
+    'r_recovery',
+]
 
 def calculate_centrality(centrality_function: Callable, cascade: nx.Graph, patient_zero: int):
     """
@@ -30,7 +43,6 @@ def process_file(pkl_file):
     """
     Processes a pkl file and calculates the centrality measures.
     """
-    print(pkl_file)
     results = []
     cascades = pkl_to_cascade(pkl_file)
     for simulation_id, data in cascades.items():
@@ -52,23 +64,19 @@ def main():
     start = perf_counter()
 
     pkl_files = list(DATA_DIR.rglob("*.pkl"))
-    header_written = False
+    pd.DataFrame(columns=COLUMNS).to_csv(OUTPUT_FILE, index=False, mode='w') # write header
     lock = Lock()
 
     with ProcessPoolExecutor() as executor:
         futures = [executor.submit(process_file, f) for f in pkl_files] # submit tasks
         for i, future in enumerate(as_completed(futures)): # process results as soon as they are ready
             result = future.result()
+            print(result[0].keys())
 
             # save to csv
             df = pd.DataFrame(data=result)
             with lock:
-                if not header_written:
-                    df.to_csv(OUTPUT_FILE, index=False, mode='w', columns=result[0].keys())
-                    header_written = True
-                else:
-                    df.to_csv(OUTPUT_FILE, index=False, mode='a', header=False)
-                 
+                df.to_csv(OUTPUT_FILE, index=False, mode='a', header=False)
 
             print(f"{i+1}/{len(pkl_files)} files processed...")
     
