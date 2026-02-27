@@ -4,35 +4,25 @@ from patient_zero.enums import CentralityMeasure, NetworkType
 
 def pkl_to_cascade(path):
     """
-    Unpacks pkl file into NetworkX graph. Path is the relative path.
+    Lazily unpack cascades from a pkl file.
+    Yields: simulation_id, nodes, edges, metadata
     """
-    with open(path, 'rb') as f:
+    import pickle
+
+    with open(path, "rb") as f:
         simulations = pickle.load(f)
 
-    cascades = {}
-
     for simulation in simulations:
-        graph = nx.Graph()
-
-        nodes = simulation.get("nodes_infected", [])
-        graph.add_nodes_from(nodes)
-
-        edges = simulation.get("cascade_edges", [])
-        graph.add_edges_from(edges)
-
         simulation_id = simulation.get("id")
+        nodes = simulation.get("nodes_infected", [])
+        edges = simulation.get("cascade_edges", [])
 
         metadata = {
-            key: value for key, value in simulation.items()
-            if key not in {"nodes_infected", "cascade_edges"}
+            k: v for k, v in simulation.items() 
+            if k not in {"nodes_infected", "cascade_edges"}
         }
 
-        cascades[simulation_id] = {
-            "cascade": graph,
-            "metadata": metadata
-        }
-
-    return cascades
+        yield simulation_id, nodes, edges, metadata
 
 def get_centrality_title(key):
     if key == CentralityMeasure.DEGREE.value: 

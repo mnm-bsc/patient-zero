@@ -3,6 +3,7 @@ Experiments for guessing patient zero based on centrality measures.
 """
 from pathlib import Path
 from threading import Lock
+import os
 from time import perf_counter
 from collections.abc import Callable
 from concurrent.futures import ProcessPoolExecutor, as_completed
@@ -28,32 +29,41 @@ COLUMNS = [
     'r_recovery',
 ]
 
-def process_file(pkl_file):
-    """
-    Processes a pkl file and calculates the centrality measures.
-    """
+def process_cascade(task):
+    simulation_id, nodes, edges, metadata = task
+
+    cascade = nx.Graph()
+    cascade.add_nodes_from(nodes)
+    cascade.add_edges_from(edges)
+
     results = []
-    cascades = pkl_to_cascade(pkl_file)
+    patient_zero = metadata["patient_zero"]
 
-    for simulation_id, data in cascades.items():
-        cascade = data.get("cascade")
-        metadata = data.get("metadata")
-        patient_zero = metadata["patient_zero"]
-        paths = nx.single_source_shortest_path_length(cascade, patient_zero)
+    for cm in CENTRALITY_MEASURES:
+        result = cm(cascade)
+        guess = max(result, key=result.get)
 
-        for cm in CENTRALITY_MEASURES:
-            result = cm(cascade)
-            guess = max(result, key=result.get)
-            diff = paths.get[guess]
+        diff = nx.shortest_path_length(
+            cascade, guess, patient_zero
+        )
 
-            results.append({
-                "id": simulation_id,
-                "centrality": cm.__name__,
-                "guess": guess,
-                "diff": diff,
-                **metadata
-            })
+        results.append({
+            "id": simulation_id,
+            "centrality": cm.__name__,
+            "guess": guess,
+            "diff": diff,
+            **metadata
+        })
+
     return results
+
+def cascade_tasks(pkl_files):
+    """
+    Lazily iterate over all cascades from all PKL files.
+    """
+    for pkl_file in pkl_files:
+        for sim_id, nodes, edges, metadata in pkl_to_cascade(pkl_file):
+            yield (sim_id, nodes, edges, metadata)
 
 def main():
     print("Starting centrality calculations...")
@@ -63,18 +73,18 @@ def main():
     pd.DataFrame(columns=COLUMNS).to_csv(OUTPUT_FILE, index=False, mode='w') # write header
     lock = Lock()
 
-    with ProcessPoolExecutor() as executor:
-        futures = [executor.submit(process_file, f) for f in pkl_files] # submit tasks
-        for i, future in enumerate(as_completed(futures)): # process results as soon as they are ready
-            result = future.result()
-            print(result[0].keys())
+    with ProcessPoolExecutor(max_workers=os.cpu_count()) as executor:
+        buffer = []
+        for i, result in enumerate(executor.map(process_cascade, cascade_tasks(pkl_files), chunksize=1_000)):
+            buffer.extend(result)
 
-            # save to csv
-            df = pd.DataFrame(data=result)
-            with lock:
-                df.to_csv(OUTPUT_FILE, index=False, mode='a', header=False)
+            if (i+1) % 100_000 == 0:
+                pd.DataFrame(buffer).to_csv(OUTPUT_FILE, index=False, mode='a', header=False)
+                buffer = []
+                print(f"Processed {i}")
 
-            print(f"{i+1}/{len(pkl_files)} files processed...")
+        if buffer: # write remaining
+            pd.DataFrame(buffer).to_csv(OUTPUT_FILE, index=False, mode='a', header=False)
     
     end = perf_counter()
     duration = end - start
