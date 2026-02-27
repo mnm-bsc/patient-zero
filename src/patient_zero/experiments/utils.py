@@ -7,7 +7,6 @@ def pkl_to_cascade(path):
     Lazily unpack cascades from a pkl file.
     Yields: simulation_id, nodes, edges, metadata
     """
-    import pickle
 
     with open(path, "rb") as f:
         simulations = pickle.load(f)

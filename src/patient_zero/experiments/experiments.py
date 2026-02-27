@@ -14,7 +14,7 @@ from patient_zero.experiments.centrality import degree_centrality, distance_cent
 
 DATA_DIR = Path(__file__).resolve().parent / "simulations"
 OUTPUT_FILE = Path(__file__).resolve().parent / "results.csv"
-NUM_PKL_FILES = 4 * 2 * 4 # graph types * models * cascade size limits 
+NUM_CASCADES = 4 * 2 * 4 * 100 * 100 # graph types * models * cascade size limits 
 CENTRALITY_MEASURES = [degree_centrality, distance_centrality, rumor_centrality] # new centrality measures can be added here
 COLUMNS = [
     'id',
@@ -36,16 +36,14 @@ def process_cascade(task):
     cascade.add_nodes_from(nodes)
     cascade.add_edges_from(edges)
 
-    results = []
     patient_zero = metadata["patient_zero"]
+    path_lengths = nx.single_source_shortest_path_length(cascade, patient_zero)
 
+    results = []
     for cm in CENTRALITY_MEASURES:
         result = cm(cascade)
         guess = max(result, key=result.get)
-
-        diff = nx.shortest_path_length(
-            cascade, guess, patient_zero
-        )
+        diff = path_lengths.get(guess)
 
         results.append({
             "id": simulation_id,
@@ -71,7 +69,6 @@ def main():
 
     pkl_files = list(DATA_DIR.rglob("*.pkl"))
     pd.DataFrame(columns=COLUMNS).to_csv(OUTPUT_FILE, index=False, mode='w') # write header
-    lock = Lock()
 
     with ProcessPoolExecutor(max_workers=os.cpu_count()) as executor:
         buffer = []
@@ -81,10 +78,11 @@ def main():
             if (i+1) % 100_000 == 0:
                 pd.DataFrame(buffer).to_csv(OUTPUT_FILE, index=False, mode='a', header=False)
                 buffer = []
-                print(f"Processed {i}")
+                print(f"Processed {i+1}/{NUM_CASCADES}")
 
         if buffer: # write remaining
             pd.DataFrame(buffer).to_csv(OUTPUT_FILE, index=False, mode='a', header=False)
+            print(f"Processed {NUM_CASCADES}/{NUM_CASCADES}")
     
     end = perf_counter()
     duration = end - start
