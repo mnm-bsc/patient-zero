@@ -3,7 +3,6 @@ Experiments for guessing patient zero based on centrality measures.
 """
 from pathlib import Path
 from threading import Lock
-import signal
 from time import perf_counter
 from collections.abc import Callable
 from concurrent.futures import ProcessPoolExecutor, as_completed
