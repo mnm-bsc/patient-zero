@@ -13,41 +13,52 @@ from patient_zero.networks.utils import get_random_node
 from patient_zero.enums import NetworkType
 
 BASE_PATH = Path(__file__).resolve().parent
+MAX_ATTEMPTS = 100_000_000
 
 def run_ic_simulation(graph, patient_zero_base_seed, cascade_size, n_experiments, model_base_seed, p_values, experiment_metadata, simulations_name):
     results, metadata = [], []
+
     for p_infect in p_values:
         for sim_id in range(n_experiments):
-            patient_zero_seed = patient_zero_base_seed + sim_id
-            patient_zero = get_random_node(graph, patient_zero_seed)
-            model_seed = model_base_seed + sim_id
+            attempt = 0
 
-            sim_name = f"{simulations_name}_r{p_infect:.2f}_exp{sim_id}"
-            infected_nodes, cascade_edges = ic(
-                g=graph, patient_zero=patient_zero, p_infect=p_infect, max_size=cascade_size, seed=model_seed
-            )
-            if len(infected_nodes) < cascade_size: continue
+            while attempt < MAX_ATTEMPTS: # retry if cascade not successful
+                attempt += 1
 
-            metadata.append({
-                "id": sim_name,
-                **experiment_metadata,
-                "model": "IC",
-                "p_infect": p_infect,
-                "patient_zero": patient_zero,
-                "patient_zero_seed": patient_zero_seed,
-                "model_seed": model_seed,
-                "cascade_size_limit": cascade_size
-            })
-            results.append({
-                "id": sim_name,
-                "graph_type": experiment_metadata["graph_type"],
-                "nodes_infected": list(infected_nodes),
-                "cascade_edges": cascade_edges,
-                "patient_zero": patient_zero,
-                "cascade_size_limit": cascade_size,
-                "model": "IC",
-                "p_infect": p_infect
-            })
+                patient_zero_seed = patient_zero_base_seed + sim_id
+                patient_zero = get_random_node(graph, patient_zero_seed)
+                model_seed = model_base_seed + sim_id + attempt
+
+                sim_name = f"{simulations_name}_r{p_infect:.2f}_exp{sim_id}"
+                infected_nodes, cascade_edges = ic(
+                    g=graph, patient_zero=patient_zero, p_infect=p_infect, max_size=cascade_size, seed=model_seed
+                )
+                if len(infected_nodes) < cascade_size: continue
+
+                metadata.append({
+                    "id": sim_name,
+                    **experiment_metadata,
+                    "model": "IC",
+                    "p_infect": p_infect,
+                    "patient_zero": patient_zero,
+                    "patient_zero_seed": patient_zero_seed,
+                    "model_seed": model_seed,
+                    "cascade_size_limit": cascade_size
+                })
+                results.append({
+                    "id": sim_name,
+                    "graph_type": experiment_metadata["graph_type"],
+                    "nodes_infected": list(infected_nodes),
+                    "cascade_edges": cascade_edges,
+                    "patient_zero": patient_zero,
+                    "cascade_size_limit": cascade_size,
+                    "model": "IC",
+                    "p_infect": p_infect
+                })
+                break
+            if attempt >= MAX_ATTEMPTS:
+                raise TimeoutError(f"Unable to generate cascade within {MAX_ATTEMPTS} attempts, p={p_infect}.")
+
     return metadata, results
 
 
