@@ -15,3 +15,4 @@ class CentralityMeasure(Enum):
     DEGREE = "degree_centrality"
     DISTANCE = "distance_centrality"
     RUMOR = "rumor_centrality"
+    BETWEENNESS = "betweenness_centrality"

@@ -9,12 +9,12 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 import networkx as nx
 import pandas as pd
 from patient_zero.experiments.utils import pkl_to_cascade
-from patient_zero.experiments.centrality import degree_centrality, distance_centrality, rumor_centrality
+from patient_zero.experiments.centrality import degree_centrality, distance_centrality, rumor_centrality, betweenness_centrality
 
 DATA_DIR = Path(__file__).resolve().parent / "simulations"
 OUTPUT_FILE = Path(__file__).resolve().parent / "results.csv"
 NUM_PKL_FILES = 4 * 2 * 4 # graph types * models * cascade size limits 
-CENTRALITY_MEASURES = [degree_centrality, distance_centrality, rumor_centrality] # new centrality measures can be added here
+CENTRALITY_MEASURES = [betweenness_centrality] # new centrality measures can be added here
 COLUMNS = [
     'id',
     'centrality',

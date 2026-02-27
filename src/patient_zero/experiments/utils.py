@@ -41,6 +41,8 @@ def get_centrality_title(key):
         return "Distance Centrality"
     if key == CentralityMeasure.RUMOR.value: 
         return "Rumor Centrality"
+    if key == CentralityMeasure.BETWEENNESS.value:
+        return "Betweenness Centrality"
     raise ValueError(f"Unknown centrality: {key}")
 
 def get_network_title(key):

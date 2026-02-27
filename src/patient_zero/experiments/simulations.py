@@ -30,7 +30,7 @@ def run_ic_simulation(graph, patient_zero_base_seed, cascade_size, n_experiments
                 "id": sim_name,
                 **experiment_metadata,
                 "model": "IC",
-                "r_infect": p_infect,
+                "p_infect": p_infect,
                 "patient_zero": patient_zero,
                 "patient_zero_seed": patient_zero_seed,
                 "model_seed": model_seed,
@@ -44,7 +44,7 @@ def run_ic_simulation(graph, patient_zero_base_seed, cascade_size, n_experiments
                 "patient_zero": patient_zero,
                 "cascade_size_limit": cascade_size,
                 "model": "IC",
-                "r_infect": p_infect
+                "p_infect": p_infect
             })
     return metadata, results
 
@@ -81,8 +81,8 @@ def run_sir_simulation(graph, patient_zero_base_seed, cascade_size, n_experiment
                 "patient_zero": patient_zero,
                 "cascade_size_limit": cascade_size,
                 "model": "SIR",
-                "r_infect": p_infect,
-                "r_recover": p_recover
+                "p_infect": p_infect,
+                "p_recover": p_recover
             })
     return metadata, results
 
