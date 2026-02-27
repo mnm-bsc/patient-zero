@@ -26,6 +26,8 @@ def run_ic_simulation(graph, patient_zero_base_seed, cascade_size, n_experiments
             infected_nodes, cascade_edges = ic(
                 g=graph, patient_zero=patient_zero, p_infect=p_infect, max_size=cascade_size, seed=model_seed
             )
+            if len(infected_nodes) < cascade_size: continue
+
             metadata.append({
                 "id": sim_name,
                 **experiment_metadata,
@@ -62,6 +64,8 @@ def run_sir_simulation(graph, patient_zero_base_seed, cascade_size, n_experiment
                 g=graph, patient_zero=patient_zero, p_infect=p_infect, p_recover=p_recover,
                 max_size=cascade_size, seed=model_seed
             )
+            if len(infected_nodes) < cascade_size: continue
+
             metadata.append({
                 "id": sim_name,
                 **experiment_metadata,
@@ -179,7 +183,7 @@ def main():
                     )
                 else:
                     raise ValueError(f"Unknown model {model_name}")
-
+                
                 path = BASE_PATH / "simulations" / graph_type / model_name
                 save_metadata(path, f"{sim_name}.json", meta)
                 save_results(path, f"{sim_name}.pkl", res)

@@ -1,6 +1,6 @@
 {
   "defaults": {
-    "cascade_size_limits": [10, 50, 100, 500],
+    "cascade_size_limits": [10, 50, 100, 250],
     "n_experiments_per_p": 100,
     "seeds": {
       "graph": 42,
@@ -12,7 +12,7 @@
         "type": "IC",
         "params": {
           "p_values": {
-            "start": 0.01,
+            "start": 0.2,
             "stop": 1.0,
             "num": 100
           }
@@ -22,7 +22,7 @@
         "type": "SIR",
         "params": {
           "p_values": {
-            "start": 0.01,
+            "start": 0.2,
             "stop": 1.0,
             "num": 100
           },
