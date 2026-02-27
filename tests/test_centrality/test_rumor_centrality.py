@@ -16,8 +16,9 @@ class TestRumorCentrality:
         subtree_size = {}
         subtree_size_root = dfs(0, None, BFS_tree, subtree_size)
 
-        assert subtree_size_root == 5
         assert subtree_size == {0: 5, 1: 3, 3: 1, 4: 1, 2: 1}
+        assert subtree_size_root == 5 # Assert 5 because it's the subtree of the root
+        assert subtree_size[4] == 1 # Assert 1 because 4 is a leaf
 
     def test_rumor_centrality_score_nodes(self):
         G = nx.Graph()
