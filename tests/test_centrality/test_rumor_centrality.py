@@ -1,4 +1,3 @@
-import math
 import networkx as nx
 from patient_zero.experiments import dfs, rumor_centrality 
 
