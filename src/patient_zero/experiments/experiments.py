@@ -28,27 +28,23 @@ COLUMNS = [
     'r_recovery',
 ]
 
-def calculate_centrality(centrality_function: Callable, cascade: nx.Graph, patient_zero: int):
-    """
-    Calculates the centrality of all nodes in a cascade.
-    """
-    result = centrality_function(cascade)
-    guess = max(result, key=result.get)
-
-    diff = nx.shortest_path_length(cascade, guess, patient_zero)
-    return guess, diff
-
 def process_file(pkl_file):
     """
     Processes a pkl file and calculates the centrality measures.
     """
     results = []
     cascades = pkl_to_cascade(pkl_file)
+    patient_zero = metadata["patient_zero"]
+    paths = nx.single_source_shortest_path_length(cascade, patient_zero)
+
     for simulation_id, data in cascades.items():
         cascade = data.get("cascade")
         metadata = data.get("metadata")
         for cm in CENTRALITY_MEASURES:
-            guess, diff = calculate_centrality(cm, cascade, metadata["patient_zero"])
+            result = cm(cascade)
+            guess = max(result, key=result.get)
+            diff = paths.get[guess]
+
             results.append({
                 "id": simulation_id,
                 "centrality": cm.__name__,
