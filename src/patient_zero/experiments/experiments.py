@@ -62,7 +62,7 @@ def main():
     print("Starting centrality calculations...")
     start = perf_counter()
 
-    pkl_files = list(DATA_DIR.rglob("*.pkl"))
+    pkl_files = list(DATA_DIR.rglob("barabasi_albert_IC_cascade50.pkl"))
     pd.DataFrame(columns=COLUMNS).to_csv(OUTPUT_FILE, index=False, mode='w') # write header
     lock = Lock()
 

@@ -24,12 +24,13 @@ def rumor_centrality(cascade: nx.Graph):
         BFS_tree = nx.bfs_tree(cascade, node) # Creates a BFS tree for that specific node.
         subtree_size = {}
         dfs(node, None, BFS_tree, subtree_size) # Uses Depth-First-Search on the node with the BFS tree to calculate subtree sizes.
-
+        
         prod = 0
         for tree_node in BFS_tree.nodes: # Computes the product of all subtree sizes.
             prod += math.log(subtree_size[tree_node]) # prod = product of T[u] for all nodes u in the BFS tree.
-        
-        node_scores[node] = -math.log(prod) # Compute root's rumor centrality. R(root) = n! / prod.
+        print(prod)
+        if prod == 0.0: continue
+        node_scores[node] = -math.log(prod) # Compute root's rumor centrality. R(root) = n! / prod = -ln(prod)
     return node_scores
 
 

@@ -1,3 +1,4 @@
+import math
 import networkx as nx
 from patient_zero.experiments import dfs, rumor_centrality 
 
@@ -14,7 +15,9 @@ class TestRumorCentrality:
         BFS_tree = nx.bfs_tree(G, 0)
         subtree_size = {}
         subtree_size_root = dfs(0, None, BFS_tree, subtree_size)
+
         assert subtree_size_root == 5
+        assert subtree_size == {0: 5, 1: 3, 3: 1, 4: 1, 2: 1}
 
     def test_rumor_centrality_score_nodes(self):
         G = nx.Graph()
