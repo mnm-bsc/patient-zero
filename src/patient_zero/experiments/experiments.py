@@ -34,12 +34,13 @@ def process_file(pkl_file):
     """
     results = []
     cascades = pkl_to_cascade(pkl_file)
-    patient_zero = metadata["patient_zero"]
-    paths = nx.single_source_shortest_path_length(cascade, patient_zero)
 
     for simulation_id, data in cascades.items():
         cascade = data.get("cascade")
         metadata = data.get("metadata")
+        patient_zero = metadata["patient_zero"]
+        paths = nx.single_source_shortest_path_length(cascade, patient_zero)
+
         for cm in CENTRALITY_MEASURES:
             result = cm(cascade)
             guess = max(result, key=result.get)
