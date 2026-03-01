@@ -2,11 +2,9 @@
 Experiments for guessing patient zero based on centrality measures.
 """
 from pathlib import Path
-from threading import Lock
 import os
 from time import perf_counter
-from collections.abc import Callable
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor
 import networkx as nx
 import pandas as pd
 from patient_zero.experiments.utils import pkl_to_cascade
@@ -15,7 +13,7 @@ from patient_zero.experiments.centrality import degree_centrality, distance_cent
 DATA_DIR = Path(__file__).resolve().parent / "simulations"
 OUTPUT_FILE = Path(__file__).resolve().parent / "results.csv"
 NUM_CASCADES = 4 * 2 * 4 * 100 * 100 # graph types * models * cascade size limits 
-CENTRALITY_MEASURES = [degree_centrality, distance_centrality, rumor_centrality, betweenness_centrality] # new centrality measures can be added here
+CENTRALITY_MEASURES = [degree_centrality, distance_centrality, rumor_centrality] # new centrality measures can be added here
 COLUMNS = [
     'id',
     'centrality',
@@ -78,11 +76,11 @@ def main():
             if (i+1) % 100_000 == 0:
                 pd.DataFrame(buffer).to_csv(OUTPUT_FILE, index=False, mode='a', header=False)
                 buffer = []
-                print(f"Processed {i+1}/{NUM_CASCADES}")
+                print(f"Processed {i+1} cascades")
 
         if buffer: # write remaining
             pd.DataFrame(buffer).to_csv(OUTPUT_FILE, index=False, mode='a', header=False)
-            print(f"Processed {NUM_CASCADES}/{NUM_CASCADES}")
+            print(f"Processed all cascades")
     
     end = perf_counter()
     duration = end - start

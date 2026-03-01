@@ -5,6 +5,7 @@ import os
 import json
 from time import perf_counter
 from pathlib import Path
+from concurrent.futures import ProcessPoolExecutor, as_completed
 import pickle
 import numpy as np
 from patient_zero.networks import create_tree_graph, create_k_regular_graph, create_random_graph, create_scale_free_graph, create_small_world_graph
@@ -13,12 +14,14 @@ from patient_zero.networks.utils import get_random_node
 from patient_zero.enums import NetworkType
 
 BASE_PATH = Path(__file__).resolve().parent
-MAX_ATTEMPTS = 100_000_000
+MAX_ATTEMPTS = 100_000
 
 def run_ic_simulation(graph, patient_zero_base_seed, cascade_size, n_experiments, model_base_seed, p_values, experiment_metadata, simulations_name):
     results, metadata = [], []
 
     for p_infect in p_values:
+        tmp_results, tmp_metadata = [], []
+
         for sim_id in range(n_experiments):
             attempt = 0
 
@@ -35,7 +38,7 @@ def run_ic_simulation(graph, patient_zero_base_seed, cascade_size, n_experiments
                 )
                 if len(infected_nodes) < cascade_size: continue
 
-                metadata.append({
+                tmp_metadata.append({
                     "id": sim_name,
                     **experiment_metadata,
                     "model": "IC",
@@ -45,7 +48,7 @@ def run_ic_simulation(graph, patient_zero_base_seed, cascade_size, n_experiments
                     "model_seed": model_seed,
                     "cascade_size_limit": cascade_size
                 })
-                results.append({
+                tmp_results.append({
                     "id": sim_name,
                     "graph_type": experiment_metadata["graph_type"],
                     "nodes_infected": list(infected_nodes),
@@ -56,8 +59,12 @@ def run_ic_simulation(graph, patient_zero_base_seed, cascade_size, n_experiments
                     "p_infect": p_infect
                 })
                 break
-            if attempt >= MAX_ATTEMPTS:
-                raise TimeoutError(f"Unable to generate cascade within {MAX_ATTEMPTS} attempts, p={p_infect}.")
+
+        if len(tmp_results) == n_experiments:
+            metadata.extend(tmp_metadata)
+            results.extend(tmp_results)
+        else:
+            print(f"Unable to generate cascades for graph={experiment_metadata["graph_type"]} p={p_infect:.2f}, size={cascade_size}.")
 
     return metadata, results
 

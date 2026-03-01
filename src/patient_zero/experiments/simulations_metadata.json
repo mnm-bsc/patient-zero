@@ -12,7 +12,7 @@
         "type": "IC",
         "params": {
           "p_values": {
-            "start": 0.3,
+            "start": 0.01,
             "stop": 1.0,
             "num": 100
           }
