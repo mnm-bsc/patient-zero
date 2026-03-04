@@ -24,3 +24,6 @@ From the root directory:
 
 - Remove simulation and experiment results
   `make clean`
+
+- Run plots
+  `make plots`

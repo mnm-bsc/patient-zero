@@ -11,3 +11,6 @@ sim:
 
 exp:
 	python3 src/patient_zero/experiments/experiments.py
+
+plots:
+	python3 src/patient_zero/experiments/plots.py
