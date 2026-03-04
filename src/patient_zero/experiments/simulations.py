@@ -7,6 +7,7 @@ from time import perf_counter
 from pathlib import Path
 import pickle
 import numpy as np
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from patient_zero.networks import create_tree_graph, create_k_regular_graph, create_random_graph, create_scale_free_graph, create_small_world_graph
 from patient_zero.models import ic, sir
 from patient_zero.networks.utils import get_random_node
@@ -33,14 +34,14 @@ def run_simulation(
     for p_infect in p_values:
         tmp_results, tmp_metadata = [], []
 
-        for sim_id in range(MAX_SIMULATIONS):
+        for sim in range(MAX_SIMULATIONS):
             attempt = 0
 
             while attempt != MAX_ATTEMPTS_PER_SIM: # retry if cascade not successful
-                patient_zero_seed = patient_zero_base_seed + sim_id
+                patient_zero_seed = patient_zero_base_seed + sim
                 patient_zero = get_random_node(graph, patient_zero_seed)
-                model_seed = model_base_seed + sim_id + attempt
-                sim_name = f"{simulations_name}_p{p_infect:.2f}_exp{sim_id}"
+                model_seed = model_base_seed + sim + attempt
+                sim_id = f"{simulations_name}_p{p_infect:.2f}_exp{sim}"
 
                 if model == ModelType.IC.value:
                     infected_nodes, cascade_edges = ic(g=graph, patient_zero=patient_zero, p_infect=p_infect, max_size=cascade_size, seed=model_seed)
@@ -52,7 +53,8 @@ def run_simulation(
                     continue
 
                 tmp_metadata.append({
-                    "id": sim_name,
+                    "id": sim_id,
+                    "simulations_name": simulations_name,
                     **experiment_metadata,
                     "model": model,
                     "p_infect": p_infect,
@@ -63,7 +65,7 @@ def run_simulation(
                 })
 
                 tmp_results.append({
-                    "id": sim_name,
+                    "id": sim_id,
                     "graph_type": experiment_metadata["graph_type"],
                     "nodes_infected": list(infected_nodes),
                     "cascade_edges": cascade_edges,
@@ -74,8 +76,8 @@ def run_simulation(
                 })
 
                 if p_recover is not None:
-                    tmp_metadata["p_recover"] = p_recover
-                    tmp_results["p_recover"] = p_recover
+                    tmp_metadata[len(tmp_metadata)-1]["p_recover"] = p_recover
+                    tmp_results[len(tmp_metadata)-1]["p_recover"] = p_recover
 
                 break
             
@@ -83,8 +85,8 @@ def run_simulation(
                 metadata.extend(tmp_metadata)
                 results.extend(tmp_results)
                 break
-            elif sim_id == MAX_SIMULATIONS-1:
-                print(f"Unable to generate IC cascades for graph={experiment_metadata["graph_type"]} p={p_infect:.2f}, size={cascade_size}.")
+            elif sim == MAX_SIMULATIONS-1:
+                print(f"Unable to generate {model} cascades for graph={experiment_metadata["graph_type"]} p={p_infect:.2f}, size={cascade_size}.")
                 break
 
     return metadata, results
@@ -119,6 +121,7 @@ def save_results(path, filename, data):
 def main():
     print("Started simulations...")
     time_start = perf_counter()
+    tasks = []
 
     with open(BASE_PATH / "simulations_metadata.json", "r", encoding="utf-8") as f:
         metadata = json.load(f)
@@ -157,23 +160,33 @@ def main():
                     "graph_seed": graph_seed,
                 }
 
-                meta, res = run_simulation(
-                    graph=g,
-                    patient_zero_base_seed=patient_zero_base_seed,
-                    cascade_size=cascade_size,
-                    n_experiments=n_experiments_per_p,
-                    model_base_seed=model_base_seed,
-                    p_values=p_values,
-                    p_recover=p_recover,
-                    experiment_metadata=experiment_metadata,
-                    simulations_name=sim_name,
-                    model=model_name
-                )
+                tasks.append({
+                    "graph": g,
+                    "patient_zero_base_seed": patient_zero_base_seed,
+                    "cascade_size": cascade_size,
+                    "n_experiments": n_experiments_per_p,
+                    "model_base_seed": model_base_seed,
+                    "p_values": p_values,
+                    "p_recover": p_recover,
+                    "experiment_metadata": experiment_metadata,
+                    "simulations_name": sim_name,
+                    "model": model_name
+                })
+    
+    with ProcessPoolExecutor() as executor:
+        futures = [executor.submit(run_simulation, **task) for task in tasks]
+
+        for future in as_completed(futures):
+            meta, res = future.result()
+
+            graph_type = meta[0]["graph_type"]
+            model_name = meta[0]["model"]
+            sim_name = meta[0]["simulations_name"]
                 
-                path = BASE_PATH / "simulations" / graph_type / model_name
-                save_metadata(path, f"{sim_name}.json", meta)
-                save_results(path, f"{sim_name}.pkl", res)
-                print("Completed simulation:", sim_name)
+            path = BASE_PATH / "simulations" / graph_type / model_name
+            save_metadata(path, f"{sim_name}.json", meta)
+            save_results(path, f"{sim_name}.pkl", res)
+            print("Completed simulation:", sim_name)
 
     time_end = perf_counter()
     duration = time_end - time_start
