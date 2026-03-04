@@ -54,8 +54,11 @@ def distance_centrality(cascade: nx.Graph) -> dict:
     """
     return nx.closeness_centrality(cascade)
 
-def betweenness_centrality():
-    print("betweenness")
+def betweenness_centrality(cascade):
+    """
+    Returns the betweenness centrality for all nodes in a graph.
+    """
+    return nx.betweenness_centrality(cascade)
 
 def pagerank():
     print("page rank")

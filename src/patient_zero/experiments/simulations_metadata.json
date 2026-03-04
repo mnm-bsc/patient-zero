@@ -1,6 +1,6 @@
 {
   "defaults": {
-    "cascade_size_limits": [10, 50, 100, 500],
+    "cascade_size_limits": [10, 25, 50, 100],
     "n_experiments_per_p": 100,
     "seeds": {
       "graph": 42,
@@ -45,7 +45,7 @@
       "name": "watts_strogatz",
       "graph": {
         "type": "watts_strogatz",
-        "params": { "nodes": 1000, "neighbors": 2, "probability": 0.2 }
+        "params": { "nodes": 1000, "neighbors": 10, "probability": 0.2 }
       },
       "models": ["IC", "SIR"]
     },
@@ -53,7 +53,7 @@
       "name": "erdos_renyi",
       "graph": {
         "type": "erdos_renyi",
-        "params": { "nodes": 1000, "probability": 0.2 }
+        "params": { "nodes": 1000, "probability": 0.005 }
       },
       "models": ["IC", "SIR"]
     },
