@@ -53,7 +53,7 @@
       "name": "erdos_renyi",
       "graph": {
         "type": "erdos_renyi",
-        "params": { "nodes": 1000, "probability": 0.2 }
+        "params": { "nodes": 1000, "probability": 0.005 }
       },
       "models": ["IC", "SIR"]
     },
