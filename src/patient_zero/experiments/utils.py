@@ -1,5 +1,4 @@
 import pickle
-import networkx as nx
 from patient_zero.enums import CentralityMeasure, NetworkType
 
 def pkl_to_cascade(path):

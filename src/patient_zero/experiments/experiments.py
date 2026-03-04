@@ -13,7 +13,7 @@ from patient_zero.experiments.centrality import degree_centrality, distance_cent
 DATA_DIR = Path(__file__).resolve().parent / "simulations"
 OUTPUT_FILE = Path(__file__).resolve().parent / "results.csv"
 NUM_CASCADES = 4 * 2 * 4 * 100 * 100 # graph types * models * cascade size limits 
-CENTRALITY_MEASURES = [degree_centrality, distance_centrality, rumor_centrality] # new centrality measures can be added here
+CENTRALITY_MEASURES = [degree_centrality, distance_centrality, rumor_centrality, betweenness_centrality] # new centrality measures can be added here
 COLUMNS = [
     'id',
     'centrality',
@@ -80,7 +80,7 @@ def main():
 
         if buffer: # write remaining
             pd.DataFrame(buffer).to_csv(OUTPUT_FILE, index=False, mode='a', header=False)
-            print(f"Processed all cascades")
+            print("Processed all cascades")
     
     end = perf_counter()
     duration = end - start

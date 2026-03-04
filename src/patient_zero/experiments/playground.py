@@ -1,9 +1,9 @@
-from patient_zero.networks import create_random_graph, create_small_world_graph
-from patient_zero.models import ic, sir
-from patient_zero.networks.utils import get_random_node
-from patient_zero.experiments.centrality import degree_centrality, distance_centrality, rumor_centrality
 import networkx as nx
 import matplotlib.pyplot as plt
+from patient_zero.networks import create_small_world_graph
+from patient_zero.models import ic
+from patient_zero.networks.utils import get_random_node
+from patient_zero.experiments.centrality import degree_centrality, distance_centrality, rumor_centrality
 
 # Graph
 nodes = 500
@@ -31,7 +31,8 @@ for p in range (10):
         infected_nodes, cascade_edges = ic(G, patient_zero, p_infect, max_size)
         attempt += 1
 
-    if len(infected_nodes) < max_size: continue
+    if len(infected_nodes) < max_size: 
+        continue
 
     cascade = nx.Graph()
     cascade.add_nodes_from(infected_nodes)

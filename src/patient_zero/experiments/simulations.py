@@ -5,9 +5,9 @@ import os
 import json
 from time import perf_counter
 from pathlib import Path
+from concurrent.futures import ProcessPoolExecutor, as_completed
 import pickle
 import numpy as np
-from concurrent.futures import ProcessPoolExecutor, as_completed
 from patient_zero.networks import create_tree_graph, create_k_regular_graph, create_random_graph, create_scale_free_graph, create_small_world_graph
 from patient_zero.models import ic, sir
 from patient_zero.networks.utils import get_random_node
@@ -47,6 +47,8 @@ def run_simulation(
                     infected_nodes, cascade_edges = ic(g=graph, patient_zero=patient_zero, p_infect=p_infect, max_size=cascade_size, seed=model_seed)
                 elif model == ModelType.SIR.value:
                     infected_nodes, cascade_edges = sir(g=graph, patient_zero=patient_zero, p_infect=p_infect, p_recover=p_recover, max_size=cascade_size, seed=model_seed)
+                else:
+                    raise ValueError(f"Unknown model {model}") 
 
                 if len(infected_nodes) < cascade_size: # if cascade not large enough, throw away
                     attempt += 1
@@ -85,7 +87,7 @@ def run_simulation(
                 metadata.extend(tmp_metadata)
                 results.extend(tmp_results)
                 break
-            elif sim == MAX_SIMULATIONS-1:
+            if sim == MAX_SIMULATIONS-1:
                 print(f"Unable to generate {model} cascades for graph={experiment_metadata["graph_type"]} p={p_infect:.2f}, size={cascade_size}.")
                 break
 
