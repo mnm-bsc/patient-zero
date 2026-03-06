@@ -1,3 +1,4 @@
+"""Enum types"""
 from enum import Enum
 
 class NetworkType(Enum):
