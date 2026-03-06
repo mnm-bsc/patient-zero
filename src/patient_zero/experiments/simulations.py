@@ -15,7 +15,7 @@ from patient_zero.enums import NetworkType, ModelType
 
 BASE_PATH = Path(__file__).resolve().parent
 MAX_ATTEMPTS_PER_SIM = 1_000
-MAX_SIMULATIONS = 100
+MAX_SIMULATIONS = 1_000
 
 def run_simulation(
     graph, 
