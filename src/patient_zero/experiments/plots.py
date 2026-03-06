@@ -12,7 +12,7 @@ CENTRALITY_MEASURES = sorted(df["centrality"].unique())
 MODELS = sorted(df["model"].unique())
 
 grouped = (
-    df.groupby(["graph_type", "model", "cascade_size_limit", "r_infect", "centrality"])["diff"]
+    df.groupby(["graph_type", "model", "cascade_size_limit", "p_infect", "centrality"])["diff"]
     .mean()
     .reset_index(name="avg_diff")
 ) 
@@ -34,6 +34,10 @@ for graph_type in graph_types:
     )
 
     for row, model in enumerate(MODELS):
+        df_model = df_graph[df_graph["model"] == model]
+        ymin = df_model["avg_diff"].min()
+        ymax = df_model["avg_diff"].max()
+
         for col, centrality in enumerate(CENTRALITY_MEASURES):
             ax = axes[row, col]
             
@@ -47,14 +51,17 @@ for graph_type in graph_types:
             ] # filter df for specific model and centrality measure
 
             for cascade_size in sorted(df_plot["cascade_size_limit"].unique()):
-                s = df_plot[df_plot["cascade_size_limit"] == cascade_size].sort_values("r_infect") # get df for one cascade size
-                ax.plot(s["r_infect"], s["avg_diff"], label=cascade_size, linewidth=2.5) # plots 
+                s = df_plot[df_plot["cascade_size_limit"] == cascade_size].sort_values("p_infect") # get df for one cascade size
+                ax.plot(s["p_infect"], s["avg_diff"], label=cascade_size, linewidth=2.5) # plots 
 
+            ax.set_ylim(ymin * 0.95, ymax * 1.05)
             if row == 0: # only add title to left plot
                 ax.set_title(get_centrality_title(centrality))
-            if col == 0: # only add y axis labels to right plots
+            if col == 0: # only add y axis labels to left plots
                 ax.set_ylabel("Avg diff", rotation=90)
                 ax.text(-0.2, 0.90, model, rotation=0, ha="right", va="bottom", transform=ax.transAxes, fontweight="bold")
+            else:
+                ax.set_yticklabels([])
             if row == len(MODELS) - 1: # only add x axis labels to bottom plots
                 ax.set_xlabel("p")
 
