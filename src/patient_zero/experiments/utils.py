@@ -1,14 +1,23 @@
+"""Utility module for experiments"""
 import pickle
 from patient_zero.enums import CentralityMeasure, NetworkType
 
 def pkl_to_cascade(path):
-    """
-    Lazily unpack cascades from a pkl file.
-    Yields: simulation_id, nodes, edges, metadata
+    """Lazily unpack cascades from a pkl file.
+
+    Args:
+        path (str): The path to the pkl file.
+
+    Yields:
+        generator: 
+            - simulation_id (int): The ID of the simulation.
+            - nodes (list): The nodes in the cascade.
+            - edges (list): The edges in the cascades.
+            - metadata (obj): Metadata from the cascade simulation.
     """
 
     with open(path, "rb") as f:
-        simulations = pickle.load(f)
+        simulations = pickle.load(f) # unpickle file
 
     for simulation in simulations:
         simulation_id = simulation.get("id")
@@ -17,7 +26,7 @@ def pkl_to_cascade(path):
 
         metadata = {
             k: v for k, v in simulation.items() 
-            if k not in {"nodes_infected", "cascade_edges"}
+            if k not in {"nodes_infected", "cascade_edges"} # save all key-value pairs that are not nodes_infected or cascade_edges in metadata
         }
 
         yield simulation_id, nodes, edges, metadata
