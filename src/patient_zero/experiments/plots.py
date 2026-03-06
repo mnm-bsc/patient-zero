@@ -29,7 +29,7 @@ for graph_type in graph_types:
         ncols=len(CENTRALITY_MEASURES),
         figsize=(4 * len(CENTRALITY_MEASURES), 3.6 * len(MODELS)),
         sharex=True,
-        sharey=True,
+        sharey=False,
         squeeze=False,
     )
 
