@@ -12,7 +12,6 @@ from patient_zero.experiments.centrality import degree_centrality, distance_cent
 
 DATA_DIR = Path(__file__).resolve().parent / "simulations"
 OUTPUT_FILE = Path(__file__).resolve().parent / "results.csv"
-NUM_CASCADES = 4 * 2 * 4 * 100 * 100 # graph types * models * cascade size limits 
 CENTRALITY_MEASURES = [degree_centrality, distance_centrality, rumor_centrality, betweenness_centrality] # new centrality measures can be added here
 COLUMNS = [
     'id',
@@ -23,8 +22,8 @@ COLUMNS = [
     'patient_zero',
     'cascade_size_limit',
     'model',
-    'r_infect',
-    'r_recovery',
+    'p_infect',
+    'p_recovery',
 ]
 
 def process_cascade(task):
