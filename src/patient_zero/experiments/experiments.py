@@ -17,7 +17,8 @@ COLUMNS = [
     'id',
     'centrality',
     'guess',
-    'diff',
+    'estimate_error',
+    'rank',
     'graph_type',
     'patient_zero',
     'cascade_size_limit',
@@ -54,13 +55,19 @@ def process_cascade(task):
     for cm in CENTRALITY_MEASURES:
         result = cm(cascade) # run centrality measure on the given cascade cm
         guess = max(result, key=result.get) # get the most likely source node
-        diff = path_lengths.get(guess) # calculate difference between guess and true source
+        estimate_error = path_lengths.get(guess) # calculate difference between guess and true source
+        patient_zero_score = result[patient_zero]
+        rank = sum(
+            (node != patient_zero) and (score >= patient_zero_score) 
+            for node, score in result.items()
+        ) # scores tied with the true source are included in the rank
 
         results.append({ # save results
             "id": simulation_id,
             "centrality": cm.__name__,
             "guess": guess,
-            "diff": diff,
+            "estimate_error": estimate_error,
+            "rank": rank,
             **metadata
         })
 

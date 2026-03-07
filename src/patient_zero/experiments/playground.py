@@ -29,7 +29,6 @@ cascade = nx.Graph()
 cascade.add_nodes_from(infected_nodes)
 cascade.add_edges_from(cascade_edges)
 
-print(cascade.nodes())
 
 path_lengths = nx.single_source_shortest_path_length(cascade, patient_zero)
 
@@ -43,6 +42,13 @@ distance_result = distance_centrality(cascade)
 guess = max(distance_result, key=distance_result.get)
 diff = path_lengths.get(guess)
 
+patient_zero_score = distance_result[patient_zero]
+rank = sum(
+    (node != patient_zero) and (score >= patient_zero_score) 
+    for node, score in distance_result.items()
+)
+
+print(rank)
 print(f"cascade={cascade}, cm=distance p={p_infect}, guess={guess}, patient_zero={patient_zero} diff={diff}")
 
 #rumor_result = rumor_centrality(cascade)
