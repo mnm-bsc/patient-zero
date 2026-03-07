@@ -108,13 +108,13 @@ def main():
     # Accuracy plots
     name = "accuracy"
     index = f"avg_{name}"
-    df['correct'] = (df['guess'] == df['patient_zero']).astype(int)
-    accuracy = (
+    df['correct'] = (df['estimate'] == df['patient_zero']).astype(int)
+    grouped = (
         df.groupby(["graph_type", "model", "cascade_size_limit", "p_infect", "centrality"])['correct']
         .mean()
         .reset_index(name=index)
     )
-    create_plot(name, index, accuracy)
+    create_plot(name, index, grouped)
 
 if __name__ == "__main__":
     main()
