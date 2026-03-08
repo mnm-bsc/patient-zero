@@ -51,6 +51,6 @@ def get_network_title(key):
         return "Scale-free"
     if key == NetworkType.SMALL_WORLD.value: 
         return "Small World"
-    if key == NetworkType.TREE.value: 
+    if key == NetworkType.BALANCED_TREE.value: 
         return "Balanced Tree"
     raise ValueError(f"Unknown network: {key}")

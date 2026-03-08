@@ -4,26 +4,56 @@ Centrality measures
 import math
 import networkx as nx
 
-def dfs(n: int, p: int | None, bfs_tree: nx.DiGraph, subtree_sizes: set) -> int:
+def compute_subtree_sizes(tree: nx.DiGraph, node: int, parent: int | None, subtree: dict[int, int], log_prod: dict[int, float]):
     """Run DFS from node n with parent p to recursiely get the subtree size all nodes.
 
     Args:
-        n (int): Root of dfs.
-        p (int | None): Parent node. None when n is root.
-        bfs_tree (nx.DiGraph): The bfs tree graph to run the search on.
-        subtree_sizes (set): The set of subtree sizes for all nodes in bfs_tree.
-
-    Returns:
-        int: The subtree size of node n.
+        tree (nx.DiGraph): The bfs tree graph to run the search on.
+        node (int): The current node being visited (parent in the first call).
+        parent (int | None): Parent node. None when n is root.
+        subtree (dict): The dictionary of subtree sizes for all nodes in the tree.
     """
-    subtree_sizes[n] = 1 # Root size is 1.
-    for neighbor in bfs_tree.neighbors(n): # Loops over neighbors in the BFS tree.
-        if neighbor != p:
-            subtree_sizes[n] += dfs(neighbor, n, bfs_tree, subtree_sizes) # Recursively calls itself with the new neighbor node and Calculates the subtree size.
-    return subtree_sizes[n]
+    subtree[node] = 1 # Root size is 1.
+    log_prod[node] = 0.0 # Cumulative product (log(1) = 0)
 
-def rumor_centrality(cascade: nx.Graph) -> dict:
+    for neighbor in tree.neighbors(node): # Loops over neighbors in the BFS tree.
+        if neighbor == parent:
+            continue
+        # Recursively calls itself with the new neighbor node and calculates the subtree size.
+        compute_subtree_sizes(tree, neighbor, node, subtree, log_prod)
+
+        # The below is described in sec. 3.2 of Who's the Culprit.
+        subtree[node] += subtree[neighbor] # Message passing of subtree sizes
+        # log_prod corresponds to taking the product of all subtree sizes rooted at root (the denominator of the fraction)
+        # log(s1 * s2 * ...) = log(s1) + log(s2) + ...
+        log_prod[node] += math.log(subtree[neighbor]) # Message passing of commulative product
+
+    log_prod[node] += math.log(subtree[node]) # Include current nodes subtree
+
+
+def propagate_scores(tree: nx.DiGraph, node: int, parent: int | None, subtree: dict, scores: dict[int, float], n: int):
+    """DFS to propagate rumor centrality scores on a BFS tree.
+
+    Args:
+        tree (nx.DiGraph): The BFS tree of the cascade graph.
+        node (int): The current node being visited (parent in the first call).
+        parent (int | None): The parent of the current node in the DFS. None when node is root.
+        subtree (dict): Dictionary mapping each node to the size of its subtree.
+        scores (dict[int, float]): Dictionary storing the log rumor centrality scores for each node.
+        n (int): Total number of nodes in the tree.
+    """
+    for nbr in tree.neighbors(node):
+        if nbr == parent:
+            continue
+        scores[nbr] = scores[node] + math.log(n - subtree[nbr]) - math.log(subtree[nbr])
+        propagate_scores(tree, nbr, node, subtree, scores, n)
+
+
+def rumor_centrality(cascade: nx.Graph) -> dict[int, float]:
     """Calculates the rumor centrality for all nodes in a graph.
+    Note: For general graphs with cycles, this function computes rumor centrality
+    approximately using BFS trees rooted at each node, following the approach
+    from "Who's the Culprit?" by Shah & Zaman (2011).
 
     Args:
         cascade (nx.Graph): NetworkX graph.
@@ -31,22 +61,36 @@ def rumor_centrality(cascade: nx.Graph) -> dict:
     Returns:
         dict: Dictionary of nodes and their rumor score.
     """
-    node_scores = {}
-    
-    for node in list(cascade.nodes): # Loops through every node in the cascade and calculates the rumor score for that node.
-        bfs_tree = nx.bfs_tree(cascade, node) # Creates a BFS tree for that specific node.
-        subtree_sizes = {}
-        dfs(node, None, bfs_tree, subtree_sizes) # Uses Depth-First-Search on the node with the BFS tree to calculate subtree sizes.
-        
-        prod = 0
-        for tree_node in bfs_tree.nodes: # Computes the product of all subtree sizes.
-            prod += math.log(subtree_sizes[tree_node]) # prod = product of T[u] for all nodes u in the BFS tree.
-        
-        if prod == 0.0: # If the cascade is one return a default score of 1
-            node_scores[node] = 1
-            return node_scores
-        node_scores[node] = -math.log(prod) # Compute root's rumor centrality. R(root) = n! / prod = -ln(prod)
-    return node_scores
+    all_scores = {}
+    n = cascade.number_of_nodes()
+
+    is_tree_graph = nx.is_tree(cascade)
+    for root in cascade.nodes: # Loops through every node in the cascade and calculates the rumor score for that node.
+        # Create BFS tree rooted at the candidate node
+        if is_tree_graph: # No need to compute BFS tree for general trees.
+            tree_to_use = cascade
+        else:
+            tree_to_use = nx.bfs_tree(cascade, root)
+
+        # Compute subtree sizes
+        subtree = {}
+        log_prod = {}
+        # Uses Depth-First-Search on the node with the BFS tree to calculate subtree sizes and log_prod via message passing.
+        compute_subtree_sizes(tree_to_use, root, None, subtree, log_prod)
+
+        # math.lgamma(n+1) = log(n!). log(A/B) is the same as log(A) - log(B)
+        scores = {}
+        scores[root] = math.lgamma(n + 1) - log_prod[root]
+
+        if is_tree_graph:
+            # Propagate scores down the tree
+            propagate_scores(tree_to_use, root, None, subtree, scores, n)
+            return scores # no need to run dfs mulitple times for general trees
+
+        # Store the score of the root
+        all_scores[root] = scores[root] # Just compare rumor centralities as log form to avoid overflow.
+
+    return all_scores
 
 
 def degree_centrality(cascade: nx.Graph) -> dict:

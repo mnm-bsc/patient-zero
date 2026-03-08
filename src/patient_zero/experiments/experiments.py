@@ -100,10 +100,12 @@ def main():
         for i, result in enumerate(executor.map(process_cascade, cascade_tasks(pkl_files), chunksize=1_000)): # process cascades in chunks of 1k per process
             buffer.extend(result)
 
+            if (i+1) % 10_000 == 0:
+                print(f"Processed {i+1} cascades")
+
             if (i+1) % 100_000 == 0: # write results to csv from buffer in batches of 100k
                 pd.DataFrame(buffer).to_csv(OUTPUT_FILE, index=False, mode='a', header=False)
                 buffer = []
-                print(f"Processed {i+1} cascades")
 
         if buffer: # write remaining
             pd.DataFrame(buffer).to_csv(OUTPUT_FILE, index=False, mode='a', header=False)

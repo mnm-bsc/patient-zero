@@ -26,13 +26,21 @@
             "stop": 1.0,
             "num": 100
           },
-          "p_recover": 0.2
+          "p_recover": 0.0
         }
       }
     }
   },
 
   "simulations": [
+    {
+      "name": "balanced_tree",
+      "graph": {
+        "type": "balanced_tree",
+        "params": { "children": 3, "depth": 6 }
+      },
+      "models": ["IC", "SIR"]
+    },
     {
       "name": "k_regular",
       "graph": {
