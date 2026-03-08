@@ -13,5 +13,5 @@ __all__ = [
     "rumor_centrality",
     "dfs",
     "get_estimate_error",
-    "rank"
+    "get_rank"
     ]

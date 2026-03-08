@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from patient_zero.networks import create_k_regular_graph
 from patient_zero.models import ic
 from patient_zero.networks.utils import get_random_node
-from patient_zero.experiments.centrality import degree_centrality, distance_centrality, rumor_centrality
+from patient_zero.experiments.centrality import distance_centrality
 
 # Graph
 nodes = 1000
@@ -42,13 +42,6 @@ distance_result = distance_centrality(cascade)
 guess = max(distance_result, key=distance_result.get)
 diff = path_lengths.get(guess)
 
-patient_zero_score = distance_result[patient_zero]
-rank = sum(
-    (node != patient_zero) and (score >= patient_zero_score) 
-    for node, score in distance_result.items()
-)
-
-print(rank)
 print(f"cascade={cascade}, cm=distance p={p_infect}, guess={guess}, patient_zero={patient_zero} diff={diff}")
 
 #rumor_result = rumor_centrality(cascade)
