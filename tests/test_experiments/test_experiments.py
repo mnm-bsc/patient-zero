@@ -62,7 +62,8 @@ class TestExperiments:
             2: 2,
             3: 2
         }
+        patient_zero = 2
 
-        rank = get_rank(result, 2)
+        rank = get_rank(result, patient_zero)
 
-        assert rank == 0
+        assert rank == 0 # nodes tied with patient_zero are not included in the rank
