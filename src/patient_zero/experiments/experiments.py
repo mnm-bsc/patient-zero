@@ -30,7 +30,7 @@ COLUMNS = [
 def get_rank(result, patient_zero):
     patient_zero_score = result[patient_zero]
     rank = sum(
-        (node != patient_zero) and (score >= patient_zero_score) 
+        (node != patient_zero) and (score > patient_zero_score) 
         for node, score in result.items()
     ) # scores tied with the true source are included in the rank
     return rank
