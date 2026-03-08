@@ -95,9 +95,30 @@ def main():
     ) 
     create_plot(name, index, grouped)
 
+    # Estimate error normalized plots
+    name = "estimate_error_normalized"
+    df["estimate_error_normalized"] = df["estimate_error"] / df["cascade_size_limit"].astype(float)
+    grouped = (
+        df.groupby(["graph_type", "model", "cascade_size_limit", "p_infect", "centrality"])[name]
+        .mean()
+        .reset_index(name=index)
+    ) 
+    create_plot(name, index, grouped)
+
     # Rank plots
     name = "rank"
     index = f"avg_{name}"
+    grouped = (
+        df.groupby(["graph_type", "model", "cascade_size_limit", "p_infect", "centrality"])[name]
+        .mean()
+        .reset_index(name=index)
+    ) 
+    create_plot(name, index, grouped)
+
+    # Rank normalized plots
+    name = "rank_normalized"
+    index = f"avg_{name}"
+    df["rank_normalized"] = df["rank"] / df["cascade_size_limit"].astype(float)
     grouped = (
         df.groupby(["graph_type", "model", "cascade_size_limit", "p_infect", "centrality"])[name]
         .mean()

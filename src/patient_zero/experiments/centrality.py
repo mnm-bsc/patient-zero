@@ -80,7 +80,7 @@ def rumor_centrality(cascade: nx.Graph) -> dict[int, float]:
 
         # math.lgamma(n+1) = log(n!). log(A/B) is the same as log(A) - log(B)
         scores = {}
-        scores[root] = math.lgamma(n + 1) - log_prod[root]
+        scores[root] = math.lgamma(n + 1) - log_prod[root] # or just -log_prod[root]
 
         if is_tree_graph:
             # Propagate scores down the tree
