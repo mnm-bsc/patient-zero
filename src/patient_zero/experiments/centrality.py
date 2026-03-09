@@ -67,25 +67,17 @@ def rumor_centrality(cascade: nx.Graph) -> dict[int, float]:
     is_tree_graph = nx.is_tree(cascade)
     for root in cascade.nodes: # Loops through every node in the cascade and calculates the rumor score for that node.
         # Create BFS tree rooted at the candidate node
-        if is_tree_graph: # No need to compute BFS tree for general trees.
-            tree_to_use = cascade
-        else:
-            tree_to_use = nx.bfs_tree(cascade, root)
+        bfs_tree = nx.bfs_tree(cascade, root)
 
         # Compute subtree sizes
         subtree = {}
         log_prod = {}
         # Uses Depth-First-Search on the node with the BFS tree to calculate subtree sizes and log_prod via message passing.
-        compute_subtree_sizes(tree_to_use, root, None, subtree, log_prod)
+        compute_subtree_sizes(bfs_tree, root, None, subtree, log_prod)
 
         # math.lgamma(n+1) = log(n!). log(A/B) is the same as log(A) - log(B)
         scores = {}
         scores[root] = math.lgamma(n + 1) - log_prod[root] # or just -log_prod[root]
-
-        if is_tree_graph:
-            # Propagate scores down the tree
-            propagate_scores(tree_to_use, root, None, subtree, scores, n)
-            return scores # no need to run dfs mulitple times for general trees
 
         # Store the score of the root
         all_scores[root] = scores[root] # Just compare rumor centralities as log form to avoid overflow.
