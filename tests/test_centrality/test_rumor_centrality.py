@@ -1,4 +1,5 @@
 import networkx as nx
+from patient_zero.networks import create_scale_free_graph, create_small_world_graph
 from patient_zero.experiments import dfs, rumor_centrality 
 
 class TestRumorCentrality:
@@ -57,7 +58,7 @@ class TestRumorCentrality:
         G = nx.Graph()
         G.add_edge(0, 1)
         rumor_scores = rumor_centrality(G)
-        
+
         assert rumor_scores[0] == rumor_scores[1]
 
     def test_balanced_tree_root_highest_score(self):
