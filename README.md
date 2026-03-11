@@ -5,7 +5,7 @@ A bachelor project by Mads Østrup, Mathias Bindslev Hansen & Nikolai Tilgreen N
 From the root directory:
 
 - Download packages
-  `pip install -e .[dev]`
+  `pip install -e ".[dev]"`
 
 - Run tests
   `pytest`
