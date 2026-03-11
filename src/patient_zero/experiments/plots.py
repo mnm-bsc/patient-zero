@@ -107,6 +107,13 @@ def create_graph_plot(G: nx.Graph, pos, cascade: nx.Graph, patient_zero: int, es
             color = 'white'
         node_colors.append(color)
 
+    sp_edges = list(zip(sp[:-1], sp[1:]))
+    edge_colors = [
+        "black" if (u, v) in sp_edges or (v, u) in sp_edges else "silver"
+        for u, v in G.edges()
+    ]
+
+
     # Draw graph
     nx.draw(
         G,
@@ -115,7 +122,7 @@ def create_graph_plot(G: nx.Graph, pos, cascade: nx.Graph, patient_zero: int, es
         node_color=node_colors,
         node_size=50,
         edgecolors="black",
-        edge_color="silver",
+        edge_color=edge_colors,
         linewidths=0.5
     )
 
