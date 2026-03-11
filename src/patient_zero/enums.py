@@ -2,7 +2,7 @@
 from enum import Enum
 
 class NetworkType(Enum):
-    TREE = "balanced_tree"
+    BALANCED_TREE = "balanced_tree"
     REGULAR = "k_regular"
     RANDOM = "erdos_renyi"
     SMALL_WORLD = "watts_strogatz"

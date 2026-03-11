@@ -4,7 +4,7 @@ This module is just a wrapper around the existing NetworkX graph creation functi
 """
 import networkx as nx
 
-def create_tree_graph(c: int, d: int) -> nx.Graph:
+def create_balanced_tree_graph(c: int, d: int) -> nx.Graph:
     """Creates a perfectly balanced tree graph with c children and depth d.
 
     Args:

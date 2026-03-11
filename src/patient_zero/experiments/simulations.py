@@ -9,7 +9,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 import pickle
 import numpy as np
 import networkx as nx
-from patient_zero.networks import create_tree_graph, create_k_regular_graph, create_random_graph, create_scale_free_graph, create_small_world_graph
+from patient_zero.networks import create_balanced_tree_graph, create_k_regular_graph, create_random_graph, create_scale_free_graph, create_small_world_graph
 from patient_zero.models import ic, sir
 from patient_zero.networks.utils import get_random_node
 from patient_zero.enums import NetworkType, ModelType
@@ -144,8 +144,8 @@ def get_graph(graph_type, graph_seed, **params):
         return create_small_world_graph(n=params.get("nodes"), k=params.get("neighbors"), p=params.get("probability"), seed=graph_seed)
     if graph_type == NetworkType.SCALE_FREE.value:
         return create_scale_free_graph(n=params.get("nodes"), e=params.get("edges"), seed=graph_seed)
-    if graph_type == NetworkType.TREE.value:
-        return create_tree_graph(c=params.get("children"), d=params.get("depth"))
+    if graph_type == NetworkType.BALANCED_TREE.value:
+        return create_balanced_tree_graph(c=params.get("children"), d=params.get("depth"))
     raise ValueError(f"Unknown graph type: {graph_type}")
 
 
