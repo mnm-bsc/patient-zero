@@ -57,17 +57,19 @@ class TestRumorCentrality:
         G = nx.Graph()
         G.add_edge(0, 1)
         rumor_scores = rumor_centrality(G)
+        
         assert rumor_scores[0] == rumor_scores[1]
 
     def test_balanced_tree_root_highest_score(self):
         G = nx.balanced_tree(r=2, h=2)
         rumor_scores = rumor_centrality(G)
+
         assert rumor_scores[0] == max(rumor_scores.values())
 
     def test_path_graph_symmetric_scores(self):
         G = nx.path_graph(5)
         rumor_scores = rumor_centrality(G)
-        print(rumor_scores)
+
         assert rumor_scores[2] == max(rumor_scores.values())
         assert rumor_scores[0] == rumor_scores[4]
         assert rumor_scores[1] == rumor_scores[3]
@@ -77,5 +79,6 @@ class TestRumorCentrality:
         tree = nx.bfs_tree(G, source=0)
         subtree = {}
         dfs(0, None, tree, subtree)
+
         assert subtree[0] == 5
         assert subtree[4] == 1
