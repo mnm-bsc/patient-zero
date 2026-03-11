@@ -2,6 +2,13 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
 from patient_zero.experiments.utils import get_network_title, get_centrality_title
+from patient_zero.networks import create_balanced_tree_graph, create_k_regular_graph, create_random_graph, create_scale_free_graph, create_small_world_graph
+from patient_zero.networks.utils import get_random_node
+from patient_zero.models import ic, sir
+from patient_zero.experiments.centrality import rumor_centrality, distance_centrality, degree_centrality, betweenness_centrality
+from patient_zero.experiments.experiments import get_estimate_error
+from patient_zero.enums import ModelType, NetworkType, CentralityMeasure
+import networkx as nx
 
 DATA_DIR = Path(__file__).resolve().parent
 CSV_FILE = DATA_DIR / "results.csv"
@@ -82,9 +89,116 @@ def create_plot(name, index, grouped):
 
         fig.suptitle(get_network_title(graph_type), fontsize=14, weight="bold")
         plt.savefig(folder_path / graph_type, bbox_inches="tight", pad_inches=0.2) # save plots to png
+        plt.clf()
 
 
-def main():
+def create_graph_plot(G: nx.Graph, pos, cascade: nx.Graph, patient_zero: int, estimate: int, sp: list, filename, foldername):
+    node_colors = []
+    for node in G.nodes():
+        if node == patient_zero:
+            color = 'darkviolet' if node == estimate else 'red'
+        elif node == estimate:
+            color = 'blue'
+        elif node in sp:
+            color = 'black'
+        elif node in cascade.nodes():
+            color = 'gray'
+        else:
+            color = 'white'
+        node_colors.append(color)
+
+    # Draw graph
+    nx.draw(
+        G,
+        pos,
+        with_labels=False,
+        node_color=node_colors,
+        node_size=50,
+        edgecolors="black",
+        edge_color="silver",
+        linewidths=0.5
+    )
+
+    # Save figure
+    graphs_dir = Path(DATA_DIR / "graphs" / foldername.value)
+    graphs_dir.mkdir(parents=True, exist_ok=True)
+    plt.savefig(graphs_dir / filename)
+    plt.clf()
+
+
+def main(): 
+    graphs = {
+        NetworkType.BALANCED_TREE: {
+            "graph": create_balanced_tree_graph(3, 4),
+            "layout": lambda G: nx.kamada_kawai_layout(G)
+        },
+        
+        NetworkType.REGULAR: {
+            "graph": create_k_regular_graph(100, 3),
+            "layout": lambda G: nx.circular_layout(G)
+        },
+        
+        NetworkType.SMALL_WORLD: {
+            "graph": create_small_world_graph(100, 5, 0.2),
+            "layout": lambda G: nx.circular_layout(G)
+        },
+        
+        NetworkType.SCALE_FREE: {
+            "graph": create_scale_free_graph(100, 2),
+            "layout": lambda G: nx.spring_layout(G, seed=1)
+        },
+        
+        NetworkType.RANDOM: {
+            "graph": create_random_graph(100, 0.05),
+            "layout": lambda G: nx.spring_layout(G, seed=1)
+        }
+    }
+
+    cms = {
+        CentralityMeasure.RUMOR: lambda cascade: rumor_centrality(cascade),
+        CentralityMeasure.DISTANCE: lambda cascade: distance_centrality(cascade),
+        CentralityMeasure.BETWEENNESS: lambda cascade: betweenness_centrality(cascade),
+        CentralityMeasure.DEGREE: lambda cascade: degree_centrality(cascade)
+    }
+
+    models = {
+        ModelType.IC: lambda G, patient_zero, p_infect, cascade_size, seed: ic(G, patient_zero, p_infect, cascade_size, seed),
+        ModelType.SIR: lambda G, patient_zero, p_infect, cascade_size, seed: sir(G, patient_zero, p_infect, 0.2, cascade_size, seed)
+    }
+
+    for graph_type, gdata in graphs.items():
+        G = gdata["graph"]
+        pos = gdata["layout"](G)
+
+        # remove disconnected nodes
+        isolated_nodes = list(nx.isolates(G))
+        G.remove_nodes_from(isolated_nodes)
+
+        patient_zero = get_random_node(G)
+        p_infect = 0.5
+        cascade_size = 50
+        seed = 1
+
+        for model, model_func in models.items():
+            # generate cascade
+            nodes, edges = model_func(G, patient_zero, p_infect, cascade_size, seed)
+            cascade = nx.Graph()
+            cascade.add_nodes_from(nodes)
+            cascade.add_edges_from(edges)
+
+            # path lengths from patient zero
+            path_lengths = nx.single_source_shortest_path_length(cascade, patient_zero)
+
+            for cm, cm_func in cms.items():
+                # compute centrality scores and estimate
+                scores = cm_func(cascade)
+                estimate, _ = get_estimate_error(scores, path_lengths)
+                sp = nx.shortest_path(cascade, estimate, patient_zero)
+
+                # plot
+                filename = f"{graph_type.value}_{model.value}_{cm.value}"
+                create_graph_plot(G, pos, cascade, patient_zero, estimate, sp, filename, graph_type)
+
     # Estimate error plots
     name = "estimate_error"
     index = f"avg_{name}"
