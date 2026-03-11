@@ -1,6 +1,5 @@
 import networkx as nx
-#from patient_zero.networks import create_scale_free_graph, create_small_world_graph
-from patient_zero.experiments import dfs, rumor_centrality 
+from patient_zero.experiments import dfs, rumor_centrality, distance_centrality
 
 class TestRumorCentrality:
     def test_dfs(self):
@@ -83,3 +82,56 @@ class TestRumorCentrality:
 
         assert subtree[0] == 5
         assert subtree[4] == 1
+
+    def test_rumor_is_guesses_different_on_a_small_world_graph_than_distance(self):
+        G = nx.Graph()
+        G.add_edges_from([
+            (0, 1), 
+            (0, 2), 
+            (0, 18), 
+            (1, 2), 
+            (1, 3), 
+            (1, 19), 
+            (2, 3), 
+            (2, 4), 
+            (3, 4), 
+            (3, 18), 
+            (3, 5), 
+            (4, 5), 
+            (4, 6), 
+            (4, 15), 
+            (4, 9), 
+            (5, 6), 
+            (5, 9), 
+            (6, 8), 
+            (6, 15), 
+            (6, 19), 
+            (7, 8), 
+            (7, 9), 
+            (8, 12), 
+            (8, 18), 
+            (10, 11), 
+            (10, 12), 
+            (11, 12), 
+            (11, 13), 
+            (12, 13), 
+            (12, 17), 
+            (13, 14), 
+            (13, 15), 
+            (14, 15), 
+            (14, 16), 
+            (15, 17), 
+            (16, 17), 
+            (16, 18), 
+            (17, 18), 
+            (17, 19), 
+            (18, 19)
+        ])
+        
+        rumor_scores = rumor_centrality(G)
+        distance_scores = distance_centrality(G)
+
+        rumor_guess = max(rumor_scores, key=rumor_scores.get)
+        distance_guess = max(distance_scores, key=distance_scores.get)
+
+        assert rumor_guess != distance_guess
