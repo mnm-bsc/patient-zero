@@ -16,8 +16,9 @@ CENTRALITY_MEASURES = [degree_centrality, distance_centrality, rumor_centrality,
 COLUMNS = [
     'id',
     'centrality',
-    'guess',
-    'diff',
+    'estimate',
+    'estimate_error',
+    'rank',
     'graph_type',
     'patient_zero',
     'cascade_size_limit',
@@ -25,6 +26,17 @@ COLUMNS = [
     'p_infect',
     'p_recovery',
 ]
+
+def get_rank(result, patient_zero):
+    patient_zero_score = result[patient_zero]
+    rank = sum(score > patient_zero_score for score in result.values()) 
+    # scores tied with the true source are not included in the rank
+    return rank
+
+def get_estimate_error(result, spl):
+    estimate = max(result, key=result.get) # get the most likely source node
+    estimate_error = spl.get(estimate) # calculate difference between estimate and true source
+    return estimate, estimate_error
 
 def process_cascade(task):
     """Processes a single cascade
@@ -37,7 +49,7 @@ def process_cascade(task):
         - metadata (dict[any, any]): Dictionary containing metadata information.
 
     Returns:
-        list: A list of results containing the centrality measure, patient zero guess and difference between the guess and the true patient zero
+        list: A list of results containing the centrality measure, patient zero estimate and difference between the estimate and the true patient zero
     """
     simulation_id, nodes, edges, metadata = task
 
@@ -53,14 +65,16 @@ def process_cascade(task):
     results = []
     for cm in CENTRALITY_MEASURES:
         result = cm(cascade) # run centrality measure on the given cascade cm
-        guess = max(result, key=result.get) # get the most likely source node
-        diff = path_lengths.get(guess) # calculate difference between guess and true source
+
+        estimate, estimate_error = get_estimate_error(result, path_lengths)
+        rank = get_rank(result, patient_zero)
 
         results.append({ # save results
             "id": simulation_id,
             "centrality": cm.__name__,
-            "guess": guess,
-            "diff": diff,
+            "estimate": estimate,
+            "estimate_error": estimate_error,
+            "rank": rank,
             **metadata
         })
 

@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from patient_zero.networks import create_k_regular_graph
 from patient_zero.models import ic
 from patient_zero.networks.utils import get_random_node
-from patient_zero.experiments.centrality import degree_centrality, distance_centrality, rumor_centrality
+from patient_zero.experiments.centrality import distance_centrality
 
 # Graph
 nodes = 1000
@@ -29,7 +29,6 @@ cascade = nx.Graph()
 cascade.add_nodes_from(infected_nodes)
 cascade.add_edges_from(cascade_edges)
 
-print(cascade.nodes())
 
 path_lengths = nx.single_source_shortest_path_length(cascade, patient_zero)
 
