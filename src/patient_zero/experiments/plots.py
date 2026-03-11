@@ -1,6 +1,7 @@
 from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
+import networkx as nx
 from patient_zero.experiments.utils import get_network_title, get_centrality_title
 from patient_zero.networks import create_balanced_tree_graph, create_k_regular_graph, create_random_graph, create_scale_free_graph, create_small_world_graph
 from patient_zero.networks.utils import get_random_node
@@ -8,7 +9,6 @@ from patient_zero.models import ic, sir
 from patient_zero.experiments.centrality import rumor_centrality, distance_centrality, degree_centrality, betweenness_centrality
 from patient_zero.experiments.experiments import get_estimate_error
 from patient_zero.enums import ModelType, NetworkType, CentralityMeasure
-import networkx as nx
 
 DATA_DIR = Path(__file__).resolve().parent
 CSV_FILE = DATA_DIR / "results.csv"
