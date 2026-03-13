@@ -31,7 +31,7 @@ def independent_cascade(G: nx.Graph, patient_zero: int, p_infect: float, max_siz
     while infected:
         new_infected = set()
         for node in sorted(infected): # sort infected nodes and neighbors to ensure reproducibility across runs
-            if expand != 0 and G.degree(node) == 1:
+            if expand != 0 and G.degree(node) == 1:                
                 next_label = expand_tree(G, node, expand, next_label)
             for neighbor in sorted(G.neighbors(node)): 
                 if neighbor not in all_infected and rng.random() < p_infect:
