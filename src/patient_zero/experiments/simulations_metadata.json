@@ -37,39 +37,7 @@
       "name": "balanced_tree",
       "graph": {
         "type": "balanced_tree",
-        "params": { "children": 5, "depth": 1 }
-      },
-      "models": ["IC", "SIR"]
-    },
-    {
-      "name": "k_regular",
-      "graph": {
-        "type": "k_regular",
-        "params": { "degree": 3, "nodes": 1000 }
-      },
-      "models": ["IC", "SIR"]
-    },
-    {
-      "name": "watts_strogatz",
-      "graph": {
-        "type": "watts_strogatz",
-        "params": { "nodes": 1000, "neighbors": 10, "probability": 0.2 }
-      },
-      "models": ["IC", "SIR"]
-    },
-    {
-      "name": "erdos_renyi",
-      "graph": {
-        "type": "erdos_renyi",
-        "params": { "nodes": 1000, "probability": 0.005 }
-      },
-      "models": ["IC", "SIR"]
-    },
-    {
-      "name": "barabasi_albert",
-      "graph": {
-        "type": "barabasi_albert",
-        "params": { "nodes": 1000, "edges": 3 }
+        "params": { "children": 5, "depth": 4 }
       },
       "models": ["IC", "SIR"]
     }
