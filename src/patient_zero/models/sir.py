@@ -39,6 +39,7 @@ def susceptible_infected_recovered(
 
     all_infected = {patient_zero}
     cascade_edges = []
+    next_label = max(G.nodes) + 1
 
     while infected:
         new_infected = set()
@@ -46,7 +47,7 @@ def susceptible_infected_recovered(
 
         for node in sorted(infected):  # sort infected nodes and neighbors to ensure reproducibility across runs
             if expand != 0 and G.degree(node) == 1:
-                expand_tree(G, node, expand)
+                next_label = expand_tree(G, node, expand, next_label)
             for neighbor in sorted(G.neighbors(node)): 
                 if neighbor in susceptible and rng.random() < p_infect:
                     if (max_size is not None and len(all_infected) >= max_size):

@@ -23,7 +23,8 @@ class TestExpandTree:
         children = 3
         expand_from = 1
         tree = nx.balanced_tree(children, 1)
-        expand_tree(tree, expand_from, children)
+        next_label = max(tree.nodes) + 1
+        expand_tree(tree, expand_from, children, next_label)
         leaves = [2, 3, 4, 5, 6]
         assert len(tree.nodes()) == 7
         assert len(tree.edges()) == 6
@@ -35,5 +36,6 @@ class TestExpandTree:
         children = 3
         expand_from = 0
         tree = nx.balanced_tree(children, 1)
+        next_label = max(tree.nodes) + 1
         with pytest.raises(ValueError):
-            expand_tree(tree, expand_from, children)
+            expand_tree(tree, expand_from, children, next_label)

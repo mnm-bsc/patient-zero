@@ -18,7 +18,7 @@ BASE_PATH = Path(__file__).resolve().parent
 
 # Worst case number of tries = MAX_ATTEMPTS_PER_SIM * MAX_SIMULATIONS * len(p_values)
 MAX_ATTEMPTS_PER_SIM = 1_000 # attempts per simulation
-MAX_SIMULATIONS = 1_000 # max number of simulations. Will stop early if enough successful cascades have been made
+MAX_SIMULATIONS = 10 # max number of simulations. Will stop early if enough successful cascades have been made
 
 
 def run_simulation(
@@ -56,6 +56,8 @@ def run_simulation(
         - results (list): List containing resulting cascades for all the simulations.
     """
     metadata, results = [], []
+    expand = 0
+    if nx.is_tree(graph): expand = graph.degree(0)
 
     for p_infect in p_values:
         tmp_results, tmp_metadata = [], []
@@ -76,7 +78,8 @@ def run_simulation(
                         patient_zero=patient_zero,
                         p_infect=p_infect,
                         max_size=cascade_size,
-                        seed=model_seed
+                        seed=model_seed,
+                        expand=expand
                     )
                 elif model == ModelType.SIR.value:
                     infected_nodes, cascade_edges = sir(
@@ -85,7 +88,8 @@ def run_simulation(
                         p_infect=p_infect, 
                         p_recover=p_recover, 
                         max_size=cascade_size, 
-                        seed=model_seed
+                        seed=model_seed,
+                        expand=expand
                     )
                 else:
                     raise ValueError(f"Unknown model {model}") 
