@@ -130,6 +130,7 @@ def create_graph_plot(G: nx.Graph, pos, cascade: nx.Graph, patient_zero: int, es
     graphs_dir.mkdir(parents=True, exist_ok=True)
     plt.savefig(graphs_dir / filename)
     plt.clf()
+    plt.close()
 
 
 def main(): 
