@@ -4,8 +4,9 @@ Independent cascade model.
 
 import random
 import networkx as nx
+from patient_zero.networks.utils import expand_tree
 
-def independent_cascade(G: nx.Graph, patient_zero: int, p_infect: float, max_size: int = None, seed: int = None) -> tuple[set[int], list]:
+def independent_cascade(G: nx.Graph, patient_zero: int, p_infect: float, max_size: int = None, seed: int = None, expand: int = 0) -> tuple[set[int], list]:
     """Implementation of the IC model.
 
     Args:
@@ -29,6 +30,8 @@ def independent_cascade(G: nx.Graph, patient_zero: int, p_infect: float, max_siz
     while infected:
         new_infected = set()
         for node in sorted(infected): # sort infected nodes and neighbors to ensure reproducibility across runs
+            if expand != 0 and G.degree(node) == 1:
+                expand_tree(G, node, expand)
             for neighbor in sorted(G.neighbors(node)): 
                 if neighbor not in all_infected and rng.random() < p_infect:
                     if (max_size is not None and len(all_infected) >= max_size):
