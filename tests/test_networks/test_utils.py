@@ -1,7 +1,7 @@
 """Tests for network utilities"""
 import pytest
 import networkx as nx
-from patient_zero.networks.utils import get_random_node
+from patient_zero.networks.utils import get_random_node, expand_tree
 
 class TestGetRandomNode:
     """Tests for the get_random_node function"""
@@ -17,3 +17,23 @@ class TestGetRandomNode:
         empty_graph = nx.Graph()
         with pytest.raises(IndexError):
             get_random_node(empty_graph)
+
+class TestExpandTree:
+    def test_expand_tree(self):
+        children = 3
+        expand_from = 1
+        tree = nx.balanced_tree(children, 1)
+        expand_tree(tree, expand_from, children)
+        leaves = [2, 3, 4, 5, 6]
+        assert len(tree.nodes()) == 7
+        assert len(tree.edges()) == 6
+        for leaf in leaves:
+            assert tree.degree(leaf) == 1
+        assert tree.degree(expand_from) == 4
+    
+    def test_expand_from_none_leaf_raises_error(self):
+        children = 3
+        expand_from = 0
+        tree = nx.balanced_tree(children, 1)
+        with pytest.raises(ValueError):
+            expand_tree(tree, expand_from, children)
