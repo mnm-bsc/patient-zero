@@ -11,3 +11,8 @@ def get_random_node(G: nx.Graph, seed: int = None):
     except IndexError as e:
         print("Cannot select a random node from an empty graph.")
         raise e
+
+def expand_tree(G: nx.Graph, n: int, c: int, next_label: int):
+    if G.degree(n) > 1: raise ValueError(f"Node {n} not a leaf")
+    G.add_edges_from((n, node) for node in range(next_label, next_label + c))
+    return next_label + c

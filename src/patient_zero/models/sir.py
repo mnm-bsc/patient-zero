@@ -4,6 +4,7 @@ Suceptible Infected Recovered model
 
 import random
 import networkx as nx
+from patient_zero.networks.utils import expand_tree
 
 def susceptible_infected_recovered(
         G: nx.graph,
@@ -11,7 +12,8 @@ def susceptible_infected_recovered(
         p_infect: float,
         p_recover,
         max_size: int = None, 
-        seed: int = None
+        seed: int = None,
+        expand: int = 0
     ):
     """Implementation of the SIR model.
 
@@ -37,12 +39,15 @@ def susceptible_infected_recovered(
 
     all_infected = {patient_zero}
     cascade_edges = []
+    next_label = max(G.nodes) + 1
 
     while infected:
         new_infected = set()
         new_recovered = set()
 
         for node in sorted(infected):  # sort infected nodes and neighbors to ensure reproducibility across runs
+            if expand != 0 and G.degree(node) == 1:
+                next_label = expand_tree(G, node, expand, next_label)
             for neighbor in sorted(G.neighbors(node)): 
                 if neighbor in susceptible and rng.random() < p_infect:
                     if (max_size is not None and len(all_infected) >= max_size):

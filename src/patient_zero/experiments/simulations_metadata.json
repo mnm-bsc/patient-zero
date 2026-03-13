@@ -37,7 +37,7 @@
       "name": "balanced_tree",
       "graph": {
         "type": "balanced_tree",
-        "params": { "children": 3, "depth": 6 }
+        "params": { "children": 5, "depth": 4 }
       },
       "models": ["IC", "SIR"]
     },
@@ -45,7 +45,7 @@
       "name": "k_regular",
       "graph": {
         "type": "k_regular",
-        "params": { "degree": 3, "nodes": 1000 }
+        "params": { "degree": 6, "nodes": 1000 }
       },
       "models": ["IC", "SIR"]
     },
