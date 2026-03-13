@@ -90,7 +90,6 @@ def create_plot(name, index, grouped):
         fig.suptitle(get_network_title(graph_type), fontsize=14, weight="bold")
         plt.savefig(folder_path / graph_type, bbox_inches="tight", pad_inches=0.2) # save plots to png
         plt.clf()
-        plt.close()
 
 
 def create_graph_plot(G: nx.Graph, pos, cascade: nx.Graph, patient_zero: int, estimate: int, sp: list, filename, foldername):
@@ -183,28 +182,36 @@ def main():
 
         patient_zero = get_random_node(G)
         p_infect = 0.7
-        cascade_size = 50
+        cascade_size = 25
         seed = 1
 
         for model, model_func in models.items():
             # generate cascade
-            nodes, edges = model_func(G, patient_zero, p_infect, cascade_size, seed)
-            cascade = nx.Graph()
-            cascade.add_nodes_from(nodes)
-            cascade.add_edges_from(edges)
+            attempt = 0
+            while True:
+                nodes, edges = model_func(G, patient_zero, p_infect, cascade_size, seed + attempt)
+                if len(nodes) != cascade_size:
+                    attempt += 1
+                    if attempt > 1000:
+                        raise ValueError(f"p_infect={p_infect} is to low to generate cascades.")
+                    continue
+                cascade = nx.Graph()
+                cascade.add_nodes_from(nodes)
+                cascade.add_edges_from(edges)
 
-            # path lengths from patient zero
-            path_lengths = nx.single_source_shortest_path_length(cascade, patient_zero)
+                # path lengths from patient zero
+                path_lengths = nx.single_source_shortest_path_length(cascade, patient_zero)
 
-            for cm, cm_func in cms.items():
-                # compute centrality scores and estimate
-                scores = cm_func(cascade)
-                estimate, _ = get_estimate_error(scores, path_lengths)
-                sp = nx.shortest_path(cascade, estimate, patient_zero)
+                for cm, cm_func in cms.items():
+                    # compute centrality scores and estimate
+                    scores = cm_func(cascade)
+                    estimate, _ = get_estimate_error(scores, path_lengths)
+                    sp = nx.shortest_path(cascade, estimate, patient_zero)
 
-                # plot
-                filename = f"{graph_type.value}_{model.value}_{cm.value}"
-                create_graph_plot(G, pos, cascade, patient_zero, estimate, sp, filename, graph_type)
+                    # plot
+                    filename = f"{graph_type.value}_{model.value}_{cm.value}"
+                    create_graph_plot(G, pos, cascade, patient_zero, estimate, sp, filename, graph_type)
+                break
 
     # Estimate error plots
     name = "estimate_error"
