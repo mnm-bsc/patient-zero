@@ -113,7 +113,6 @@ def create_graph_plot(G: nx.Graph, pos, cascade: nx.Graph, patient_zero: int, es
         for u, v in G.edges()
     ]
 
-
     # Draw graph
     nx.draw(
         G,
@@ -177,7 +176,7 @@ def main():
         G = gdata["graph"]
         pos = gdata["layout"](G)
 
-        # remove disconnected nodes
+        # remove disconnected nodes (for random graph)
         isolated_nodes = list(nx.isolates(G))
         G.remove_nodes_from(isolated_nodes)
 
