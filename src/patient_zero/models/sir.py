@@ -24,6 +24,7 @@ def susceptible_infected_recovered(
         p_recover (float): The probability that an infected node recovers.
         max_size (int, optional): The maximum size a cascade will grow to. Defaults to None.
         seed (int, optional): Randomness seed. Defaults to None.
+        expand (int, optional): The number of children to expand with if the graph is not large enough. Only for balanced trees.
 
     Returns:
         tuple:

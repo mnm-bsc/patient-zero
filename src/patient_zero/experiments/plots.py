@@ -169,13 +169,12 @@ def main():
     }
 
     models = {
-        ModelType.IC: lambda G, patient_zero, p_infect, cascade_size, seed: ic(G, patient_zero, p_infect, cascade_size, seed),
-        ModelType.SIR: lambda G, patient_zero, p_infect, cascade_size, seed: sir(G, patient_zero, p_infect, 0.2, cascade_size, seed)
+        ModelType.IC: lambda G, patient_zero, p_infect, cascade_size, seed, expand: ic(G, patient_zero, p_infect, cascade_size, seed, expand),
+        ModelType.SIR: lambda G, patient_zero, p_infect, cascade_size, seed, expand: sir(G, patient_zero, p_infect, 0.2, cascade_size, seed, expand)
     }
 
     for graph_type, gdata in graphs.items():
         G = gdata["graph"]
-        pos = gdata["layout"](G)
 
         # remove disconnected nodes (for random graph)
         isolated_nodes = list(nx.isolates(G))
@@ -186,11 +185,15 @@ def main():
         cascade_size = 25
         seed = 1
 
+        expand = 0
+        if graph_type == NetworkType.BALANCED_TREE:
+            expand = 3
+
         for model, model_func in models.items():
             # generate cascade
             attempt = 0
             while True:
-                nodes, edges = model_func(G, patient_zero, p_infect, cascade_size, seed + attempt)
+                nodes, edges = model_func(G, patient_zero, p_infect, cascade_size, seed + attempt, expand)
                 if len(nodes) != cascade_size:
                     attempt += 1
                     if attempt > 1000:
@@ -202,6 +205,7 @@ def main():
 
                 # path lengths from patient zero
                 path_lengths = nx.single_source_shortest_path_length(cascade, patient_zero)
+                pos = gdata["layout"](G)
 
                 for cm, cm_func in cms.items():
                     # compute centrality scores and estimate
