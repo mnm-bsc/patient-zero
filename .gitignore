@@ -212,3 +212,6 @@ __marimo__/
 *.pkl
 simulations/
 *.csv
+
+# Ignore all plots
+*.png
