@@ -2,8 +2,8 @@
 Centrality measures
 """
 import math
-import networkx as nx
 import random
+import networkx as nx
 
 def dfs(n: int, p: int | None, bfs_tree: nx.DiGraph, subtree_sizes: set) -> int:
     """Run DFS from node n with parent p to recursiely get the subtree size all nodes.

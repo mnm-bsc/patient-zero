@@ -57,7 +57,8 @@ def run_simulation(
     """
     metadata, results = [], []
     expand = 0
-    if nx.is_tree(graph): expand = graph.degree(0)
+    if nx.is_tree(graph): 
+        expand = graph.degree(0)
 
     for p_infect in p_values:
         tmp_results, tmp_metadata = [], []
