@@ -3,6 +3,7 @@ Centrality measures
 """
 import math
 import networkx as nx
+import random
 
 def dfs(n: int, p: int | None, bfs_tree: nx.DiGraph, subtree_sizes: set) -> int:
     """Run DFS from node n with parent p to recursiely get the subtree size all nodes.
@@ -66,3 +67,6 @@ def betweenness_centrality(cascade) -> dict:
     Returns the betweenness centrality for all nodes in a graph.
     """
     return nx.betweenness_centrality(cascade)
+
+def random_guess(cascade) -> dict:
+    return {node: random.random() for node in cascade.nodes()}

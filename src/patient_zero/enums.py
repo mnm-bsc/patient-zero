@@ -17,3 +17,4 @@ class CentralityMeasure(Enum):
     DISTANCE = "distance_centrality"
     RUMOR = "rumor_centrality"
     BETWEENNESS = "betweenness_centrality"
+    RANDOM = "random_guess"

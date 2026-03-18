@@ -90,6 +90,7 @@ def create_plot(name, index, grouped):
         fig.suptitle(get_network_title(graph_type), fontsize=14, weight="bold")
         plt.savefig(folder_path / graph_type, bbox_inches="tight", pad_inches=0.2) # save plots to png
         plt.clf()
+        plt.close()
 
 
 def create_graph_plot(G: nx.Graph, pos, cascade: nx.Graph, patient_zero: int, estimate: int, sp: list, filename, foldername):
