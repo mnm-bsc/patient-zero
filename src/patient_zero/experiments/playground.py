@@ -68,7 +68,7 @@ def playground():
 def test():
     G = nx.balanced_tree(5, 1)
     print(G)
-    nodes, edges = ic(G, 0, 0.2, 10, None, 5)
+    _, edges = ic(G, 0, 0.2, 10, None, 5)
     print(G.edges())
     print(edges)
 
