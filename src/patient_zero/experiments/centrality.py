@@ -43,10 +43,7 @@ def rumor_centrality(cascade: nx.Graph) -> dict:
         for tree_node in bfs_tree.nodes: # Computes the product of all subtree sizes.
             prod += math.log(subtree_sizes[tree_node]) # prod = product of T[u] for all nodes u in the BFS tree.
         
-        if prod == 0.0: # If the cascade is one return a default score of 1
-            node_scores[node] = 1
-            return node_scores
-        node_scores[node] = -math.log(prod) # Compute root's rumor centrality. R(root) = n! / prod = -ln(prod)
+        node_scores[node] = -prod # Compute root's rumor centrality. R(root) = n! / prod = -ln(prod)
     return node_scores
 
 

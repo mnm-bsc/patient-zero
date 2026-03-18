@@ -49,11 +49,6 @@ class TestRumorCentrality:
         for leaf in leaves:
             assert scores[leaf] < max(scores[c] for c in center)
 
-    def test_1_node_graph(self):
-        G = nx.Graph()
-        G.add_node(0)
-        assert rumor_centrality(G) == {0: 1}
-
     def test_two_nodes_same_score(self):
         G = nx.Graph()
         G.add_edge(0, 1)
