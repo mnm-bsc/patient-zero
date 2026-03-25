@@ -43,7 +43,7 @@ def rumor_centrality(cascade: nx.Graph) -> dict:
         for tree_node in bfs_tree.nodes: # Computes the product of all subtree sizes.
             prod += math.log(subtree_sizes[tree_node]) # prod = product of T[u] for all nodes u in the BFS tree.
         
-        node_scores[node] = -prod # Compute root's rumor centrality. R(root) = n! / prod = -ln(prod)
+        node_scores[node] = -prod # Compute root's rumor centrality. R(root) = n! / prod -> -prod
     return node_scores
 
 
@@ -66,4 +66,7 @@ def betweenness_centrality(cascade) -> dict:
     return nx.betweenness_centrality(cascade)
 
 def random_guess(cascade) -> dict:
+    """
+    Returns a random score to each node.
+    """
     return {node: random.random() for node in cascade.nodes()}
