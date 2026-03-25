@@ -31,10 +31,14 @@ def independent_cascade(G: nx.Graph, patient_zero: int, p_infect: float, max_siz
 
     while infected:
         new_infected = set()
-        for node in rng.shuffle(infected): # sort infected nodes and neighbors to ensure reproducibility across runs
+        infected_list = list(infected)
+        rng.shuffle(infected_list)
+        for node in infected_list: # sort infected nodes and neighbors to ensure reproducibility across runs
             if expand != 0 and G.degree(node) == 1:                
                 next_label = expand_tree(G, node, expand, next_label)
-            for neighbor in rng.shuffle(G.neighbors(node)): 
+            neighbor_list = list(G.neighbors(node))
+            rng.shuffle(neighbor_list)
+            for neighbor in neighbor_list: 
                 if neighbor not in all_infected and rng.random() < p_infect:
                     if (max_size is not None and len(all_infected) >= max_size):
                         return all_infected, cascade_edges # return if max cascade size is reached
