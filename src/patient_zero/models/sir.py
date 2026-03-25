@@ -42,15 +42,15 @@ def susceptible_infected_recovered(
     cascade_edges = []
     next_label = max(G.nodes) + 1
     avg_degree = sum(degree for _,degree in G.degree) / len(G.degree)
-    R_0 = avg_degree * p_infect
-    si_links = {(patient_zero, node) for node in G.neighbors(patient_zero)}
+    si_links = {(nb, patient_zero) for nb in G.neighbors(patient_zero)}
 
     while si_links:
 
         if (max_size is not None and len(all_infected) >= max_size):
             return all_infected, cascade_edges # return if max cascade size is reached
 
-        rate_infect = len(si_links) * R_0 / (avg_degree - 1)
+        R_0 = (avg_degree - 1) * p_infect
+        rate_infect = [(R_0 * (len([nb for nb in G.neighbors(node) if nb in susceptible]) - 1) / (avg_degree - 1)) for node in infected]
         rate_recover = len(infected) * p_recover
         probability = calculate_probability(rate_infect=rate_infect, rate_recover=rate_recover)
 
@@ -61,19 +61,19 @@ def susceptible_infected_recovered(
             if expand != 0 and G.degree(new) == 1:
                 next_label = expand_tree(G, new, expand, next_label)
 
-            si_links.update({(new, nb) for nb in G.neighbors(new) if nb in susceptible})
+            si_links.update({(nb, new) for nb in G.neighbors(new) if nb in susceptible})
             infected.add(new)
-            si_links = {(i, s) for (i, s) in si_links if s != new}
+            si_links = {(s, i) for (s, i) in si_links if s != new}
             all_infected.add(new)
             susceptible.remove(new)
             cascade_edges.append((existing, new))
         else:
             node = rng.choice(list(infected))
-            si_links.difference_update({(node, nb) for nb in G.neighbors(node)})
+            si_links.difference_update({(nb, node) for nb in G.neighbors(node)})
             recovered.add(node)
             infected.remove(node)
 
     return all_infected, cascade_edges
 
 def calculate_probability(rate_infect, rate_recover) -> float:
-    return rate_infect/(rate_recover + rate_infect)
+    return sum(rate_infect)/(rate_recover + sum(rate_infect))
