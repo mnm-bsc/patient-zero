@@ -50,10 +50,9 @@ def susceptible_infected_recovered(
         if (max_size is not None and len(all_infected) >= max_size):
             return all_infected, cascade_edges # return if max cascade size is reached
 
-        rate_infect = [R_0 * (G.degree[node] - 1) / (avg_degree - 1) for node in infected]
+        rate_infect = len(si_links) * R_0 / (avg_degree - 1)
         rate_recover = len(infected) * p_recover
         probability = calculate_probability(rate_infect=rate_infect, rate_recover=rate_recover)
-        print(probability)
 
         if rng.random() < probability:
             
@@ -77,4 +76,4 @@ def susceptible_infected_recovered(
     return all_infected, cascade_edges
 
 def calculate_probability(rate_infect, rate_recover) -> float:
-    return sum(rate_infect)/(rate_recover + sum(rate_infect))
+    return rate_infect/(rate_recover + rate_infect)
