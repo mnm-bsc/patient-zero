@@ -44,19 +44,19 @@ def susceptible_infected_recovered(
     avg_degree = sum(degree for _,degree in G.degree) / len(G.degree)
     si_links = {(nb, patient_zero) for nb in G.neighbors(patient_zero)}
 
-    while si_links:
+    while infected:
 
         if (max_size is not None and len(all_infected) >= max_size):
             return all_infected, cascade_edges # return if max cascade size is reached
 
         R_0 = (avg_degree - 1) * p_infect
-        rate_infect = [(R_0 * (len([nb for nb in G.neighbors(node) if nb in susceptible]) - 1) / (avg_degree - 1)) for node in infected]
+        rate_infect = [(R_0 * (len([nb for nb in G.neighbors(node) if nb in susceptible])) / (avg_degree - 1)) for node in infected]
         rate_recover = len(infected) * p_recover
         probability = calculate_probability(rate_infect=rate_infect, rate_recover=rate_recover)
 
         if rng.random() < probability:
             
-            existing, new = rng.choice(list(si_links))
+            new, i = rng.choice(list(si_links))
 
             if expand != 0 and G.degree(new) == 1:
                 next_label = expand_tree(G, new, expand, next_label)
@@ -66,10 +66,10 @@ def susceptible_infected_recovered(
             si_links = {(s, i) for (s, i) in si_links if s != new}
             all_infected.add(new)
             susceptible.remove(new)
-            cascade_edges.append((existing, new))
+            cascade_edges.append((i, new))
         else:
             node = rng.choice(list(infected))
-            si_links.difference_update({(nb, node) for nb in G.neighbors(node)})
+            si_links = {(s, i) for (s, i) in si_links if i != node}
             recovered.add(node)
             infected.remove(node)
 
