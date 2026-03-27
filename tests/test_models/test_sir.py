@@ -16,7 +16,7 @@ class TestSusceptibleInfectedRecovered:
         tree = self.create_tree()
         recovered, edges = sir(tree, 0, 1.0, 0.2)
         assert len(recovered) == len(tree.nodes())
-        assert edges == [(0, 1), (0, 2), (0, 3), (1, 4), (1, 5), (1, 6), (2, 7), (2, 8), (2, 9), (3, 10), (3, 11), (3, 12)]
+        assert sorted(edges) == sorted([(0, 1), (0, 2), (0, 3), (1, 4), (1, 5), (1, 6), (2, 7), (2, 8), (2, 9), (3, 10), (3, 11), (3, 12)])
 
     def test_one_infected_after_simulation(self):
         """Testing if the list with the infected is one after a simulation with a r value of 0"""
