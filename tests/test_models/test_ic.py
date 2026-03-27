@@ -29,7 +29,7 @@ class TestIndependentCascade:
         neighbors = list(g.neighbors(patient_zero))
         for n in neighbors:
             assert n in infected
-        assert edges == [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)]
+        assert sorted(edges) == [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)]
 
     def test_r_value_zero(self):
         """Test that patient zero wont spread to neighboring nodes when r value is 0"""
