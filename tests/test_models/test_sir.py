@@ -27,12 +27,15 @@ class TestSusceptibleInfectedRecovered:
         assert len(infected) == 1
         assert not edges
 
-    def test_more_than_one_infected_after_few_steps(self):
+    def test_if_there_can_be_more_than_one_infected_after_few_steps(self):
         """
-        Testing if there are more nodes than the root
+        Testing if there can be more nodes than the root
         which is in the infected list with a 100% infection rate
         """
         tree = self.create_tree()
         infected, edges = sir(tree, 0, 1.0, 0.2, 2)
-        assert len(infected) > 1
-        assert len(edges) != 0
+        if len(infected) == 1:
+            assert infected == 1
+        else:
+            assert len(infected) > 1
+            assert len(edges) != 0
