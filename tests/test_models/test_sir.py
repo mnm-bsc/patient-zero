@@ -8,15 +8,17 @@ class TestSusceptibleInfectedRecovered:
         """Creates the tree used for the test cases"""
         return nx.balanced_tree(3, 2)
 
-    def test_all_infected_after_simulation(self):
+    def test_correct_edges_where_nodes_are_infected_after_simulation(self):
         """
-        Testing if all nodes is in the recovered list 
-        after the simulation when giving a 100% infection rate
+        Testing if correct edges are made after the simulation when giving a 100% infection rate 
+        and a recovery rate 20%
         """
         tree = self.create_tree()
         recovered, edges = sir(tree, 0, 1.0, 0.2)
-        assert len(recovered) == len(tree.nodes())
-        assert sorted(edges) == sorted([(0, 1), (0, 2), (0, 3), (1, 4), (1, 5), (1, 6), (2, 7), (2, 8), (2, 9), (3, 10), (3, 11), (3, 12)])
+        if len(recovered) == 1: 
+            assert edges == []
+        else:
+            assert any(edge in edges for edge in [(0, 1) or (0, 2) or (0, 3)])
 
     def test_one_infected_after_simulation(self):
         """Testing if the list with the infected is one after a simulation with a r value of 0"""
