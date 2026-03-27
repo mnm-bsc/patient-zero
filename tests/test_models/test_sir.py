@@ -20,6 +20,14 @@ class TestSusceptibleInfectedRecovered:
         else:
             assert any(edge in edges for edge in [(0, 1) or (0, 2) or (0, 3)])
 
+    def test_all_is_infected_when_there_is_a_very_low_recovery_rate(self):
+        """
+        blablalba
+        """
+        tree = self.create_tree()
+        recovered, edges = sir(tree, 0, 1.0, 0.00001)
+        assert sorted(edges) == sorted([(0, 1), (1, 5), (0, 3), (3, 10), (0, 2), (2, 9), (1, 6), (3, 11), (1, 4), (2, 7), (3, 12), (2, 8)])
+
     def test_one_infected_after_simulation(self):
         """Testing if the list with the infected is one after a simulation with a r value of 0"""
         tree = self.create_tree()
