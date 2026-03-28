@@ -6,7 +6,7 @@ import random
 import networkx as nx
 from patient_zero.networks.utils import expand_tree
 
-def independent_cascade(G: nx.Graph, patient_zero: int, p_infect: float, max_size: int = None, seed: int = None, expand: int = 0) -> tuple[set[int], list]:
+def independent_cascade(G: nx.Graph, patient_zero: int, R_0: float, max_size: int = None, seed: int = None, expand: int = 0) -> tuple[set[int], list]:
     """Implementation of the IC model.
 
     Args:
@@ -28,6 +28,9 @@ def independent_cascade(G: nx.Graph, patient_zero: int, p_infect: float, max_siz
     all_infected = set(infected)
     cascade_edges = []
     next_label = max(G.nodes) + 1
+
+    avg_degree = sum(degree for _, degree in G.degree) / len(G.degree)
+    p_infect = R_0 / (avg_degree - 1)
 
     while infected:
         new_infected = set()

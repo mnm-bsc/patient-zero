@@ -11,36 +11,27 @@
       "IC": {
         "type": "IC",
         "params": {
-          "p_values": {
-            "start": 0.01,
-            "stop": 1.0,
-            "num": 100
+          "r0_values": {
+            "start": 0.1,
+            "stop": 2.0,
+            "num": 20
           }
         }
       },
       "SIR": {
         "type": "SIR",
         "params": {
-          "p_values": {
-            "start": 0.01,
-            "stop": 1.0,
-            "num": 100
-          },
-          "p_recover": 0.2
+          "r0_values": {
+            "start": 0.1,
+            "stop": 2.0,
+            "num": 20
+          }
         }
       }
     }
   },
 
   "simulations": [
-    {
-      "name": "balanced_tree",
-      "graph": {
-        "type": "balanced_tree",
-        "params": { "children": 5, "depth": 4 }
-      },
-      "models": ["IC", "SIR"]
-    },
     {
       "name": "k_regular",
       "graph": {
