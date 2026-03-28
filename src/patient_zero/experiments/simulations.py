@@ -18,7 +18,7 @@ BASE_PATH = Path(__file__).resolve().parent
 
 # Worst case number of tries = MAX_ATTEMPTS_PER_SIM * MAX_SIMULATIONS * len(p_values)
 MAX_ATTEMPTS_PER_SIM = 1_000 # attempts per simulation
-MAX_SIMULATIONS = 50 # max number of simulations. Will stop early if enough successful cascades have been made
+MAX_SIMULATIONS = 200 # max number of simulations. Will stop early if enough successful cascades have been made
 
 
 def run_simulation(
@@ -171,7 +171,7 @@ def main():
 
     defaults = metadata["defaults"] # default data regarding all simulations
     cascade_size_limits = defaults["cascade_size_limits"]
-    n_simulations_per_p = defaults["n_simulations_per_p"]
+    n_simulations_per_r0 = defaults["n_simulations_per_r0"]
     seeds = defaults["seeds"]
     models_defaults = defaults["models"]
 
@@ -207,7 +207,7 @@ def main():
                     "graph": G,
                     "patient_zero_base_seed": patient_zero_base_seed,
                     "cascade_size": cascade_size,
-                    "n_simulations": n_simulations_per_p,
+                    "n_simulations": n_simulations_per_r0,
                     "model_base_seed": model_base_seed,
                     "r0_values": r0_values,
                     "experiment_metadata": experiment_metadata,

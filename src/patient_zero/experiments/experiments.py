@@ -23,8 +23,7 @@ COLUMNS = [
     'patient_zero',
     'cascade_size_limit',
     'model',
-    'p_infect',
-    'p_recovery',
+    'r0',
 ]
 
 def get_rank(result, patient_zero):

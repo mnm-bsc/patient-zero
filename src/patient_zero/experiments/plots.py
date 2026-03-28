@@ -1,6 +1,7 @@
 from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
 import networkx as nx
 from patient_zero.experiments.utils import get_network_title, get_centrality_title
 from patient_zero.networks import create_balanced_tree_graph, create_k_regular_graph, create_random_graph, create_scale_free_graph, create_small_world_graph
@@ -51,8 +52,8 @@ def create_plot(name, index, grouped):
                 ] # filter df for specific model and centrality measure
 
                 for cascade_size in sorted(df_plot["cascade_size_limit"].unique()):
-                    s = df_plot[df_plot["cascade_size_limit"] == cascade_size].sort_values("p_infect") # get df for one cascade size
-                    ax.plot(s["p_infect"], s[index], label=cascade_size, linewidth=2.5) # plots 
+                    s = df_plot[df_plot["cascade_size_limit"] == cascade_size].sort_values("r0") # get df for one cascade size
+                    ax.plot(s["r0"], s[index], label=cascade_size, linewidth=2.5) # plots 
 
                 ax.set_ylim(ymin * 0.95, ymax * 1.05)
                 if row == 0: # only add title to left plot
@@ -63,9 +64,18 @@ def create_plot(name, index, grouped):
                 else:
                     ax.set_yticklabels([])
                 if row == len(MODELS) - 1: # only add x axis labels to bottom plots
-                    ax.set_xlabel("p")
+                    ax.set_xlabel(r"$R_0$")
 
-                ax.set_xticks([0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]) # to avoid weird p values on x axis
+                # to avoid weird p values on x axis
+                r0_values = sorted(df_plot["r0"].unique())
+
+                # Pick 10 evenly spaced indices
+                indices = np.linspace(0, len(r0_values) - 1, 10, dtype=int)
+                r0_ticks = [r0_values[i] for i in indices]
+
+                # Then set the ticks
+                ax.set_xticks(r0_ticks)
+                ax.set_xticklabels([f"{r:.2f}" for r in r0_ticks], rotation=45, ha='right')
                 ax.margins(x=0) # remove margin on x axis
 
         left  = axes[0, 0].get_position().x0
@@ -170,8 +180,8 @@ def main():
     }
 
     models = {
-        ModelType.IC: lambda G, patient_zero, p_infect, cascade_size, seed, expand: ic(G, patient_zero, p_infect, cascade_size, seed, expand),
-        ModelType.SIR: lambda G, patient_zero, p_infect, cascade_size, seed, expand: sir(G, patient_zero, p_infect, 0.2, cascade_size, seed, expand)
+        ModelType.IC: lambda G, patient_zero, r0, cascade_size, seed, expand: ic(G, patient_zero, r0, cascade_size, seed, expand),
+        ModelType.SIR: lambda G, patient_zero, r0, cascade_size, seed, expand: sir(G, patient_zero, r0, cascade_size, seed, expand)
     }
 
     for graph_type, gdata in graphs.items():
@@ -182,7 +192,7 @@ def main():
         G.remove_nodes_from(isolated_nodes)
 
         patient_zero = get_random_node(G)
-        p_infect = 0.7
+        r0 = 1
         cascade_size = 25
         seed = 1
 
@@ -194,11 +204,11 @@ def main():
             # generate cascade
             attempt = 0
             while True:
-                nodes, edges = model_func(G, patient_zero, p_infect, cascade_size, seed + attempt, expand)
+                nodes, edges = model_func(G, patient_zero, r0, cascade_size, seed + attempt, expand)
                 if len(nodes) != cascade_size:
                     attempt += 1
                     if attempt > 1000:
-                        raise ValueError(f"p_infect={p_infect} is to low to generate cascades.")
+                        raise ValueError(f"r0={r0} is to low to generate cascades.")
                     continue
                 cascade = nx.Graph()
                 cascade.add_nodes_from(nodes)
@@ -223,7 +233,7 @@ def main():
     name = "estimate_error"
     index = f"avg_{name}"
     grouped = (
-        df.groupby(["graph_type", "model", "cascade_size_limit", "p_infect", "centrality"])[name]
+        df.groupby(["graph_type", "model", "cascade_size_limit", "r0", "centrality"])[name]
         .mean()
         .reset_index(name=index)
     ) 
@@ -233,7 +243,7 @@ def main():
     name = "estimate_error_normalized"
     df["estimate_error_normalized"] = df["estimate_error"] / df["cascade_size_limit"].astype(float)
     grouped = (
-        df.groupby(["graph_type", "model", "cascade_size_limit", "p_infect", "centrality"])[name]
+        df.groupby(["graph_type", "model", "cascade_size_limit", "r0", "centrality"])[name]
         .mean()
         .reset_index(name=index)
     ) 
@@ -243,7 +253,7 @@ def main():
     name = "rank"
     index = f"avg_{name}"
     grouped = (
-        df.groupby(["graph_type", "model", "cascade_size_limit", "p_infect", "centrality"])[name]
+        df.groupby(["graph_type", "model", "cascade_size_limit", "r0", "centrality"])[name]
         .mean()
         .reset_index(name=index)
     ) 
@@ -254,7 +264,7 @@ def main():
     index = f"avg_{name}"
     df["rank_normalized"] = df["rank"] / df["cascade_size_limit"].astype(float)
     grouped = (
-        df.groupby(["graph_type", "model", "cascade_size_limit", "p_infect", "centrality"])[name]
+        df.groupby(["graph_type", "model", "cascade_size_limit", "r0", "centrality"])[name]
         .mean()
         .reset_index(name=index)
     ) 
@@ -265,7 +275,7 @@ def main():
     index = f"avg_{name}"
     df['correct'] = (df['estimate'] == df['patient_zero']).astype(int)
     grouped = (
-        df.groupby(["graph_type", "model", "cascade_size_limit", "p_infect", "centrality"])['correct']
+        df.groupby(["graph_type", "model", "cascade_size_limit", "r0", "centrality"])['correct']
         .mean()
         .reset_index(name=index)
     )
