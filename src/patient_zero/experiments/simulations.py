@@ -18,7 +18,7 @@ BASE_PATH = Path(__file__).resolve().parent
 
 # Worst case number of tries = MAX_ATTEMPTS_PER_SIM * MAX_SIMULATIONS * len(p_values)
 MAX_ATTEMPTS_PER_SIM = 1_000 # attempts per simulation
-MAX_SIMULATIONS = 100 # max number of simulations. Will stop early if enough successful cascades have been made
+MAX_SIMULATIONS = 200 # max number of simulations. Will stop early if enough successful cascades have been made
 
 
 def run_simulation(
@@ -27,11 +27,10 @@ def run_simulation(
     cascade_size: int, 
     n_simulations: int, 
     model_base_seed: int, 
-    p_values: list[int],
+    r0_values: list[float],
     experiment_metadata: object, 
     simulations_name: str,
     model: ModelType,
-    p_recover: float = None
 ):
     """Runs a simulation using the given model and model params.
 
@@ -60,13 +59,13 @@ def run_simulation(
     if nx.is_tree(graph): 
         expand = graph.degree(0)
 
-    for p_infect in p_values:
+    for r0 in r0_values: # r0 o p_infect values
         tmp_results, tmp_metadata = [], []
         for sim in range(MAX_SIMULATIONS):
             remaining_attempts = MAX_SIMULATIONS - sim
             simulations_left_to_generate = n_simulations - len(tmp_metadata)
             if remaining_attempts < simulations_left_to_generate: # If unable to generate n cascades in max attempts and simulations, skip to next p value
-                print(f"Unable to generate {model} cascades for graph={experiment_metadata["graph_type"]} p={p_infect:.2f}, size={cascade_size}.")
+                print(f"Unable to generate {model} cascades for graph={experiment_metadata["graph_type"]} r0={r0:.2f}, size={cascade_size}.")
                 break
 
             attempt = 0
@@ -75,14 +74,14 @@ def run_simulation(
                 patient_zero_seed = patient_zero_base_seed + sim # add sim to seed to ensure unique patient zero across simulations
                 patient_zero = get_random_node(G=graph, seed=patient_zero_seed)
                 model_seed = model_base_seed + sim + attempt # add sim and attempt to seed to ensure unique model seeds accross simulations and attempts
-                sim_id = f"{simulations_name}_p{p_infect:.2f}_exp{sim}"
+                sim_id = f"{simulations_name}_r0_{r0:.2f}_exp{sim}"
 
                 # Run simulation
                 if model == ModelType.IC.value:
                     infected_nodes, cascade_edges = ic(
                         G=graph,
                         patient_zero=patient_zero,
-                        p_infect=p_infect,
+                        R_0=r0,
                         max_size=cascade_size,
                         seed=model_seed,
                         expand=expand
@@ -91,8 +90,7 @@ def run_simulation(
                     infected_nodes, cascade_edges = sir(
                         G=graph, 
                         patient_zero=patient_zero, 
-                        p_infect=p_infect, 
-                        p_recover=p_recover, 
+                        R_0=r0, 
                         max_size=cascade_size, 
                         seed=model_seed,
                         expand=expand
@@ -110,7 +108,7 @@ def run_simulation(
                     "simulations_name": simulations_name,
                     **experiment_metadata,
                     "model": model,
-                    "p_infect": p_infect,
+                    "r0": r0,
                     "patient_zero": patient_zero,
                     "patient_zero_seed": patient_zero_seed,
                     "model_seed": model_seed,
@@ -125,13 +123,8 @@ def run_simulation(
                     "patient_zero": patient_zero,
                     "cascade_size_limit": cascade_size,
                     "model": model,
-                    "p_infect": p_infect,
+                    "r0": r0,
                 })
-
-                if p_recover is not None:
-                    tmp_metadata[len(tmp_metadata)-1]["p_recover"] = p_recover
-                    tmp_results[len(tmp_metadata)-1]["p_recover"] = p_recover
-
                 break
             
             if len(tmp_results) == n_simulations: # if succesfully generated n simulaitons save them, otherwise discard all 
@@ -178,7 +171,7 @@ def main():
 
     defaults = metadata["defaults"] # default data regarding all simulations
     cascade_size_limits = defaults["cascade_size_limits"]
-    n_simulations_per_p = defaults["n_simulations_per_p"]
+    n_simulations_per_r0 = defaults["n_simulations_per_r0"]
     seeds = defaults["seeds"]
     models_defaults = defaults["models"]
 
@@ -195,12 +188,11 @@ def main():
         for model_name in models_to_run:
             model_defaults = models_defaults[model_name] # Default model params
 
-            p_values = model_defaults["params"]["p_values"]
-            start, stop, num = p_values["start"], p_values["stop"], p_values["num"]
+            r0_values = model_defaults["params"]["r0_values"]
+            start, stop, num = r0_values["start"], r0_values["stop"], r0_values["num"]
             # returns an array of p values evenly spaced between start and stop
-            p_values = np.linspace(start, stop, num).tolist()
+            r0_values = np.linspace(start, stop, num).tolist()
 
-            p_recover = model_defaults["params"].get("p_recover", None)
             model_base_seed = seeds["model_base_seed"]
 
             for cascade_size in cascade_size_limits:
@@ -215,10 +207,9 @@ def main():
                     "graph": G,
                     "patient_zero_base_seed": patient_zero_base_seed,
                     "cascade_size": cascade_size,
-                    "n_simulations": n_simulations_per_p,
+                    "n_simulations": n_simulations_per_r0,
                     "model_base_seed": model_base_seed,
-                    "p_values": p_values,
-                    "p_recover": p_recover,
+                    "r0_values": r0_values,
                     "experiment_metadata": experiment_metadata,
                     "simulations_name": sim_name,
                     "model": model_name
