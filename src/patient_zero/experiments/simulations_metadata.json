@@ -33,6 +33,14 @@
 
   "simulations": [
     {
+      "name": "balanced_tree",
+      "graph": {
+        "type": "balanced_tree",
+        "params": { "children": 5, "depth": 4 }
+      },
+      "models": ["IC", "SIR"]
+    },
+    {
       "name": "k_regular",
       "graph": {
         "type": "k_regular",
