@@ -10,37 +10,36 @@ class TestSusceptibleInfectedRecovered:
 
     def test_correct_edges_where_nodes_are_infected_after_simulation(self):
         """
-        Testing if correct edges are made after the simulation when giving a 100% infection rate 
-        and a recovery rate 20%
+        Testing if correct edges are made after the simulation when giving a infection rate of 1
         """
         tree = self.create_tree()
-        recovered, edges = sir(tree, 0, 1.0, 0.2)
+        recovered, edges = sir(tree, 0, 10.0)
         if len(recovered) == 1: 
-            assert edges == []
+            assert not edges
         else:
-            assert any(edge in edges for edge in [(0, 1) or (0, 2) or (0, 3)])
+            assert any(edge in edges for edge in [(0, 1), (0, 2), (0, 3)])
 
-    def test_all_is_infected_when_there_is_a_very_low_recovery_rate(self):
+    def test_all_is_infected_when_there_is_a_high_infection_rate(self):
         """Testing if all nodes are infected with a close to zero recovery rate"""
         tree = self.create_tree()
-        infected, edges = sir(tree, 0, 1.0, 0.00001)
-        assert len(infected) == 12
+        infected, edges = sir(tree, 0, 10000.0)
+        assert len(infected) == 13
         assert sorted(edges) == sorted([(0, 1), (1, 5), (0, 3), (3, 10), (0, 2), (2, 9), (1, 6), (3, 11), (1, 4), (2, 7), (3, 12), (2, 8)])
 
     def test_at_least_one_is_infected_after_simulation(self):
         """Testing if the list with the infected is one after a simulation with a r value of 0"""
         tree = self.create_tree()
-        infected, edges = sir(tree, 0, 0, 0.2)
+        infected, edges = sir(tree, 0, 0)
         assert len(infected) == 1
         assert not edges
 
     def test_if_there_can_be_more_than_one_infected_after_few_steps(self):
         """
         Testing if there can be more nodes than the root
-        which is in the infected list with a 100% infection rate
+        which is in the infected list with a high infection rate
         """
         tree = self.create_tree()
-        infected, edges = sir(tree, 0, 1.0, 0.2, 2)
+        infected, edges = sir(tree, 0, 100.0)
         if len(infected) == 1:
             assert infected == 1
         else:
