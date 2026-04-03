@@ -22,7 +22,9 @@ class TestSusceptibleInfectedRecovered:
             assert any(edge in edges for edge in [(0, 1), (0, 2), (0, 3)])
 
     def test_all_is_infected_when_R0_is_high(self):
-        """Testing if all nodes are infected with a close to zero recovery rate"""
+        """
+        Testing if all nodes are infected with a high R0 value
+        """
         tree = self.create_tree()
         patient_zero = 0
         R_0 = 10000.0
@@ -31,7 +33,9 @@ class TestSusceptibleInfectedRecovered:
         assert sorted(edges) == sorted([(0, 1), (1, 5), (0, 3), (3, 10), (0, 2), (2, 9), (1, 6), (3, 11), (1, 4), (2, 7), (3, 12), (2, 8)])
 
     def test_at_least_one_is_infected_after_simulation(self):
-        """Testing if the list with the infected is one after a simulation with a r value of 0"""
+        """
+        Testing if the list of infected nodes is one after a simulation with R0 value of 0
+        """
         tree = self.create_tree()
         patient_zero = 0
         R_0 = 0.0
@@ -41,8 +45,7 @@ class TestSusceptibleInfectedRecovered:
 
     def test_if_there_can_be_more_than_one_infected_after_few_steps(self):
         """
-        Testing if there can be more nodes than the root
-        which is in the infected list with a high infection rate
+        Testing if there can be more than one infected node with a high R0 value
         """
         tree = self.create_tree()
         patient_zero = 0
