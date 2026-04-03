@@ -40,11 +40,10 @@ def run_simulation(
         cascade_size (int): Size of the resulting cascade.
         n_simulations (int): Number of simulations per p value.
         model_base_seed (int): Base seed used for the model.
-        p_values (list[int]): List of p values.
+        r0_values (list[float]): List of r0 values.
         experiment_metadata (object): Metadata about the simulation.
         simulations_name (str): The name of the simulation.
         model (ModelType): The model to run the simulation with. Can be either IC or SIR.
-        p_recover (float, optional): Recovery value used for SIR simulations. Defaults to None.
 
     Raises:
         ValueError: If the provided model is unknown.
