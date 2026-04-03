@@ -6,24 +6,28 @@ class TestIndependentCascade:
     """Test independent cascade model"""
 
     def test_patient_zero_is_infected(self):
-        """Test patient zero is always infected"""
+        """
+        Test patient zero is always infected
+        """
         g = nx.balanced_tree(1, 0)
         patient_zero = 0
-        r = 0.1
+        R_0 = 0.1
 
-        infected, edges = ic(g, patient_zero, r)
+        infected, edges = ic(g, patient_zero, R_0)
 
         assert 0 in infected
         assert not edges
         
 
     def test_patient_zero_can_infect_neighbors(self):
-        """Test patient zero can spread to neighboring nodes"""
+        """
+        Test patient zero can spread to neighboring nodes
+        """
         g = nx.balanced_tree(2, 2)
         patient_zero = 0
-        r = 1.0
+        R_0 = 1.0
 
-        infected, edges = ic(g, patient_zero, r)
+        infected, edges = ic(g, patient_zero, R_0)
 
         assert patient_zero in infected
         neighbors = list(g.neighbors(patient_zero))
@@ -31,13 +35,15 @@ class TestIndependentCascade:
             assert n in infected
         assert sorted(edges) == [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)]
 
-    def test_r_value_zero(self):
-        """Test that patient zero wont spread to neighboring nodes when r value is 0"""
+    def test_R0_value_zero(self):
+        """
+        Test that patient zero wont spread to neighboring nodes when R0 value is 0
+        """
         g = nx.balanced_tree(2, 2)
         patient_zero = 0
-        r = 0.0
+        R_0 = 0.0
 
-        infected, edges = ic(g, patient_zero, r)
+        infected, edges = ic(g, patient_zero, R_0)
 
         assert patient_zero in infected
         neighbors = list(g.neighbors(patient_zero))

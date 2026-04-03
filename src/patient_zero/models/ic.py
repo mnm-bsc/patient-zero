@@ -12,7 +12,7 @@ def independent_cascade(G: nx.Graph, patient_zero: int, R_0: float, max_size: in
     Args:
         G (nx.Graph): NetworkX graph.
         patient_zero (int): The source node.
-        p_infect (float): The probability that a node infects one of its neighbors.
+        R_0 (float): The basic reproduction number.
         max_size (int, optional): The maximum size a cascade will grow to. Defaults to None.
         seed (int, optional): Randomness seed. Defaults to None.
         expand (int, optional): The number of children to expand with if the graph is not large enough. Only for balanced trees.

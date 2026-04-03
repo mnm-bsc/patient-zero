@@ -19,8 +19,7 @@ def susceptible_infected_recovered(
     Args:
         G (nx.graph): NetworkX graph.
         patient_zero (int): The source node.
-        p_infect (float): The probability that a node infects one of its neighbors.
-        p_recover (float): The probability that an infected node recovers.
+        R_0 (float): The basic reproduction number.
         max_size (int, optional): The maximum size a cascade will grow to. Defaults to None.
         seed (int, optional): Randomness seed. Defaults to None.
         expand (int, optional): The number of children to expand with if the graph is not large enough. Only for balanced trees.
