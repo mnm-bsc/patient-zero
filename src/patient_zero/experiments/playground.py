@@ -1,7 +1,7 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 from patient_zero.networks import create_balanced_tree_graph
-from patient_zero.models import ic
+from patient_zero.models import ic, sir
 from patient_zero.networks.utils import get_random_node
 from patient_zero.experiments.centrality import distance_centrality, degree_centrality
 
@@ -69,11 +69,11 @@ def playground():
 def test():
     G = create_balanced_tree_graph(5, 4)
     patient_zero = 20
-    r0 = 1.15
+    r0 = 1.2
 
     print(f"graph={G}")
 
-    nodes, edges = ic(G, patient_zero, r0, 500, None, 5)
+    nodes, edges = sir(G, patient_zero, r0, 100, None, 5)
     cascade = nx.Graph()
     cascade.add_nodes_from(nodes)
     cascade.add_edges_from(edges)

@@ -7,7 +7,7 @@ import networkx as nx
 from patient_zero.networks.utils import expand_tree
 
 def susceptible_infected_recovered(
-        G: nx.graph,
+        G: nx.Graph,
         patient_zero: int,
         R_0: float,
         max_size: int = None, 
@@ -40,7 +40,7 @@ def susceptible_infected_recovered(
     cascade_edges = []
     next_label = max(G.nodes) + 1
 
-    if (nx.is_tree(G)):
+    if (nx.is_tree(G) and expand != 0):
         degrees = [G.degree[node] for node in G.nodes() if G.degree[node] != 1]
         avg_degree = sum(degrees) / len(degrees)
     else:
@@ -49,7 +49,7 @@ def susceptible_infected_recovered(
     si_links = {(nb, patient_zero) for nb in G.neighbors(patient_zero)}
 
     infect_rate = R_0 / (avg_degree - 1) # r_i
-    recover_rate = 1 # r_R
+    recover_rate = 1.0 # r_R
 
     while infected:
 
