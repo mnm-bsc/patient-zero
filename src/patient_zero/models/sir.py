@@ -39,7 +39,13 @@ def susceptible_infected_recovered(
     all_infected = {patient_zero}
     cascade_edges = []
     next_label = max(G.nodes) + 1
-    avg_degree = sum(degree for _, degree in G.degree) / len(G.degree)
+
+    if (nx.is_tree(G)):
+        degrees = [G.degree[node] for node in G.nodes() if G.degree[node] != 1]
+        avg_degree = sum(degrees) / len(degrees)
+    else:
+        avg_degree = sum(degree for _, degree in G.degree) / len(G.degree)
+
     si_links = {(nb, patient_zero) for nb in G.neighbors(patient_zero)}
 
     infect_rate = R_0 / (avg_degree - 1) # r_i
