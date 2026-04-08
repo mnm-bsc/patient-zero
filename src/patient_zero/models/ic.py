@@ -29,8 +29,15 @@ def independent_cascade(G: nx.Graph, patient_zero: int, R_0: float, max_size: in
     cascade_edges = []
     next_label = max(G.nodes) + 1
 
-    avg_degree = sum(degree for _, degree in G.degree) / len(G.degree)
+    if (nx.is_tree(G)):
+        degrees = [G.degree[node] for node in G.nodes() if G.degree[node] != 1]
+        avg_degree = sum(degrees) / len(degrees)
+    else:
+        avg_degree = sum(degree for _, degree in G.degree) / len(G.degree)
+
     p_infect = R_0 / (avg_degree - 1)
+    print("avg_degree", avg_degree)
+    print("p_infect", p_infect)
 
     while infected:
         new_infected = set()
