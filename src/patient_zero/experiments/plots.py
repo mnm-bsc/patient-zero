@@ -16,7 +16,7 @@ CSV_FILE = DATA_DIR / "results.csv"
 
 df = pd.read_csv(CSV_FILE)
 
-CENTRALITY_MEASURES = sorted(df["centrality"].unique())
+CENTRALITY_MEASURES = [m.value for m in CentralityMeasure]
 MODELS = sorted(df["model"].unique())
 
 def create_plot(name, index, grouped):
