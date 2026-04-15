@@ -20,6 +20,10 @@ CENTRALITY_MEASURES = [cm.value for cm in CentralityMeasure]
 MODELS = sorted(df["model"].unique())
 
 def create_plot(name, index, grouped):
+    plt.rcParams.update({
+        "font.size": 14
+    })
+
     graph_types = grouped["graph_type"].unique() # get unique graph types
 
     for graph_type in graph_types:
@@ -42,9 +46,9 @@ def create_plot(name, index, grouped):
             for col, centrality in enumerate(CENTRALITY_MEASURES):
                 ax = axes[row, col]
                 
-                ax.tick_params(width=1.5) # sets line width of ticks
+                ax.tick_params(width=2.0, length=6) # sets line width of ticks
                 for spine in ax.spines.values():
-                    spine.set_linewidth(1.5) # sets line width of plot edges
+                    spine.set_linewidth(2.0) # sets line width of plot edges
 
                 df_plot = df_graph[
                     (df_graph["model"] == model) &
@@ -53,7 +57,7 @@ def create_plot(name, index, grouped):
 
                 for cascade_size in sorted(df_plot["cascade_size_limit"].unique()):
                     s = df_plot[df_plot["cascade_size_limit"] == cascade_size].sort_values("r0") # get df for one cascade size
-                    ax.plot(s["r0"], s[index], label=cascade_size, linewidth=2.5) # plots 
+                    ax.plot(s["r0"], s[index], label=cascade_size, linewidth=3.5) # plots 
 
                 ax.set_ylim(ymin * 0.95, ymax * 1.05)
                 if row == 0: # only add title to left plot
@@ -98,7 +102,7 @@ def create_plot(name, index, grouped):
         fig.legend(
             handles, labels,
             loc="lower center",
-            bbox_to_anchor=(x_center, -0.04),
+            bbox_to_anchor=(x_center, -0.12),
             bbox_transform=fig.transFigure,
             ncol=len(handles),
             frameon=True, fancybox=False,
@@ -144,7 +148,7 @@ def create_graph_plot(G: nx.Graph, pos, cascade: nx.Graph, patient_zero: int, es
         node_size=50,
         edgecolors="black",
         edge_color=edge_colors,
-        linewidths=0.5
+        linewidths=1.0
     )
 
     # Save figure

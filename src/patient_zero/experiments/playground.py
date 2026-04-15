@@ -20,7 +20,7 @@ def playground():
 
     results = []
 
-    for sim in range(10000):
+    for sim in range(1000):
         # Model
         patient_zero = get_random_node(G, patien_zero_seed+sim)
         print("patient zero=", patient_zero)
