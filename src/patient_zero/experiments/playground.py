@@ -3,11 +3,10 @@ import matplotlib.pyplot as plt
 from patient_zero.networks import create_balanced_tree_graph
 from patient_zero.models import ic, sir
 from patient_zero.networks.utils import get_random_node
-from patient_zero.experiments.centrality import distance_centrality, degree_centrality
+from patient_zero.experiments.centrality import distance_centrality
 
 def playground():
     # Graph
-    nodes = 1000
     children = 5
     graph_seed = 42
     expand = 5
