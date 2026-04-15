@@ -3,6 +3,7 @@ Module for running cascade simulations.
 """
 import os
 import json
+import random
 from time import perf_counter
 from pathlib import Path
 from concurrent.futures import ProcessPoolExecutor, as_completed
@@ -17,8 +18,8 @@ from patient_zero.enums import NetworkType, ModelType
 BASE_PATH = Path(__file__).resolve().parent
 
 # Worst case number of tries = MAX_ATTEMPTS_PER_SIM * MAX_SIMULATIONS * len(p_values)
-MAX_ATTEMPTS_PER_SIM = 1_000 # attempts per simulation
-MAX_SIMULATIONS = 200 # max number of simulations. Will stop early if enough successful cascades have been made
+MAX_ATTEMPTS_PER_SIM = 100 # attempts per simulation
+MAX_SIMULATIONS = 100 # max number of simulations. Will stop early if enough successful cascades have been made
 
 
 def run_simulation(
@@ -55,6 +56,7 @@ def run_simulation(
     """
     metadata, results = [], []
     expand = 0
+
     if nx.is_tree(graph): 
         expand = graph.degree(0)
 
@@ -69,10 +71,13 @@ def run_simulation(
 
             attempt = 0
 
+            patient_zero_rng = random.Random(patient_zero_base_seed + sim + r0)
+            model_rng = random.Random(model_base_seed + sim + r0)
+
             while attempt != MAX_ATTEMPTS_PER_SIM: # retry if cascade not successful
-                patient_zero_seed = patient_zero_base_seed + sim # add sim to seed to ensure unique patient zero across simulations
+                patient_zero_seed = patient_zero_rng.randint(0, 2**32 - 1) # add sim to seed to ensure unique patient zero across simulations
                 patient_zero = get_random_node(G=graph, seed=patient_zero_seed)
-                model_seed = model_base_seed + sim + attempt # add sim and attempt to seed to ensure unique model seeds accross simulations and attempts
+                model_seed = (model_rng.randint(0, 2**32 - 1) + attempt) % (2**32)  # add sim and attempt to seed to ensure unique model seeds accross simulations and attempts
                 sim_id = f"{simulations_name}_r0_{r0:.2f}_exp{sim}"
 
                 # Run simulation
