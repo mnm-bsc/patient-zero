@@ -16,7 +16,7 @@ CSV_FILE = DATA_DIR / "results.csv"
 
 df = pd.read_csv(CSV_FILE)
 
-CENTRALITY_MEASURES = [m.value for m in CentralityMeasure]
+CENTRALITY_MEASURES = [cm.value for cm in CentralityMeasure]
 MODELS = sorted(df["model"].unique())
 
 def create_plot(name, index, grouped):
@@ -59,7 +59,18 @@ def create_plot(name, index, grouped):
                 if row == 0: # only add title to left plot
                     ax.set_title(get_centrality_title(centrality))
                 if col == 0: # only add y axis labels to left plots
-                    ax.set_ylabel(name, rotation=90)
+                    if name == "estimate_error":
+                        ax.set_ylabel("Estimate Error", rotation=90)
+                    elif name == "accuracy":
+                        ax.set_ylabel("Accuracy", rotation=90)
+                    elif name == "rank":
+                        ax.set_ylabel("Rank", rotation=90)
+                    elif name == "estimate_error_normalized":
+                        ax.set_ylabel("Estimate Error Normalized", rotation=90)
+                    elif name == "accuracy_normalized":
+                        ax.set_ylabel("Accuracy Normalized", rotation=90)
+                    elif name == "rank_normalized":
+                        ax.set_ylabel("Rank Normalized", rotation=90)
                     ax.text(-0.2, 0.90, model, rotation=0, ha="right", va="bottom", transform=ax.transAxes, fontweight="bold")
                 else:
                     ax.set_yticklabels([])
