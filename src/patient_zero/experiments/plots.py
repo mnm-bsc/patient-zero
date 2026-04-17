@@ -132,10 +132,10 @@ def create_graph_plot(G: nx.Graph, pos, cascade: nx.Graph, patient_zero: int, es
     node_colors = []
     for node in G.nodes():
         if node == patient_zero:
-            color = 'darkviolet' if node == estimate else 'red'
-        elif node == estimate:
+            color = 'purple' if node == estimate and not nx.is_tree(G) else 'red'
+        elif node == estimate and not nx.is_tree(G):
             color = 'blue'
-        elif node in sp:
+        elif node in sp and not nx.is_tree(G):
             color = 'black'
         elif node in cascade.nodes():
             color = 'gray'
@@ -145,7 +145,7 @@ def create_graph_plot(G: nx.Graph, pos, cascade: nx.Graph, patient_zero: int, es
 
     sp_edges = list(zip(sp[:-1], sp[1:]))
     edge_colors = [
-        "black" if (u, v) in sp_edges or (v, u) in sp_edges else "silver"
+        "black" if ((u, v) in sp_edges or (v, u) in sp_edges) and not nx.is_tree(G) else "silver"
         for u, v in G.edges()
     ]
 
@@ -172,8 +172,8 @@ def create_graph_plot(G: nx.Graph, pos, cascade: nx.Graph, patient_zero: int, es
 def main(): 
     graphs = {
         NetworkType.BALANCED_TREE: {
-            "graph": create_balanced_tree_graph(3, 4),
-            "layout": lambda G: nx.kamada_kawai_layout(G)
+            "graph": create_balanced_tree_graph(3, 3),
+            "layout": lambda G: nx.nx_agraph.graphviz_layout(G, prog="dot")
         },
         
         NetworkType.REGULAR: {
@@ -209,17 +209,17 @@ def main():
         ModelType.SIR: lambda G, patient_zero, r0, cascade_size, seed, expand: sir(G, patient_zero, r0, cascade_size, seed, expand)
     }
 
+    seed = 12
     for graph_type, gdata in graphs.items():
-        G = gdata["graph"]
+        initial_graph = gdata["graph"]
 
         # remove disconnected nodes (for random graph)
-        isolated_nodes = list(nx.isolates(G))
-        G.remove_nodes_from(isolated_nodes)
+        isolated_nodes = list(nx.isolates(initial_graph))
+        initial_graph.remove_nodes_from(isolated_nodes)
 
-        patient_zero = get_random_node(G)
-        r0 = 1
+        patient_zero = get_random_node(initial_graph, seed)
+        r0 = 3
         cascade_size = 25
-        seed = 1
 
         expand = 0
         if graph_type == NetworkType.BALANCED_TREE:
@@ -229,6 +229,7 @@ def main():
             # generate cascade
             attempt = 0
             while True:
+                G = initial_graph.copy()
                 nodes, edges = model_func(G, patient_zero, r0, cascade_size, seed + attempt, expand)
                 if len(nodes) != cascade_size:
                     attempt += 1
