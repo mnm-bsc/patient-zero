@@ -209,7 +209,7 @@ def main():
         ModelType.SIR: lambda G, patient_zero, r0, cascade_size, seed, expand: sir(G, patient_zero, r0, cascade_size, seed, expand)
     }
 
-    seed = 12
+    seed = 432
     for graph_type, gdata in graphs.items():
         initial_graph = gdata["graph"]
 
