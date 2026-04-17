@@ -93,6 +93,16 @@ def create_plot(name, index, grouped):
                 ax.set_xticklabels([f"{r:.2f}" for r in r0_ticks], rotation=45, ha='right')
                 ax.margins(x=0) # remove margin on x axis
 
+                # Add vertical grey line at R0
+                ax.axvline(
+                    x=1.0,
+                    color="grey",
+                    linestyle="--",
+                    linewidth=1.5,
+                    alpha=0.6,
+                    zorder=0
+                )
+
         left  = axes[0, 0].get_position().x0
         right = axes[0, -1].get_position().x1
         x_center = (left + right) / 2
