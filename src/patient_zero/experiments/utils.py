@@ -46,7 +46,7 @@ def get_centrality_title(key):
 
 def get_network_title(key):
     if key == NetworkType.REGULAR.value: 
-        return "K-Regular"
+        return "K-regular"
     if key == NetworkType.RANDOM.value: 
         return "Random"
     if key == NetworkType.SCALE_FREE.value: 
