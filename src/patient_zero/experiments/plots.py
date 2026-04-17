@@ -21,7 +21,7 @@ MODELS = sorted(df["model"].unique())
 
 def create_plot(name, index, grouped):
     plt.rcParams.update({
-        "font.size": 14
+        "font.size": 16
     })
 
     graph_types = grouped["graph_type"].unique() # get unique graph types
@@ -112,7 +112,7 @@ def create_plot(name, index, grouped):
         fig.legend(
             handles, labels,
             loc="lower center",
-            bbox_to_anchor=(x_center, -0.12),
+            bbox_to_anchor=(x_center, -0.16),
             bbox_transform=fig.transFigure,
             ncol=len(handles),
             frameon=True, fancybox=False,
@@ -122,7 +122,7 @@ def create_plot(name, index, grouped):
         folder_path = Path(DATA_DIR) / "plots" / name
         folder_path.mkdir(parents=True, exist_ok=True)
 
-        fig.suptitle(get_network_title(graph_type), fontsize=14, weight="bold")
+        fig.suptitle(get_network_title(graph_type), fontsize=24, weight="bold")
         plt.savefig(folder_path / graph_type, bbox_inches="tight", pad_inches=0.2) # save plots to png
         plt.clf()
         plt.close()
