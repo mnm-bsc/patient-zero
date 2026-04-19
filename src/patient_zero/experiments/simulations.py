@@ -18,8 +18,8 @@ from patient_zero.enums import NetworkType, ModelType
 BASE_PATH = Path(__file__).resolve().parent
 
 # Worst case number of tries = MAX_ATTEMPTS_PER_SIM * MAX_SIMULATIONS * len(p_values)
-MAX_ATTEMPTS_PER_SIM = 1000 # attempts per simulation
-MAX_SIMULATIONS = 200 # max number of simulations. Will stop early if enough successful cascades have been made
+MAX_ATTEMPTS_PER_SIM = 100 # attempts per simulation
+MAX_SIMULATIONS = 100 # max number of simulations. Will stop early if enough successful cascades have been made
 
 
 def run_simulation(
