@@ -1,6 +1,7 @@
 """Tests for the susceptible infected recovered cascade model"""
 import networkx as nx
-from patient_zero.models import sir
+from patient_zero.models import sir, infection_event, recovery_event, calculate_probability, get_rates
+import random
 
 class TestSusceptibleInfectedRecovered:
     """Test SIR model"""
@@ -56,3 +57,118 @@ class TestSusceptibleInfectedRecovered:
         else:
             assert len(infected) > 1
             assert len(edges) != 0
+
+    def test_infection_event(self):
+        """
+        Testing if the infection event correctly updates the sets and edges
+        """
+        tree = self.create_tree()
+        patient_zero = 0
+        infected = {patient_zero}
+        susceptible = set(tree.nodes()) - infected
+        si_links = {(nb, patient_zero) for nb in tree.neighbors(patient_zero)}
+        next_label = len(tree.nodes())
+        cascade_edges = []
+        rng = random.Random(42)
+
+        new_si_links, _ = infection_event(tree, rng, 0, susceptible, infected, si_links, infected, cascade_edges, next_label)
+        assert len(new_si_links) == len(si_links) + 2 # minus existing one, plus 3 new
+        assert all(s in susceptible for s, i in new_si_links) # all sources should be in susceptible
+        assert all(i in infected for s, i in new_si_links) # all targets should be in infected
+        assert len(cascade_edges) == 1 # one new edge should be
+        assert len(infected) == 2 # one new infected should be added
+
+    def test_recovery_event(self):
+        """
+        Testing if the recovery event correctly updates the sets and edges
+        """
+        tree = self.create_tree()
+        patient_zero = 0
+        infected = {patient_zero}
+        recovered = set()
+        si_links = {(nb, patient_zero) for nb in tree.neighbors(patient_zero)}
+        rng = random.Random(42)
+        prev_infected = len(infected)
+        prev_recovered = len(recovered)
+        prev_si_links = len(si_links)
+
+        new_si_links = recovery_event(rng, infected, recovered, si_links)
+
+        assert len(new_si_links) == prev_si_links - tree.degree[patient_zero]
+        assert len(infected) == prev_infected - 1
+        assert len(recovered) == prev_recovered + 1
+    
+    def test_calculate_probability(self):
+        """
+        Testing if the probability calculation is correct
+        """
+        p = calculate_probability(
+            num_infected=2,
+            num_si=4,
+            infect_rate=0.5,
+            recover_rate=1.0
+        )
+
+        assert p == 0.5
+
+    def test_calculate_probability_without_recovery(self):
+        """
+        Testing if the probability of infection is 1 when there is no recovery
+        """
+        p = calculate_probability(
+            num_infected=2,
+            num_si=4,
+            infect_rate=0.5,
+            recover_rate=0
+        )
+
+        assert p == 1
+
+    def test_calculate_probability_without_infect_rate(self):
+        """
+        Testing if the probability of infection is 0 when infect rate is 0
+        """
+        p = calculate_probability(
+            num_infected=2,
+            num_si=4,
+            infect_rate=0,
+            recover_rate=1
+        )
+
+        assert p == 0
+
+    def test_calculate_probability_with_one_infected(self):
+        recover_rate = 1.0
+        infect_rate = 0.36363636363636365
+
+        p = calculate_probability(
+            num_infected=1,
+            num_si=4,
+            infect_rate=infect_rate,
+            recover_rate=recover_rate
+        )
+
+        assert p == 0.5925925925925926
+
+    def test_probability_increases_with_infect_rate(self):
+
+        p1 = calculate_probability(num_infected=3, num_si=5, infect_rate=1.0, recover_rate=1.0)
+        p2 = calculate_probability(num_infected=3, num_si=5, infect_rate=2.0, recover_rate=1.0)
+
+        assert p2 > p1
+
+    def test_no_si_links_gives_zero(self):
+        p = calculate_probability(3, 0, 1.0, 1.0)
+
+        assert p == 0
+
+    def test_get_rates(self):
+        G = nx.balanced_tree(3, 2)
+        print(G)
+        R_0 = 1.0
+
+        infect_rate, recover_rate = get_rates(G, R_0, is_tree=True)
+
+        assert recover_rate == 1.0
+        assert infect_rate == 0.36363636363636365
+

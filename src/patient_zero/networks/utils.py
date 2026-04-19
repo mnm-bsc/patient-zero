@@ -15,5 +15,6 @@ def get_random_node(G: nx.Graph, seed: int = None):
 def expand_tree(G: nx.Graph, n: int, c: int, next_label: int):
     if G.degree(n) > 1: 
         raise ValueError(f"Node {n} not a leaf")
+    new_nodes = range(next_label, next_label + c)
     G.add_edges_from((n, node) for node in range(next_label, next_label + c))
-    return next_label + c
+    return next_label + c, new_nodes
