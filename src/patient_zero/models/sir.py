@@ -114,6 +114,17 @@ def get_rates(
     
 
 def calculate_probability(num_infected, num_si, infect_rate, recover_rate) -> float:
+    """Calculate the probability of an infect or a recover event happening
+
+    Args:
+        num_infected (int): Number of infected nodes
+        num_si (int): Number of si li links
+        infect_rate (float): The infect rate
+        recover_rate (float): The recover rate
+
+    Returns:
+        float: Probability
+    """
     sum_infect = infect_rate * num_si # sum(r_I) = r_I * n_si
     sum_recover = num_infected * recover_rate # sum(r_R) = n_i * r_R
     return sum_infect/(sum_recover + sum_infect) # probability = sum(r_I)/(sum(r_I)+sum(r_R))
