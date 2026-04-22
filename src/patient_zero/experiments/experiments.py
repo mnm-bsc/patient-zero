@@ -43,7 +43,7 @@ def get_estimate_error(result, spl):
     return estimate, estimate_error
 
 def process_cascade(task):
-    """Processes a single cascade
+    """ Processes a single cascade
 
     Args:
         task (tuple):

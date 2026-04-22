@@ -58,16 +58,16 @@ def susceptible_infected_recovered(
         num_infected = len(infected) # Number of infected nodes now
         num_si = len(si_links) # Number of si links now
 
-        probability = calculate_probability( # Calculate the probability of the next infect event
+        probability = calculate_probability( 
             num_infected=num_infected, 
             num_si=num_si, 
             infect_rate=infect_rate, 
             recover_rate=recover_rate
-        )
+        ) # Calculate the probability of the next infect event
 
         if rng.random() < probability: # Coin flip for a infect event or recovery event
             
-            si_links, next_label = infection_event( # Infect event happens
+            si_links, next_label = infection_event(
                 G,
                 rng,
                 expand,
@@ -77,16 +77,16 @@ def susceptible_infected_recovered(
                 all_infected,
                 cascade_edges,
                 next_label
-            )
+            ) # Infect event happens
             
         else:
             
-            si_links = recovery_event( # Recover event happens
+            si_links = recovery_event( 
                 rng,
                 infected,
                 recovered,
                 si_links
-            )
+            ) # Recover event happens
 
     return all_infected, cascade_edges
 
@@ -95,7 +95,7 @@ def get_rates(
         R_0: float, 
         is_tree: bool = False
     ):
-    """ Computes the infection and recovery rates.
+    """ Computes the infection and recovery rate.
 
     Args:
         G (nx.Graph): NetworkX graph.
@@ -126,7 +126,7 @@ def calculate_probability(num_infected, num_si, infect_rate, recover_rate) -> fl
 
     Args:
         num_infected (int): Number of infected nodes.
-        num_si (int): Number of si li links.
+        num_si (int): Number of SI links.
         infect_rate (float): The infect rate.
         recover_rate (float): The recover rate.
 
@@ -157,13 +157,13 @@ def infection_event(
         susceptible (set[int]): The set of susceptible nodes.
         infected (set[int]): The set of currently infected nodes.
         si_links (set[tuple[int, int]]): The set of SI links.
-        all_infected (set[int]): The set all infect in the cascade.
+        all_infected (set[int]): The set all infected nodes in the cascade.
         cascade_edges (list[tuple[int, int]]): The list of cascade edges.
         next_label (int): Next available node for graph expansion.
 
     Returns:
         tuple:
-        - si_links (set[tuple[int, int]]): The set of SI links.
+        - si_links (set[tuple[int, int]]): The updated set of SI links after infect event.
         - next_label (int): The next available node for graph expansion.
     """
     new, source = rng.choice(list(si_links)) # Choose a random SI link
@@ -192,7 +192,7 @@ def recovery_event(
     recovered,
     si_links
 ):
-    """ Performs a single recover event on a random chosen infected node.
+    """ Performs a single recover event on a randomly chosen infected node.
 
     Args:
         rng (Random): Random variable generator.
@@ -201,7 +201,7 @@ def recovery_event(
         si_links (set[tuple[int, int]]): The set of SI links.
 
     Returns:
-        si_links (set[tuple[int, int]]): The set of SI links.
+        si_links (set[tuple[int, int]]): The updated set of SI links after recovery.
     """
     node = rng.choice(list(infected)) # Choose random infected node that will recover
 

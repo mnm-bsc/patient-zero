@@ -6,7 +6,7 @@ import random
 import networkx as nx
 
 def dfs(n: int, p: int | None, bfs_tree: nx.DiGraph, subtree_sizes: set) -> int:
-    """Run DFS from node n with parent p to recursively get the subtree size all nodes.
+    """ Run DFS from node n with parent p to recursively get the subtree size all nodes.
 
     Args:
         n (int): Root of dfs.
@@ -24,7 +24,7 @@ def dfs(n: int, p: int | None, bfs_tree: nx.DiGraph, subtree_sizes: set) -> int:
     return subtree_sizes[n]
 
 def rumor_centrality(cascade: nx.Graph) -> dict:
-    """Calculates the rumor centrality score for all nodes in a graph.
+    """ Calculates the rumor centrality score for all nodes in a graph.
 
     Args:
         cascade (nx.Graph): NetworkX graph.
