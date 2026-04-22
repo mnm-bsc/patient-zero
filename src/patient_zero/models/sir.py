@@ -1,5 +1,5 @@
 """
-Suceptible Infected Recovered model
+Susceptible Infected Recovered model
 """
 
 import random
