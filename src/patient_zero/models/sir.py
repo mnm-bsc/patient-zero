@@ -95,8 +95,7 @@ def get_rates(
         R_0: float, 
         is_tree: bool = False
     ):
-    """ Computes the infection and recovery rates. 
-        If the graph is a tree, we calculate the average degree excluding leaves, as those are expanded.
+    """ Computes the infection and recovery rates.
 
     Args:
         G (nx.Graph): NetworkX graph.
@@ -123,7 +122,7 @@ def get_rates(
     
 
 def calculate_probability(num_infected, num_si, infect_rate, recover_rate) -> float:
-    """ Calculate the probability of an infect or a recover event happening
+    """ Computes the probability that the next event is an infection event.
 
     Args:
         num_infected (int): Number of infected nodes.
