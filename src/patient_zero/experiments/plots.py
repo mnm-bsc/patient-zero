@@ -36,7 +36,7 @@ def create_plot(name, index, grouped, by="graph"):
     elif by == "centrality":
         figure_var = "centrality"
         col_var = "graph_type"
-        col_values_all = grouped["graph_type"].unique() # get unique graph types
+        col_values_all = grouped["graph_type"].unique() # Get unique graph types
         col_title_func = get_network_title
         suptitle_func = get_centrality_title
         folder_root = Path("plots") / "plots_by_centrality"
@@ -46,7 +46,7 @@ def create_plot(name, index, grouped, by="graph"):
     for figure_value in figure_groups:
 
         df_fig = grouped[
-            grouped[figure_var] == figure_value  # update grouped df to only contain data for current graph type/centrality measure
+            grouped[figure_var] == figure_value  # Update grouped df to only contain data for current graph type/centrality measure
         ]
 
         fig, axes = plt.subplots(
@@ -77,15 +77,15 @@ def create_plot(name, index, grouped, by="graph"):
                 ax.tick_params(
                     width=2.0,
                     length=6
-                ) # sets line width of ticks
+                ) # Sets line width of ticks
 
                 for spine in ax.spines.values():
-                    spine.set_linewidth(2.0) # sets line width of plot edges
+                    spine.set_linewidth(2.0) # Sets line width of plot edges
 
                 df_plot = df_fig[
                     (df_fig["model"] == model) &
                     (df_fig[col_var] == col_value)
-                ]  # filter df
+                ]  # Filter df
 
                 for cascade_size in sorted(
                     df_plot["cascade_size_limit"].unique()
@@ -96,7 +96,7 @@ def create_plot(name, index, grouped, by="graph"):
                             df_plot["cascade_size_limit"] == cascade_size
                         ]
                         .sort_values("r0")
-                    ) # get df for one cascade size
+                    ) # Get df for one cascade size
 
                     ax.plot(
                         s["r0"],
@@ -110,12 +110,12 @@ def create_plot(name, index, grouped, by="graph"):
                     ymax * 1.05
                 )
 
-                if row == 0:  # only add title to left plot
+                if row == 0:  # Only add title to left plot
                     ax.set_title(
                         col_title_func(col_value)
                     )
 
-                if col == 0: # only add y axis labels to left plots
+                if col == 0: # Only add y axis labels to left plots
 
                     if name == "estimate_error":
                         ax.set_ylabel(
@@ -167,12 +167,12 @@ def create_plot(name, index, grouped, by="graph"):
                 else:
                     ax.set_yticklabels([])
 
-                if row == len(MODELS)-1:  # only add x axis labels to bottom plots
+                if row == len(MODELS)-1:  # Only add x axis labels to bottom plots
                     ax.set_xlabel(
                         r"$R_0$"
                     )
 
-                 # to avoid weird p values on x axis
+                 # To avoid weird p values on x axis
                 r0_values = sorted(
                     df_plot["r0"].unique()
                 )
@@ -238,7 +238,7 @@ def create_plot(name, index, grouped, by="graph"):
             frameon=True,
             fancybox=False,
             title="Cascade size"
-        ) # add the labels to a legends in bottom center
+        ) # Add the labels to a legends in bottom center
 
         folder_path = (
             Path(DATA_DIR)
@@ -263,7 +263,7 @@ def create_plot(name, index, grouped, by="graph"):
             folder_path / figure_value,
             bbox_inches="tight",
             pad_inches=0.2
-        ) # save plots to png
+        ) # Save plots to png
 
         plt.clf()
         plt.close()
@@ -354,7 +354,7 @@ def main():
     for graph_type, gdata in graphs.items():
         initial_graph = gdata["graph"]
 
-        # remove disconnected nodes (for random graph)
+        # Remove disconnected nodes (for random graph)
         isolated_nodes = list(nx.isolates(initial_graph))
         initial_graph.remove_nodes_from(isolated_nodes)
 
@@ -367,7 +367,7 @@ def main():
             expand = 3
 
         for model, model_func in models.items():
-            # generate cascade
+            # Generate cascade
             attempt = 0
             while True:
                 G = initial_graph.copy()
@@ -381,17 +381,17 @@ def main():
                 cascade.add_nodes_from(nodes)
                 cascade.add_edges_from(edges)
 
-                # path lengths from patient zero
+                # Path lengths from patient zero
                 path_lengths = nx.single_source_shortest_path_length(cascade, patient_zero)
                 pos = gdata["layout"](G)
 
                 for cm, cm_func in cms.items():
-                    # compute centrality scores and estimate
+                    # Compute centrality scores and estimate
                     scores = cm_func(cascade)
                     estimate, _ = get_estimate_error(scores, path_lengths)
                     sp = nx.shortest_path(cascade, estimate, patient_zero)
 
-                    # plot
+                    # Plot
                     filename = f"{graph_type.value}_{model.value}_{cm.value}"
                     create_graph_plot(G, pos, cascade, patient_zero, estimate, sp, filename, graph_type)
                 break
