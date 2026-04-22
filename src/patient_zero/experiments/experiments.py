@@ -12,7 +12,7 @@ from patient_zero.experiments.centrality import degree_centrality, distance_cent
 
 DATA_DIR = Path(__file__).resolve().parent / "simulations"
 OUTPUT_FILE = Path(__file__).resolve().parent / "results.csv"
-CENTRALITY_MEASURES = [degree_centrality, distance_centrality, rumor_centrality, betweenness_centrality, random_guess] # new centrality measures can be added here
+CENTRALITY_MEASURES = [degree_centrality, distance_centrality, rumor_centrality, betweenness_centrality, random_guess] # New centrality measures can be added here
 COLUMNS = [
     'id',
     'centrality',
@@ -27,18 +27,23 @@ COLUMNS = [
 ]
 
 def get_rank(result, patient_zero):
+    """
+    Calculates how many nodes scored better than patient zero. Scores tied with the true source are not included.
+    """
     patient_zero_score = result[patient_zero]
-    rank = sum(score > patient_zero_score for score in result.values()) 
-    # scores tied with the true source are not included in the rank
+    rank = sum(score > patient_zero_score for score in result.values())
     return rank
 
 def get_estimate_error(result, spl):
-    estimate = max(result, key=result.get) # get the most likely source node
-    estimate_error = spl.get(estimate) # calculate difference between estimate and true source
+    """
+    Calculates the shortest path distance between the best scored node and patient zero.
+    """
+    estimate = max(result, key=result.get) # Get the most likely source node
+    estimate_error = spl.get(estimate) # Calculate difference between estimate and true source
     return estimate, estimate_error
 
 def process_cascade(task):
-    """Processes a single cascade
+    """ Processes a single cascade
 
     Args:
         task (tuple):
@@ -52,23 +57,21 @@ def process_cascade(task):
     """
     simulation_id, nodes, edges, metadata = task
 
-    # build cascade as NetworkX graph
-    cascade = nx.Graph()
+    cascade = nx.Graph() # Build cascade as NetworkX graph
     cascade.add_nodes_from(nodes)
     cascade.add_edges_from(edges)
 
     patient_zero = metadata["patient_zero"]
-    # compute shortest path from patient zero to all other nodes in the cascade
-    path_lengths = nx.single_source_shortest_path_length(cascade, patient_zero)
+    path_lengths = nx.single_source_shortest_path_length(cascade, patient_zero) # Compute shortest path from patient zero to all other nodes in the cascade
 
     results = []
     for cm in CENTRALITY_MEASURES:
-        result = cm(cascade) # run centrality measure on the given cascade cm
+        result = cm(cascade) # Run centrality measure on the given cascade
 
-        estimate, estimate_error = get_estimate_error(result, path_lengths)
+        estimate, estimate_error = get_estimate_error(result, path_lengths) # Calculate results
         rank = get_rank(result, patient_zero)
 
-        results.append({ # save results
+        results.append({ # Save results
             "id": simulation_id,
             "centrality": cm.__name__,
             "estimate": estimate,
@@ -84,27 +87,27 @@ def cascade_tasks(pkl_files):
     Lazily iterate over all cascades from all PKL files.
     """
     for pkl_file in pkl_files:
-        for sim_id, nodes, edges, metadata in pkl_to_cascade(pkl_file): # unpickle pkl file
-            yield (sim_id, nodes, edges, metadata) # yield cascade when loaded
+        for sim_id, nodes, edges, metadata in pkl_to_cascade(pkl_file): # Unpickle pkl file
+            yield (sim_id, nodes, edges, metadata) # Yield cascade when loaded
 
 def main():
     print("Starting centrality calculations...")
     start = perf_counter()
 
-    pkl_files = list(DATA_DIR.rglob("*.pkl")) # find all pkl files
-    pd.DataFrame(columns=COLUMNS).to_csv(OUTPUT_FILE, index=False, mode='w') # write header
+    pkl_files = list(DATA_DIR.rglob("*.pkl")) # Find all pkl files
+    pd.DataFrame(columns=COLUMNS).to_csv(OUTPUT_FILE, index=False, mode='w') # Write header
 
-    with ProcessPoolExecutor(max_workers=os.cpu_count()) as executor: # create processes
-        buffer = [] # buffer for intermediate results
-        for i, result in enumerate(executor.map(process_cascade, cascade_tasks(pkl_files), chunksize=1_000)): # process cascades in chunks of 1k per process
+    with ProcessPoolExecutor(max_workers=os.cpu_count()) as executor: # Create processes
+        buffer = [] # Buffer for intermediate results
+        for i, result in enumerate(executor.map(process_cascade, cascade_tasks(pkl_files), chunksize=1_000)): # Process cascades in chunks of 1k per process
             buffer.extend(result)
 
-            if (i+1) % 100_000 == 0: # write results to csv from buffer in batches of 100k
+            if (i+1) % 100_000 == 0: # Write results to csv from buffer in batches of 100k
                 pd.DataFrame(buffer).to_csv(OUTPUT_FILE, index=False, mode='a', header=False)
                 buffer = []
                 print(f"Processed {i+1} cascades")
 
-        if buffer: # write remaining
+        if buffer: # Write remaining
             pd.DataFrame(buffer).to_csv(OUTPUT_FILE, index=False, mode='a', header=False)
             print("Processed all cascades")
     

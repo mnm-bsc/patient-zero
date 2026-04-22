@@ -5,7 +5,7 @@ This module is just a wrapper around the existing NetworkX graph creation functi
 import networkx as nx
 
 def create_balanced_tree_graph(c: int, d: int) -> nx.Graph:
-    """Creates a perfectly balanced tree graph with c children and depth d.
+    """ Creates a perfectly balanced tree graph with c children and depth d.
 
     Args:
         c (int): Number of children.
@@ -20,7 +20,7 @@ def create_balanced_tree_graph(c: int, d: int) -> nx.Graph:
     return nx.balanced_tree(c, d) # Create a balanced tree graph
 
 def create_k_regular_graph(n: int, d: int, seed: int = None) -> nx.Graph:
-    """Creates a random regular graph with n nodes and degree d.
+    """ Creates a random regular graph with n nodes and degree d.
 
     Args:
         n (int): Number of nodes.
@@ -35,7 +35,7 @@ def create_k_regular_graph(n: int, d: int, seed: int = None) -> nx.Graph:
 
 
 def create_random_graph(n: int, p: float, seed: int = None) -> nx.Graph:
-    """Creates an erdos renyi graph with n nodes and probability p of edge creation.
+    """ Creates an erdos renyi graph with n nodes and probability p of edge creation.
 
     Args:
         n (int): Number of nodes.
@@ -49,9 +49,8 @@ def create_random_graph(n: int, p: float, seed: int = None) -> nx.Graph:
     return nx.erdos_renyi_graph(n, p, seed)
 
 def create_small_world_graph(n: int, k: int, p: float, seed: int = None) -> nx.Graph:
-    """
-    Creates a watts strogatz graph with n nodes joined with its k nearest neighbors, 
-    and a probability p of rewiring an edge to a random node.
+    """ Creates a watts strogatz graph with n nodes joined with its k nearest neighbors, 
+        and a probability p of rewiring an edge to a random node.
 
     Args:
         n (int): Number of nodes.
@@ -66,7 +65,7 @@ def create_small_world_graph(n: int, k: int, p: float, seed: int = None) -> nx.G
     return nx.watts_strogatz_graph(n, k, p, seed)
 
 def create_scale_free_graph(n: int, e: int, seed: int = None) -> nx.Graph:
-    """Creates a barabasi albert graph with n nodes and e edges attached to existing nodes.
+    """ Creates a barabasi albert graph with n nodes and e edges attached to existing nodes.
 
     Args:
         n (int): Number of nodes.

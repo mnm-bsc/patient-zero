@@ -17,7 +17,7 @@ def pkl_to_cascade(path):
     """
 
     with open(path, "rb") as f:
-        simulations = pickle.load(f) # unpickle file
+        simulations = pickle.load(f) # Unpickle file
 
     for simulation in simulations:
         simulation_id = simulation.get("id")
@@ -26,12 +26,15 @@ def pkl_to_cascade(path):
 
         metadata = {
             k: v for k, v in simulation.items() 
-            if k not in {"nodes_infected", "cascade_edges"} # save all key-value pairs that are not nodes_infected or cascade_edges in metadata
+            if k not in {"nodes_infected", "cascade_edges"} # Save all key-value pairs that are not nodes_infected or cascade_edges in metadata
         }
 
         yield simulation_id, nodes, edges, metadata
 
 def get_centrality_title(key):
+    """
+    Returns centrality title
+    """
     if key == CentralityMeasure.DEGREE.value: 
         return "Degree Centrality"
     if key == CentralityMeasure.DISTANCE.value: 
@@ -45,6 +48,9 @@ def get_centrality_title(key):
     raise ValueError(f"Unknown centrality: {key}")
 
 def get_network_title(key):
+    """
+    Returns network title
+    """
     if key == NetworkType.REGULAR.value: 
         return "K-regular"
     if key == NetworkType.RANDOM.value: 

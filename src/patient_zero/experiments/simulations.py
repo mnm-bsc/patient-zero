@@ -18,8 +18,8 @@ from patient_zero.enums import NetworkType, ModelType
 BASE_PATH = Path(__file__).resolve().parent
 
 # Worst case number of tries = MAX_ATTEMPTS_PER_SIM * MAX_SIMULATIONS * len(p_values)
-MAX_ATTEMPTS_PER_SIM = 1000 # attempts per simulation
-MAX_SIMULATIONS = 200 # max number of simulations. Will stop early if enough successful cascades have been made
+MAX_ATTEMPTS_PER_SIM = 1000 # Attempts per simulation
+MAX_SIMULATIONS = 200 # Max number of simulations. Will stop early if enough successful cascades have been made
 
 
 def run_simulation(
@@ -57,13 +57,13 @@ def run_simulation(
     metadata, results = [], []
     expand = 0
 
-    if nx.is_tree(graph): 
+    if nx.is_tree(graph): # Set expand to be the branching factor of the balanced tree
         expand = graph.degree(0)
 
     for r0 in r0_values: # r0 o p_infect values
         tmp_results, tmp_metadata = [], []
         for sim in range(MAX_SIMULATIONS):
-            remaining_attempts = MAX_SIMULATIONS - sim
+            remaining_attempts = MAX_SIMULATIONS - sim # Track simulation attempts
             simulations_left_to_generate = n_simulations - len(tmp_metadata)
             if remaining_attempts < simulations_left_to_generate: # If unable to generate n cascades in max attempts and simulations, skip to next p value
                 print(f"Unable to generate {model} cascades for graph={experiment_metadata["graph_type"]} r0={r0:.2f}, size={cascade_size}.")
@@ -71,17 +71,17 @@ def run_simulation(
 
             attempt = 0
 
-            patient_zero_rng = random.Random(patient_zero_base_seed + sim + r0)
+            patient_zero_rng = random.Random(patient_zero_base_seed + sim + r0) # Add sim and r0 to rng to ensure unique patient zero and model across simulations
             model_rng = random.Random(model_base_seed + sim + r0)
 
-            while attempt != MAX_ATTEMPTS_PER_SIM: # retry if cascade not successful
-                patient_zero_seed = patient_zero_rng.randint(0, 2**32 - 1) # add sim to seed to ensure unique patient zero across simulations
-                patient_zero = get_random_node(G=graph, seed=patient_zero_seed)
-                model_seed = (model_rng.randint(0, 2**32 - 1) + attempt) % (2**32)  # add sim and attempt to seed to ensure unique model seeds accross simulations and attempts
+            while attempt != MAX_ATTEMPTS_PER_SIM: # Retry if cascade not successful
+                patient_zero_seed = patient_zero_rng.randint(0, 2**32 - 1)
+                patient_zero = get_random_node(G=graph, seed=patient_zero_seed) # Choose a random patient zero
+                model_seed = (model_rng.randint(0, 2**32 - 1) + attempt) % (2**32)  # Add attempt to seed to ensure unique model seeds across simulations and attempts
                 sim_id = f"{simulations_name}_r0_{r0:.2f}_exp{sim}"
 
                 # Run simulation
-                if model == ModelType.IC.value:
+                if model == ModelType.IC.value: # IC model
                     infected_nodes, cascade_edges = ic(
                         G=graph,
                         patient_zero=patient_zero,
@@ -90,7 +90,7 @@ def run_simulation(
                         seed=model_seed,
                         expand=expand
                     )
-                elif model == ModelType.SIR.value:
+                elif model == ModelType.SIR.value: # SIR model
                     infected_nodes, cascade_edges = sir(
                         G=graph, 
                         patient_zero=patient_zero, 
@@ -102,11 +102,11 @@ def run_simulation(
                 else:
                     raise ValueError(f"Unknown model {model}") 
 
-                if len(infected_nodes) < cascade_size: # if cascade not large enough, throw away
+                if len(infected_nodes) < cascade_size: # If cascade not large enough, throw away
                     attempt += 1
                     continue
                 
-                # if cascade is large enough, save
+                # If cascade is large enough, save
                 tmp_metadata.append({
                     "id": sim_id,
                     "simulations_name": simulations_name,
@@ -131,7 +131,7 @@ def run_simulation(
                 })
                 break
             
-            if len(tmp_results) == n_simulations: # if succesfully generated n simulaitons save them, otherwise discard all 
+            if len(tmp_results) == n_simulations: # If successfully generated n simulations save them, otherwise discard all 
                 metadata.extend(tmp_metadata)
                 results.extend(tmp_results)
                 break
@@ -140,6 +140,9 @@ def run_simulation(
 
 
 def get_graph(graph_type, graph_seed, **params):
+    """
+    Returns a generated graph of a specific type.
+    """
     if graph_type == NetworkType.RANDOM.value:
         return create_random_graph(n=params.get("nodes"), p=params.get("probability"), seed=graph_seed)
     if graph_type == NetworkType.REGULAR.value:
@@ -173,7 +176,7 @@ def main():
     with open(BASE_PATH / "simulations_metadata.json", "r", encoding="utf-8") as f:
         metadata = json.load(f)
 
-    defaults = metadata["defaults"] # default data regarding all simulations
+    defaults = metadata["defaults"] # Default data regarding all simulations
     cascade_size_limits = defaults["cascade_size_limits"]
     n_simulations_per_r0 = defaults["n_simulations_per_r0"]
     seeds = defaults["seeds"]
@@ -194,7 +197,7 @@ def main():
 
             r0_values = model_defaults["params"]["r0_values"]
             start, stop, num = r0_values["start"], r0_values["stop"], r0_values["num"]
-            # returns an array of p values evenly spaced between start and stop
+            # Returns an array of p values evenly spaced between start and stop
             r0_values = np.linspace(start, stop, num).tolist()
 
             model_base_seed = seeds["model_base_seed"]
@@ -206,7 +209,7 @@ def main():
                     "graph_seed": graph_seed,
                 }
 
-                # save independent simulation
+                # Save independent simulation
                 tasks.append({
                     "graph": G,
                     "patient_zero_base_seed": patient_zero_base_seed,
@@ -220,16 +223,16 @@ def main():
                 })
     
     with ProcessPoolExecutor() as executor:
-        futures = [executor.submit(run_simulation, **task) for task in tasks] # spawn multiple processes and run simulations in parallel
+        futures = [executor.submit(run_simulation, **task) for task in tasks] # Spawn multiple processes and run simulations in parallel
 
-        for future in as_completed(futures): # process results when completed
+        for future in as_completed(futures): # Process results when completed
             meta, res = future.result()
 
             graph_type = meta[0]["graph_type"]
             model_name = meta[0]["model"]
             sim_name = meta[0]["simulations_name"]
                 
-            # save metadata and results
+            # Save metadata and results
             path = BASE_PATH / "simulations" / graph_type / model_name
             save_metadata(path, f"{sim_name}.json", meta)
             save_results(path, f"{sim_name}.pkl", res)

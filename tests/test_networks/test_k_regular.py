@@ -5,6 +5,9 @@ class TestCreateKRegularGraph:
     """Test create k-regular graph function"""
 
     def test_can_create_k_regular_graph(self):
+        """
+        Test the k-regular graph is created correctly.
+        """
         nodes = 10
         degree = 3
 
@@ -14,6 +17,9 @@ class TestCreateKRegularGraph:
         assert len(G.edges()) == (nodes * 3) / 2
     
     def test_tree_has_correct_degree(self):
+        """
+        Test the k-regular graph has correct amount of degrees.
+        """
         nodes = 4
         degree = 3
 

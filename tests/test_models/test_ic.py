@@ -7,7 +7,7 @@ class TestIndependentCascade:
 
     def test_patient_zero_is_infected(self):
         """
-        Test patient zero is always infected
+        Test patient zero is always infected.
         """
         g = nx.balanced_tree(1, 0)
         patient_zero = 0
@@ -21,7 +21,7 @@ class TestIndependentCascade:
 
     def test_patient_zero_can_infect_neighbors(self):
         """
-        Test patient zero can spread to neighboring nodes
+        Test patient zero can spread to neighboring nodes.
         """
         g = nx.balanced_tree(2, 2)
         patient_zero = 0
@@ -37,7 +37,7 @@ class TestIndependentCascade:
 
     def test_R0_value_zero(self):
         """
-        Test that patient zero wont spread to neighboring nodes when R0 value is 0
+        Test that patient zero wont spread to neighboring nodes when R0 value is 0.
         """
         g = nx.balanced_tree(2, 2)
         patient_zero = 0

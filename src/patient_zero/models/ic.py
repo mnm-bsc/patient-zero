@@ -29,31 +29,31 @@ def independent_cascade(G: nx.Graph, patient_zero: int, R_0: float, max_size: in
     cascade_edges = []
     next_label = max(G.nodes) + 1
 
-    if (nx.is_tree(G) and expand != 0):
+    if (nx.is_tree(G) and expand != 0): # Calculate average degree on balanced trees or on other networks
         degrees = [G.degree[node] for node in G.nodes() if G.degree[node] != 1]
         avg_degree = sum(degrees) / len(degrees)
     else:
         avg_degree = sum(degree for _, degree in G.degree) / len(G.degree)
 
-    p_infect = R_0 / (avg_degree - 1)
+    p_infect = R_0 / (avg_degree - 1) # Calculate the probability of infecting
 
     while infected:
         new_infected = set()
         infected_list = list(infected)
         rng.shuffle(infected_list)
-        for node in infected_list: # sort infected nodes and neighbors to ensure reproducibility across runs
-            if expand != 0 and G.degree(node) == 1:                
+        for node in infected_list:
+            if expand != 0 and G.degree(node) == 1: # Expands balanced tree if leaf node is infected           
                 next_label, _ = expand_tree(G, node, expand, next_label)
             neighbor_list = list(G.neighbors(node))
             rng.shuffle(neighbor_list)
             for neighbor in neighbor_list: 
-                if neighbor not in all_infected and rng.random() < p_infect:
-                    if (max_size is not None and len(all_infected) >= max_size):
-                        return all_infected, cascade_edges # return if max cascade size is reached
+                if neighbor not in all_infected and rng.random() < p_infect: # Infect a susceptible neighbor with a given probability
+                    if (max_size is not None and len(all_infected) >= max_size): # Return if max cascade size is reached
+                        return all_infected, cascade_edges 
 
-                    new_infected.add(neighbor)
-                    all_infected.add(neighbor) # track all infected nodes
-                    cascade_edges.append((node, neighbor)) # save cascade edge
-        infected = new_infected # only newly infected nodes can infect in next round
+                    new_infected.add(neighbor) # Track newly infected node
+                    all_infected.add(neighbor) # Track all infected nodes
+                    cascade_edges.append((node, neighbor)) # Save cascade edge
+        infected = new_infected # Only newly infected nodes can infect in next round
     
     return all_infected, cascade_edges

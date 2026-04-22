@@ -1,10 +1,10 @@
+import random
 import networkx as nx
 import matplotlib.pyplot as plt
 from patient_zero.networks import create_random_graph, create_balanced_tree_graph
 from patient_zero.models import ic, sir
 from patient_zero.networks.utils import get_random_node
 from patient_zero.experiments.centrality import distance_centrality
-import random
 
 def playground():
     # Graph
@@ -28,7 +28,8 @@ def playground():
 
         infected_nodes, cascade_edges = ic(G, patient_zero, r0, max_size, seed=model_seed+sim)
 
-        if len(infected_nodes) != max_size: continue
+        if len(infected_nodes) != max_size: 
+            continue
 
         cascade = nx.Graph()
         cascade.add_nodes_from(infected_nodes)
