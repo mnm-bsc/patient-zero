@@ -44,21 +44,21 @@ def susceptible_infected_recovered(
     IS_TREE = nx.is_tree(G)
 
     infect_rate, recover_rate = get_rates(G, R_0, IS_TREE)
-    si_links = {(nb, patient_zero) for nb in G.neighbors(patient_zero)}
+    si_links = {(nb, patient_zero) for nb in G.neighbors(patient_zero)} # Add si links from patient-zero
 
-    if (IS_TREE and G.degree(patient_zero) == 1 and expand != 0):
+    if (IS_TREE and G.degree(patient_zero) == 1 and expand != 0): # Expands balanced tree if leaf node is infected
         next_label, new_nodes = expand_tree(G, patient_zero, expand, next_label)
         susceptible.update(new_nodes) # Add new nodes to susceptible
 
     while infected:
 
-        if (max_size is not None and len(all_infected) >= max_size):
-            return all_infected, cascade_edges # Return if max cascade size is reached
+        if (max_size is not None and len(all_infected) >= max_size): # Return if max cascade size is reached
+            return all_infected, cascade_edges
         
-        num_infected = len(infected) # Number of infected now
+        num_infected = len(infected) # Number of infected nodes now
         num_si = len(si_links) # Number of si links now
 
-        probability = calculate_probability(
+        probability = calculate_probability( # Calculate the probability of the next infect event.
             num_infected=num_infected, 
             num_si=num_si, 
             infect_rate=infect_rate, 
@@ -67,7 +67,7 @@ def susceptible_infected_recovered(
 
         if rng.random() < probability: # Coin flip for a infect event or recovery event
             
-            si_links, next_label = infection_event(
+            si_links, next_label = infection_event( # Infect event happens
                 G,
                 rng,
                 expand,
@@ -81,7 +81,7 @@ def susceptible_infected_recovered(
             
         else:
             
-            si_links = recovery_event(
+            si_links = recovery_event( # Recover event happens
                 rng,
                 infected,
                 recovered,
@@ -108,7 +108,7 @@ def get_rates(
         - recover_rate (float): The recover rate.
     """
 
-    if (is_tree):
+    if (is_tree): # Calculate average degree for balanced trees or other networks
         degrees = [degree for _, degree in G.degree() if degree != 1]
         avg_degree = sum(degrees) / len(degrees)
         # infect_rate = R_0 / expand ?????
