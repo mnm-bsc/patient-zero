@@ -95,9 +95,18 @@ def get_rates(
         R_0: float, 
         is_tree: bool = False
     ):
-    """
-    Computes the infection and recovery rates.
-    If the graph is a tree, we calculate the average degree excluding leaves, as those are expanded.
+    """ Computes the infection and recovery rates. 
+        If the graph is a tree, we calculate the average degree excluding leaves, as those are expanded.
+
+    Args:
+        G (nx.Graph): NetworkX graph.
+        R_0 (float): The basic reproduction number.
+        is_tree (bool, optional): True or False if the graph is a tree. Defaults to False.
+
+    Returns:
+        tuple:
+        - infect_rate (float): The infect rate.
+        - recover_rate (float): The recover rate.
     """
 
     if (is_tree):
@@ -117,13 +126,13 @@ def calculate_probability(num_infected, num_si, infect_rate, recover_rate) -> fl
     """Calculate the probability of an infect or a recover event happening
 
     Args:
-        num_infected (int): Number of infected nodes
-        num_si (int): Number of si li links
-        infect_rate (float): The infect rate
-        recover_rate (float): The recover rate
+        num_infected (int): Number of infected nodes.
+        num_si (int): Number of si li links.
+        infect_rate (float): The infect rate.
+        recover_rate (float): The recover rate.
 
     Returns:
-        float: Probability
+        float: Probability.
     """
     sum_infect = infect_rate * num_si # sum(r_I) = r_I * n_si
     sum_recover = num_infected * recover_rate # sum(r_R) = n_i * r_R
