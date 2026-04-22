@@ -57,13 +57,13 @@ def run_simulation(
     metadata, results = [], []
     expand = 0
 
-    if nx.is_tree(graph): 
+    if nx.is_tree(graph): # Set expand to be the branching factor of the balanced tree
         expand = graph.degree(0)
 
     for r0 in r0_values: # r0 o p_infect values
         tmp_results, tmp_metadata = [], []
         for sim in range(MAX_SIMULATIONS):
-            remaining_attempts = MAX_SIMULATIONS - sim
+            remaining_attempts = MAX_SIMULATIONS - sim # Track simulation attempts
             simulations_left_to_generate = n_simulations - len(tmp_metadata)
             if remaining_attempts < simulations_left_to_generate: # If unable to generate n cascades in max attempts and simulations, skip to next p value
                 print(f"Unable to generate {model} cascades for graph={experiment_metadata["graph_type"]} r0={r0:.2f}, size={cascade_size}.")
@@ -71,17 +71,17 @@ def run_simulation(
 
             attempt = 0
 
-            patient_zero_rng = random.Random(patient_zero_base_seed + sim + r0)
+            patient_zero_rng = random.Random(patient_zero_base_seed + sim + r0) # Add sim and r0 to rng to ensure unique patient zero and model across simulations
             model_rng = random.Random(model_base_seed + sim + r0)
 
             while attempt != MAX_ATTEMPTS_PER_SIM: # Retry if cascade not successful
-                patient_zero_seed = patient_zero_rng.randint(0, 2**32 - 1) # Add sim to seed to ensure unique patient zero across simulations
-                patient_zero = get_random_node(G=graph, seed=patient_zero_seed)
-                model_seed = (model_rng.randint(0, 2**32 - 1) + attempt) % (2**32)  # Add sim and attempt to seed to ensure unique model seeds accross simulations and attempts
+                patient_zero_seed = patient_zero_rng.randint(0, 2**32 - 1)
+                patient_zero = get_random_node(G=graph, seed=patient_zero_seed) # Choose a random patient-zero
+                model_seed = (model_rng.randint(0, 2**32 - 1) + attempt) % (2**32)  # Add attempt to seed to ensure unique model seeds across simulations and attempts
                 sim_id = f"{simulations_name}_r0_{r0:.2f}_exp{sim}"
 
                 # Run simulation
-                if model == ModelType.IC.value:
+                if model == ModelType.IC.value: # IC model
                     infected_nodes, cascade_edges = ic(
                         G=graph,
                         patient_zero=patient_zero,
@@ -90,7 +90,7 @@ def run_simulation(
                         seed=model_seed,
                         expand=expand
                     )
-                elif model == ModelType.SIR.value:
+                elif model == ModelType.SIR.value: # SIR model
                     infected_nodes, cascade_edges = sir(
                         G=graph, 
                         patient_zero=patient_zero, 
@@ -140,6 +140,9 @@ def run_simulation(
 
 
 def get_graph(graph_type, graph_seed, **params):
+    """
+    Returns a generated graph of a specific type.
+    """
     if graph_type == NetworkType.RANDOM.value:
         return create_random_graph(n=params.get("nodes"), p=params.get("probability"), seed=graph_seed)
     if graph_type == NetworkType.REGULAR.value:
