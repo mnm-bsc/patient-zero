@@ -1,5 +1,4 @@
 import networkx as nx
-#from patient_zero.networks import create_scale_free_graph, create_small_world_graph
 from patient_zero.experiments import dfs, rumor_centrality 
 
 class TestRumorCentrality:
