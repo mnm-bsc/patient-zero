@@ -67,7 +67,7 @@ class TestExperiments:
         
     def test_rank_with_ties(self):
         """
-        Test if get_rank returns 0 if scores are tied with patient-zero
+        Test if get_rank returns 0 if scores are tied with patient-zero.
         """
         result = {
             1: 2,

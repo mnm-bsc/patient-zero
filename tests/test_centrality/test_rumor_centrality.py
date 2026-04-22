@@ -1,10 +1,11 @@
+"""Tests for the rumor centrality"""
 import networkx as nx
 from patient_zero.experiments import dfs, rumor_centrality 
 
 class TestRumorCentrality:
     def test_dfs(self):
         """
-        Testing if the dfs function is correct
+        Testing if the dfs function is correct.
         """
         G = nx.Graph()
         G.add_edges_from([
@@ -24,7 +25,7 @@ class TestRumorCentrality:
 
     def test_rumor_centrality_score_nodes(self):
         """
-        Testing the rumor centrality gives scores to nodes
+        Testing the rumor centrality gives scores to nodes.
         """
         G = nx.Graph()
         G.add_edges_from([
@@ -39,7 +40,7 @@ class TestRumorCentrality:
 
     def test_leaves_has_less_score(self):
         """
-        Testing if leaves has a lower score than other nodes
+        Testing if leaves has a lower score than other nodes.
         """
         G = nx.Graph()
         G.add_edges_from([
@@ -59,7 +60,7 @@ class TestRumorCentrality:
 
     def test_two_nodes_same_score(self):
         """
-        Testing if two nodes can have the same score
+        Testing if two nodes can have the same score.
         """
         G = nx.Graph()
         G.add_edge(0, 1)
@@ -69,7 +70,7 @@ class TestRumorCentrality:
 
     def test_balanced_tree_root_highest_score(self):
         """
-        Testing if root node has the highest score in a balanced tree
+        Testing if root node has the highest score in a balanced tree.
         """
         G = nx.balanced_tree(r=2, h=2)
         rumor_scores = rumor_centrality(G)
@@ -78,7 +79,7 @@ class TestRumorCentrality:
 
     def test_path_graph_symmetric_scores(self):
         """
-        Testing if nodes have a symmetrical score on a symmetrical graph
+        Testing if nodes have a symmetrical score on a symmetrical graph.
         """
         G = nx.path_graph(5)
         rumor_scores = rumor_centrality(G)
@@ -89,7 +90,7 @@ class TestRumorCentrality:
 
     def test_dfs_on_path_graph(self):
         """
-        Testing if the dfs subtree is correct on a path graph
+        Testing if the dfs subtree is correct on a path graph.
         """
         G = nx.path_graph(5)
         tree = nx.bfs_tree(G, source=0)
