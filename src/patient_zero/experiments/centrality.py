@@ -6,7 +6,7 @@ import random
 import networkx as nx
 
 def dfs(n: int, p: int | None, bfs_tree: nx.DiGraph, subtree_sizes: set) -> int:
-    """Run DFS from node n with parent p to recursiely get the subtree size all nodes.
+    """Run DFS from node n with parent p to recursively get the subtree size all nodes.
 
     Args:
         n (int): Root of dfs.
@@ -17,14 +17,14 @@ def dfs(n: int, p: int | None, bfs_tree: nx.DiGraph, subtree_sizes: set) -> int:
     Returns:
         int: The subtree size of node n.
     """
-    subtree_sizes[n] = 1 # Root size is 1.
-    for neighbor in bfs_tree.neighbors(n): # Loops over neighbors in the BFS tree.
+    subtree_sizes[n] = 1 # Root size is 1
+    for neighbor in bfs_tree.neighbors(n): # Loops over neighbors in the BFS tree
         if neighbor != p:
-            subtree_sizes[n] += dfs(neighbor, n, bfs_tree, subtree_sizes) # Recursively calls itself with the new neighbor node and Calculates the subtree size.
+            subtree_sizes[n] += dfs(neighbor, n, bfs_tree, subtree_sizes) # Recursively calls itself with the new neighbor node and Calculates the subtree size
     return subtree_sizes[n]
 
 def rumor_centrality(cascade: nx.Graph) -> dict:
-    """Calculates the rumor centrality for all nodes in a graph.
+    """Calculates the rumor centrality score for all nodes in a graph.
 
     Args:
         cascade (nx.Graph): NetworkX graph.
@@ -34,14 +34,14 @@ def rumor_centrality(cascade: nx.Graph) -> dict:
     """
     node_scores = {}
     
-    for node in list(cascade.nodes): # Loops through every node in the cascade and calculates the rumor score for that node.
-        bfs_tree = nx.bfs_tree(cascade, node) # Creates a BFS tree for that specific node.
+    for node in list(cascade.nodes): # Loops through every node in the cascade and calculates the rumor score for that node
+        bfs_tree = nx.bfs_tree(cascade, node) # Creates a BFS tree for the specific node
         subtree_sizes = {}
-        dfs(node, None, bfs_tree, subtree_sizes) # Uses Depth-First-Search on the node with the BFS tree to calculate subtree sizes.
+        dfs(node, None, bfs_tree, subtree_sizes) # Uses Depth-First-Search on the node with the BFS tree to calculate subtree sizes
         
         prod = 0
-        for tree_node in bfs_tree.nodes: # Computes the product of all subtree sizes.
-            prod += math.log(subtree_sizes[tree_node]) # prod = product of T[u] for all nodes u in the BFS tree.
+        for tree_node in bfs_tree.nodes: # Computes the product of all subtree sizes
+            prod += math.log(subtree_sizes[tree_node]) # prod = product of T[u] for all nodes u in the BFS tree
         
         node_scores[node] = -prod # Compute root's rumor centrality. R(root) = n! / prod -> -prod
     return node_scores
@@ -49,19 +49,19 @@ def rumor_centrality(cascade: nx.Graph) -> dict:
 
 def degree_centrality(cascade: nx.Graph) -> dict:
     """
-    Returns the degree centrality for all nodes in a graph.
+    Returns the degree centrality score for all nodes in a graph.
     """
     return nx.degree_centrality(cascade)
 
 def distance_centrality(cascade: nx.Graph) -> dict:
     """
-    Returns the distance centrality for all nodes in a graph.
+    Returns the distance centrality score for all nodes in a graph.
     """
     return nx.closeness_centrality(cascade)
 
 def betweenness_centrality(cascade) -> dict:
     """
-    Returns the betweenness centrality for all nodes in a graph.
+    Returns the betweenness centrality score for all nodes in a graph.
     """
     return nx.betweenness_centrality(cascade)
 

@@ -58,7 +58,7 @@ def susceptible_infected_recovered(
         num_infected = len(infected) # Number of infected nodes now
         num_si = len(si_links) # Number of si links now
 
-        probability = calculate_probability( # Calculate the probability of the next infect event.
+        probability = calculate_probability( # Calculate the probability of the next infect event
             num_infected=num_infected, 
             num_si=num_si, 
             infect_rate=infect_rate, 
@@ -208,6 +208,6 @@ def recovery_event(
     infected.remove(node) # Move node from infected to recovered
     recovered.add(node)
 
-    si_links = {(s, i) for (s, i) in si_links if i != node} # Update SI link state, removing all link to the newly recovered node.
+    si_links = {(s, i) for (s, i) in si_links if i != node} # Update SI link state, removing all link to the newly recovered node
 
     return si_links
