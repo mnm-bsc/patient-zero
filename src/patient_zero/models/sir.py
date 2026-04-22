@@ -48,15 +48,15 @@ def susceptible_infected_recovered(
 
     if (IS_TREE and G.degree(patient_zero) == 1 and expand != 0):
         next_label, new_nodes = expand_tree(G, patient_zero, expand, next_label)
-        susceptible.update(new_nodes) # add new nodes to susceptible
+        susceptible.update(new_nodes) # Add new nodes to susceptible
 
     while infected:
 
         if (max_size is not None and len(all_infected) >= max_size):
-            return all_infected, cascade_edges # return if max cascade size is reached
+            return all_infected, cascade_edges # Return if max cascade size is reached
         
-        num_infected = len(infected) # number of infected now
-        num_si = len(si_links) # number of si links now
+        num_infected = len(infected) # Number of infected now
+        num_si = len(si_links) # Number of si links now
 
         probability = calculate_probability(
             num_infected=num_infected, 
@@ -65,7 +65,7 @@ def susceptible_infected_recovered(
             recover_rate=recover_rate
         )
 
-        if rng.random() < probability: # coin flip for a infect event or recovery event
+        if rng.random() < probability: # Coin flip for a infect event or recovery event
             
             si_links, next_label = infection_event(
                 G,
@@ -129,27 +129,23 @@ def infection_event(
     cascade_edges,
     next_label
 ) -> int:
-    # Choose a random SI link
-    new, source = rng.choice(list(si_links))
+    new, source = rng.choice(list(si_links)) # Choose a random SI link
 
-    # Expand if chosen node new is a leaf
-    if expand != 0 and G.degree(new) == 1:
+    if expand != 0 and G.degree(new) == 1: # Expand if chosen node new is a leaf
         next_label, new_nodes = expand_tree(
             G, new, expand, next_label
         )
         susceptible.update(new_nodes) # Add the newly expanded nodes to susceptible
 
-    # Move new node from susceptible to infected
-    susceptible.remove(new)
+    susceptible.remove(new) # Move new node from susceptible to infected
     infected.add(new)
 
-    # Track cascade edges and nodes
-    cascade_edges.append((source, new))
+    cascade_edges.append((source, new)) # Track cascade edges and nodes
     all_infected.add(new)
 
     # Update SI link state, removing invalid links and adding the newly infected node
-    si_links = {(s, i) for (s, i) in si_links if s != new} # remove links targeting new, as it is no longer susceptible
-    si_links.update({(s_nb, new) for s_nb in G.neighbors(new) if s_nb in susceptible}) # add links from s to susceptible neighbors
+    si_links = {(s, i) for (s, i) in si_links if s != new} # Remove links targeting new, as it is no longer susceptible
+    si_links.update({(s_nb, new) for s_nb in G.neighbors(new) if s_nb in susceptible}) # Add links from s to susceptible neighbors
 
     return si_links, next_label
 
@@ -159,14 +155,11 @@ def recovery_event(
     recovered,
     si_links
 ):
-    # Choose random infected node that will recover
-    node = rng.choice(list(infected))
+    node = rng.choice(list(infected)) # Choose random infected node that will recover
 
-    # Move node from infected to recovered
-    infected.remove(node)
+    infected.remove(node) # Move node from infected to recovered
     recovered.add(node)
 
-     # Update SI link state, removing all link to the newly recovered node.
-    si_links = {(s, i) for (s, i) in si_links if i != node}
+    si_links = {(s, i) for (s, i) in si_links if i != node} # Update SI link state, removing all link to the newly recovered node.
 
     return si_links
