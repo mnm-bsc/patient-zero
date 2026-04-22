@@ -112,7 +112,7 @@ def create_plot(name, index, grouped, by="graph"):
                     ymax * 1.05
                 )
 
-                if row == 0:  # Only add title to left plot
+                if row == 0: # Only add title to left plot
                     ax.set_title(
                         col_title_func(col_value)
                     )
@@ -169,33 +169,30 @@ def create_plot(name, index, grouped, by="graph"):
                 else:
                     ax.set_yticklabels([])
 
-                if row == len(MODELS)-1:  # Only add x axis labels to bottom plots
+                if row == len(MODELS)-1: # Only add x axis labels to bottom plots
                     ax.set_xlabel(
                         r"$R_0$"
                     )
 
-                 # To avoid weird p values on x axis
                 r0_values = sorted(
                     df_plot["r0"].unique()
-                )
+                ) # To avoid weird p values on x axis
 
-                 # Pick 10 evenly spaced indices
                 indices = np.linspace(
                     0,
                     len(r0_values)-1,
                     10,
                     dtype=int
-                )
+                ) # Pick 10 evenly spaced indices
 
                 r0_ticks = [
                     r0_values[i]
                     for i in indices
                 ]
                 
-                # Then set the ticks
                 ax.set_xticks(
                     r0_ticks
-                )
+                ) # Then set the ticks
 
                 ax.set_xticklabels(
                     [
@@ -208,7 +205,6 @@ def create_plot(name, index, grouped, by="graph"):
 
                 ax.margins(x=0)
 
-                # Add vertical grey line at R0 = 1
                 ax.axvline(
                     x=1.0,
                     color="grey",
@@ -216,7 +212,7 @@ def create_plot(name, index, grouped, by="graph"):
                     linewidth=1.5,
                     alpha=0.6,
                     zorder=0
-                )
+                ) # Add vertical grey line at R0 = 1
 
         left = axes[0,0].get_position().x0
         right = axes[0,-1].get_position().x1
