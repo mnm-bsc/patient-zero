@@ -76,7 +76,7 @@ def run_simulation(
 
             while attempt != MAX_ATTEMPTS_PER_SIM: # Retry if cascade not successful
                 patient_zero_seed = patient_zero_rng.randint(0, 2**32 - 1)
-                patient_zero = get_random_node(G=graph, seed=patient_zero_seed) # Choose a random patient-zero
+                patient_zero = get_random_node(G=graph, seed=patient_zero_seed) # Choose a random patient zero
                 model_seed = (model_rng.randint(0, 2**32 - 1) + attempt) % (2**32)  # Add attempt to seed to ensure unique model seeds across simulations and attempts
                 sim_id = f"{simulations_name}_r0_{r0:.2f}_exp{sim}"
 

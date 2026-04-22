@@ -44,7 +44,7 @@ def susceptible_infected_recovered(
     IS_TREE = nx.is_tree(G)
 
     infect_rate, recover_rate = get_rates(G, R_0, IS_TREE)
-    si_links = {(nb, patient_zero) for nb in G.neighbors(patient_zero)} # Add si links from patient-zero
+    si_links = {(nb, patient_zero) for nb in G.neighbors(patient_zero)} # Add si links from patient zero
 
     if (IS_TREE and G.degree(patient_zero) == 1 and expand != 0): # Expands balanced tree if leaf node is infected
         next_label, new_nodes = expand_tree(G, patient_zero, expand, next_label)

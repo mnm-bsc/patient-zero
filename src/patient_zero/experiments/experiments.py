@@ -28,7 +28,7 @@ COLUMNS = [
 
 def get_rank(result, patient_zero):
     """
-    Calculates how many nodes scored better than patient-zero. Scores tied with the true source are not included.
+    Calculates how many nodes scored better than patient zero. Scores tied with the true source are not included.
     """
     patient_zero_score = result[patient_zero]
     rank = sum(score > patient_zero_score for score in result.values())
@@ -36,7 +36,7 @@ def get_rank(result, patient_zero):
 
 def get_estimate_error(result, spl):
     """
-    Calculates the shortest path distance between the best scored node and patient-zero.
+    Calculates the shortest path distance between the best scored node and patient zero.
     """
     estimate = max(result, key=result.get) # Get the most likely source node
     estimate_error = spl.get(estimate) # Calculate difference between estimate and true source

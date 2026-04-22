@@ -3,7 +3,7 @@ from patient_zero.experiments import get_estimate_error, get_rank
 class TestExperiments:
     def test_estimate_error_guessing_correctly(self):
         """
-        Test the get_estimate_error function gives correct result when patient-zero node has the highest score.
+        Test the get_estimate_error function gives correct result when patient zero node has the highest score.
         """
         result = {
             1: 1, 
@@ -67,7 +67,7 @@ class TestExperiments:
         
     def test_rank_with_ties(self):
         """
-        Test if get_rank returns 0 if scores are tied with patient-zero.
+        Test if get_rank returns 0 if scores are tied with patient zero.
         """
         result = {
             1: 2,
