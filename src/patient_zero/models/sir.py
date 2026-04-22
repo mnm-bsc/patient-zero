@@ -108,7 +108,7 @@ def get_rates(
         - recover_rate (float): The recover rate.
     """
 
-    if (is_tree): # Calculate average degree on balanced trees or on other networks
+    if is_tree: # Calculate average degree on balanced trees or on other networks
         degrees = [degree for _, degree in G.degree() if degree != 1]
         avg_degree = sum(degrees) / len(degrees)
         # infect_rate = R_0 / expand ?????

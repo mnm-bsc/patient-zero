@@ -1,7 +1,8 @@
 """Tests for the susceptible infected recovered cascade model"""
+import random
 import networkx as nx
 from patient_zero.models import sir, infection_event, recovery_event, calculate_probability, get_rates
-import random
+
 
 class TestSusceptibleInfectedRecovered:
     """Test SIR model"""
