@@ -132,12 +132,12 @@ def infection_event(
     # Choose a random SI link
     new, source = rng.choice(list(si_links))
 
-    # Expand if new is a leaf
+    # Expand if chosen node new is a leaf
     if expand != 0 and G.degree(new) == 1:
         next_label, new_nodes = expand_tree(
             G, new, expand, next_label
         )
-        susceptible.update(new_nodes)
+        susceptible.update(new_nodes) # Add the newly expanded nodes to susceptible
 
     # Move new node from susceptible to infected
     susceptible.remove(new)
