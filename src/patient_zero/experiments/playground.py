@@ -1,9 +1,10 @@
 import networkx as nx
 import matplotlib.pyplot as plt
-from patient_zero.networks import create_random_graph
+from patient_zero.networks import create_random_graph, create_balanced_tree_graph
 from patient_zero.models import ic, sir
 from patient_zero.networks.utils import get_random_node
 from patient_zero.experiments.centrality import distance_centrality
+import random
 
 def playground():
     # Graph
@@ -62,8 +63,16 @@ def draw_result(patient_zero, guess, cascade):
     nx.draw(cascade, pos, with_labels=False, node_color=node_colors, node_size=100)
     plt.show()
 
+
+def playground2():
+    G = create_balanced_tree_graph(4, 5)
+    seed = random.randint(0, 10)
+    for run in range(100):
+        patient_zero = get_random_node(G, seed + run)
+        _, _ = sir(G, patient_zero, R_0=1.0, max_size=None, expand=3, seed=seed+run)
+
 if __name__ == "__main__":
-    playground()
+    playground2()
 
 
 

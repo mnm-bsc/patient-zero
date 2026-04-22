@@ -19,81 +19,194 @@ df = pd.read_csv(CSV_FILE)
 CENTRALITY_MEASURES = [cm.value for cm in CentralityMeasure]
 MODELS = sorted(df["model"].unique())
 
-def create_plot(name, index, grouped):
+def create_plot(name, index, grouped, by="graph"):
+
     plt.rcParams.update({
         "font.size": 16
     })
 
-    graph_types = grouped["graph_type"].unique() # get unique graph types
+    if by == "graph":
+        figure_var = "graph_type"
+        col_var = "centrality"
+        col_values_all = CENTRALITY_MEASURES
+        col_title_func = get_centrality_title
+        suptitle_func = get_network_title
+        folder_root = Path("plots") / "plots_by_graph"
 
-    for graph_type in graph_types:
-        df_graph = grouped[grouped["graph_type"] == graph_type] # update grouped df to only contain data for current graph type
+    elif by == "centrality":
+        figure_var = "centrality"
+        col_var = "graph_type"
+        col_values_all = grouped["graph_type"].unique() # get unique graph types
+        col_title_func = get_network_title
+        suptitle_func = get_centrality_title
+        folder_root = Path("plots") / "plots_by_centrality"
+
+    figure_groups = grouped[figure_var].unique()
+
+    for figure_value in figure_groups:
+
+        df_fig = grouped[
+            grouped[figure_var] == figure_value  # update grouped df to only contain data for current graph type/centrality measure
+        ]
 
         fig, axes = plt.subplots(
             nrows=len(MODELS),
-            ncols=len(CENTRALITY_MEASURES),
-            figsize=(4 * len(CENTRALITY_MEASURES), 3.6 * len(MODELS)),
+            ncols=len(col_values_all),
+            figsize=(
+                4 * len(col_values_all),
+                3.6 * len(MODELS)
+            ),
             sharex=True,
             sharey=False,
-            squeeze=False,
+            squeeze=False
         )
 
         for row, model in enumerate(MODELS):
-            df_model = df_graph[df_graph["model"] == model]
+
+            df_model = df_fig[
+                df_fig["model"] == model
+            ]
+
             ymin = df_model[index].min()
             ymax = df_model[index].max()
 
-            for col, centrality in enumerate(CENTRALITY_MEASURES):
+            for col, col_value in enumerate(col_values_all):
+
                 ax = axes[row, col]
-                
-                ax.tick_params(width=2.0, length=6) # sets line width of ticks
+
+                ax.tick_params(
+                    width=2.0,
+                    length=6
+                ) # sets line width of ticks
+
                 for spine in ax.spines.values():
                     spine.set_linewidth(2.0) # sets line width of plot edges
 
-                df_plot = df_graph[
-                    (df_graph["model"] == model) &
-                    (df_graph["centrality"] == centrality)
-                ] # filter df for specific model and centrality measure
+                df_plot = df_fig[
+                    (df_fig["model"] == model) &
+                    (df_fig[col_var] == col_value)
+                ]  # filter df
 
-                for cascade_size in sorted(df_plot["cascade_size_limit"].unique()):
-                    s = df_plot[df_plot["cascade_size_limit"] == cascade_size].sort_values("r0") # get df for one cascade size
-                    ax.plot(s["r0"], s[index], label=cascade_size, linewidth=3.5) # plots 
+                for cascade_size in sorted(
+                    df_plot["cascade_size_limit"].unique()
+                ):
 
-                ax.set_ylim(ymin * 0.95, ymax * 1.05)
-                if row == 0: # only add title to left plot
-                    ax.set_title(get_centrality_title(centrality))
+                    s = (
+                        df_plot[
+                            df_plot["cascade_size_limit"] == cascade_size
+                        ]
+                        .sort_values("r0")
+                    ) # get df for one cascade size
+
+                    ax.plot(
+                        s["r0"],
+                        s[index],
+                        label=cascade_size,
+                        linewidth=3.5
+                    )
+
+                ax.set_ylim(
+                    ymin * 0.95,
+                    ymax * 1.05
+                )
+
+                if row == 0:  # only add title to left plot
+                    ax.set_title(
+                        col_title_func(col_value)
+                    )
+
                 if col == 0: # only add y axis labels to left plots
+
                     if name == "estimate_error":
-                        ax.set_ylabel("Estimate Error", rotation=90)
+                        ax.set_ylabel(
+                            "Estimate Error",
+                            rotation=90
+                        )
+
                     elif name == "accuracy":
-                        ax.set_ylabel("Accuracy", rotation=90)
+                        ax.set_ylabel(
+                            "Accuracy",
+                            rotation=90
+                        )
+
                     elif name == "rank":
-                        ax.set_ylabel("Rank", rotation=90)
+                        ax.set_ylabel(
+                            "Rank",
+                            rotation=90
+                        )
+
                     elif name == "estimate_error_normalized":
-                        ax.set_ylabel("Estimate Error Normalized", rotation=90)
+                        ax.set_ylabel(
+                            "Estimate Error Normalized",
+                            rotation=90
+                        )
+
                     elif name == "accuracy_normalized":
-                        ax.set_ylabel("Accuracy Normalized", rotation=90)
+                        ax.set_ylabel(
+                            "Accuracy Normalized",
+                            rotation=90
+                        )
+
                     elif name == "rank_normalized":
-                        ax.set_ylabel("Rank Normalized", rotation=90)
-                    ax.text(-0.2, 0.90, model, rotation=0, ha="right", va="bottom", transform=ax.transAxes, fontweight="bold")
+                        ax.set_ylabel(
+                            "Rank Normalized",
+                            rotation=90
+                        )
+
+                    ax.text(
+                        -0.2,
+                        0.90,
+                        model,
+                        rotation=0,
+                        ha="right",
+                        va="bottom",
+                        transform=ax.transAxes,
+                        fontweight="bold"
+                    )
+
                 else:
                     ax.set_yticklabels([])
-                if row == len(MODELS) - 1: # only add x axis labels to bottom plots
-                    ax.set_xlabel(r"$R_0$")
 
-                # to avoid weird p values on x axis
-                r0_values = sorted(df_plot["r0"].unique())
+                if row == len(MODELS)-1:  # only add x axis labels to bottom plots
+                    ax.set_xlabel(
+                        r"$R_0$"
+                    )
 
-                # Pick 10 evenly spaced indices
-                indices = np.linspace(0, len(r0_values) - 1, 10, dtype=int)
-                r0_ticks = [r0_values[i] for i in indices]
+                 # to avoid weird p values on x axis
+                r0_values = sorted(
+                    df_plot["r0"].unique()
+                )
 
+                 # Pick 10 evenly spaced indices
+                indices = np.linspace(
+                    0,
+                    len(r0_values)-1,
+                    10,
+                    dtype=int
+                )
+
+                r0_ticks = [
+                    r0_values[i]
+                    for i in indices
+                ]
+                
                 # Then set the ticks
-                ax.set_xticks(r0_ticks)
-                ax.set_xticklabels([f"{r:.2f}" for r in r0_ticks], rotation=45, ha='right')
-                ax.margins(x=0) # remove margin on x axis
+                ax.set_xticks(
+                    r0_ticks
+                )
 
-                # Add vertical grey line at R0
+                ax.set_xticklabels(
+                    [
+                        f"{r:.2f}"
+                        for r in r0_ticks
+                    ],
+                    rotation=45,
+                    ha="right"
+                )
+
+                ax.margins(x=0)
+
+                # Add vertical grey line at R0 = 1
                 ax.axvline(
                     x=1.0,
                     color="grey",
@@ -103,27 +216,55 @@ def create_plot(name, index, grouped):
                     zorder=0
                 )
 
-        left  = axes[0, 0].get_position().x0
-        right = axes[0, -1].get_position().x1
-        x_center = (left + right) / 2
+        left = axes[0,0].get_position().x0
+        right = axes[0,-1].get_position().x1
+        x_center = (left + right)/2
 
-        handles, labels = axes[0, 0].get_legend_handles_labels()
+        handles, labels = (
+            axes[0,0]
+            .get_legend_handles_labels()
+        )
 
         fig.legend(
-            handles, labels,
+            handles,
+            labels,
             loc="lower center",
-            bbox_to_anchor=(x_center, -0.16),
+            bbox_to_anchor=(
+                x_center,
+                -0.16
+            ),
             bbox_transform=fig.transFigure,
             ncol=len(handles),
-            frameon=True, fancybox=False,
-            title="Cascade size",
-        )# add the labels to a legends in bottom center
+            frameon=True,
+            fancybox=False,
+            title="Cascade size"
+        ) # add the labels to a legends in bottom center
 
-        folder_path = Path(DATA_DIR) / "plots" / name
-        folder_path.mkdir(parents=True, exist_ok=True)
+        folder_path = (
+            Path(DATA_DIR)
+            / folder_root
+            / name
+        )
 
-        fig.suptitle(get_network_title(graph_type), fontsize=24, weight="bold")
-        plt.savefig(folder_path / graph_type, bbox_inches="tight", pad_inches=0.2) # save plots to png
+        folder_path.mkdir(
+            parents=True,
+            exist_ok=True
+        )
+
+        fig.suptitle(
+            suptitle_func(
+                figure_value
+            ),
+            fontsize=24,
+            weight="bold"
+        )
+
+        plt.savefig(
+            folder_path / figure_value,
+            bbox_inches="tight",
+            pad_inches=0.2
+        ) # save plots to png
+
         plt.clf()
         plt.close()
 
@@ -265,6 +406,16 @@ def main():
     ) 
     create_plot(name, index, grouped)
 
+
+    name = "estimate_error"
+    index = f"avg_{name}"
+    grouped = (
+        df.groupby(["graph_type", "model", "cascade_size_limit", "r0", "centrality"])[name]
+        .mean()
+        .reset_index(name=index)
+    ) 
+    create_plot(name, index, grouped, by="centrality")
+
     # Estimate error normalized plots
     name = "estimate_error_normalized"
     df["estimate_error_normalized"] = df["estimate_error"] / df["cascade_size_limit"].astype(float)
@@ -284,6 +435,15 @@ def main():
         .reset_index(name=index)
     ) 
     create_plot(name, index, grouped)
+
+    name = "rank"
+    index = f"avg_{name}"
+    grouped = (
+        df.groupby(["graph_type", "model", "cascade_size_limit", "r0", "centrality"])[name]
+        .mean()
+        .reset_index(name=index)
+    ) 
+    create_plot(name, index, grouped, by="centrality")
 
     # Rank normalized plots
     name = "rank_normalized"
@@ -306,6 +466,16 @@ def main():
         .reset_index(name=index)
     )
     create_plot(name, index, grouped)
+
+    name = "accuracy"
+    index = f"avg_{name}"
+    df['correct'] = (df['estimate'] == df['patient_zero']).astype(int)
+    grouped = (
+        df.groupby(["graph_type", "model", "cascade_size_limit", "r0", "centrality"])['correct']
+        .mean()
+        .reset_index(name=index)
+    )
+    create_plot(name, index, grouped, by="centrality")
 
 if __name__ == "__main__":
     main()
