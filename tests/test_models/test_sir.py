@@ -5,13 +5,16 @@ import random
 
 class TestSusceptibleInfectedRecovered:
     """Test SIR model"""
+
     def create_tree(self):
-        """Creates the tree used for the test cases"""
+        """
+        Creates the tree used for the test cases.
+        """
         return nx.balanced_tree(3, 2)
 
     def test_correct_edges_where_nodes_are_infected_after_simulation(self):
         """
-        Testing if correct edges are made after the simulation when giving a R0 of 10
+        Testing if correct edges are made after the simulation when giving a R0 of 10.
         """
         tree = self.create_tree()
         patient_zero = 0
@@ -24,7 +27,7 @@ class TestSusceptibleInfectedRecovered:
 
     def test_all_is_infected_when_R0_is_high(self):
         """
-        Testing if all nodes are infected with a high R0 value
+        Testing if all nodes are infected with a high R0 value.
         """
         tree = self.create_tree()
         patient_zero = 0
@@ -35,7 +38,7 @@ class TestSusceptibleInfectedRecovered:
 
     def test_at_least_one_is_infected_after_simulation(self):
         """
-        Testing if the list of infected nodes is one after a simulation with R0 value of 0
+        Testing if the list of infected nodes is one after a simulation with R0 value of 0.
         """
         tree = self.create_tree()
         patient_zero = 0
@@ -46,7 +49,7 @@ class TestSusceptibleInfectedRecovered:
 
     def test_if_there_can_be_more_than_one_infected_after_few_steps(self):
         """
-        Testing if there can be more than one infected node with a high R0 value
+        Testing if there can be more than one infected node with a high R0 value.
         """
         tree = self.create_tree()
         patient_zero = 0
@@ -60,7 +63,7 @@ class TestSusceptibleInfectedRecovered:
 
     def test_infection_event(self):
         """
-        Testing if the infection event correctly updates the sets and edges
+        Testing if the infection event correctly updates the sets and edges.
         """
         tree = self.create_tree()
         patient_zero = 0
@@ -80,7 +83,7 @@ class TestSusceptibleInfectedRecovered:
 
     def test_recovery_event(self):
         """
-        Testing if the recovery event correctly updates the sets and edges
+        Testing if the recovery event correctly updates the sets and edges.
         """
         tree = self.create_tree()
         patient_zero = 0
@@ -100,7 +103,7 @@ class TestSusceptibleInfectedRecovered:
     
     def test_calculate_probability(self):
         """
-        Testing if the probability calculation is correct
+        Testing if the probability calculation is correct.
         """
         p = calculate_probability(
             num_infected=2,
@@ -113,7 +116,7 @@ class TestSusceptibleInfectedRecovered:
 
     def test_calculate_probability_without_recovery(self):
         """
-        Testing if the probability of infection is 1 when there is no recovery
+        Testing if the probability of an infection event is 1 when there is no recovery.
         """
         p = calculate_probability(
             num_infected=2,
@@ -126,7 +129,7 @@ class TestSusceptibleInfectedRecovered:
 
     def test_calculate_probability_without_infect_rate(self):
         """
-        Testing if the probability of infection is 0 when infect rate is 0
+        Testing if the probability of infection is 0 when infect rate is 0.
         """
         p = calculate_probability(
             num_infected=2,
@@ -138,6 +141,9 @@ class TestSusceptibleInfectedRecovered:
         assert p == 0
 
     def test_calculate_probability_with_one_infected(self):
+        """
+        Testing if calculate probability is correct with one infected node.
+        """
         recover_rate = 1.0
         infect_rate = 0.36363636363636365
 
@@ -151,18 +157,26 @@ class TestSusceptibleInfectedRecovered:
         assert p == 0.5925925925925926
 
     def test_probability_increases_with_infect_rate(self):
-
+        """
+        Testing if higher infect rate gives a higher probability of an infect event happening.
+        """
         p1 = calculate_probability(num_infected=3, num_si=5, infect_rate=1.0, recover_rate=1.0)
         p2 = calculate_probability(num_infected=3, num_si=5, infect_rate=2.0, recover_rate=1.0)
 
         assert p2 > p1
 
     def test_no_si_links_gives_zero(self):
+        """
+        Testing if probability is 0 when there is no si links.
+        """
         p = calculate_probability(3, 0, 1.0, 1.0)
 
         assert p == 0
 
     def test_get_rates(self):
+        """
+        Testing if the get rates function returns the correct recover rate and infect rate. 
+        """
         G = nx.balanced_tree(3, 2)
         print(G)
         R_0 = 1.0
