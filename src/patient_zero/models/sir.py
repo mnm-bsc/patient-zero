@@ -149,6 +149,24 @@ def infection_event(
     cascade_edges,
     next_label
 ) -> int:
+    """ Performs a single infect event on a random chosen node from si links. 
+
+    Args:
+        G (nx.graph): NetworkX graph.
+        rng (Random): Random variable generator.
+        expand (int): Number of nodes to expand with.
+        susceptible (set[int]): The set of susceptible nodes.
+        infected (set[int]): The set of infected nodes.
+        si_links (set[tuple[int, int]]): The set of SI links.
+        all_infected (set[int]): The set all infect in the cascade.
+        cascade_edges (list[tuple[int, int]]): The list of cascade edges.
+        next_label (int): Next available node for graph expansion.
+
+    Returns:
+        tuple:
+        - si_links (set[tuple[int, int]]): The set of SI links.
+        - next_label (int): The next available node for graph expansion.
+    """
     new, source = rng.choice(list(si_links)) # Choose a random SI link
 
     if expand != 0 and G.degree(new) == 1: # Expand if chosen node new is a leaf
