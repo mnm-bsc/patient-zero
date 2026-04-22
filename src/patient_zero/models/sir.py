@@ -129,7 +129,7 @@ def infection_event(
     cascade_edges,
     next_label
 ) -> int:
-    # Choose SI link
+    # Choose a random SI link
     new, source = rng.choice(list(si_links))
 
     # Expand if new is a leaf
