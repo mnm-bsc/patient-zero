@@ -168,7 +168,7 @@ def infection_event(
     """
     new, source = rng.choice(list(si_links)) # Choose a random SI link
 
-    if expand != 0 and G.degree(new) == 1: # Expand if chosen node new is a leaf
+    if expand != 0 and G.degree(new) == 1: # Expand if the new chosen node is a leaf node
         next_label, new_nodes = expand_tree(
             G, new, expand, next_label
         )
@@ -178,7 +178,7 @@ def infection_event(
     infected.add(new)
 
     cascade_edges.append((source, new)) # Track cascade edges and nodes
-    all_infected.add(new)
+    all_infected.add(new) # Add newly infected node to all infected
 
     # Update SI link state, removing invalid links and adding the newly infected node
     si_links = {(s, i) for (s, i) in si_links if s != new} # Remove links targeting new, as it is no longer susceptible
