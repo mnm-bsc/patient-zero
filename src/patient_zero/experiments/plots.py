@@ -40,6 +40,8 @@ def create_plot(name, index, grouped, by="graph"):
         col_title_func = get_network_title
         suptitle_func = get_centrality_title
         folder_root = Path("plots") / "plots_by_centrality"
+    else:
+        raise ValueError(f"{by} is invalid")
 
     figure_groups = grouped[figure_var].unique()
 
