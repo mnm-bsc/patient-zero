@@ -14,7 +14,7 @@ def susceptible_infected_recovered(
         seed: int = None,
         expand: int = 0
     ):
-    """Implementation of the SIR model.
+    """ Implementation of the SIR model.
 
     Args:
         G (nx.graph): NetworkX graph.
@@ -123,7 +123,7 @@ def get_rates(
     
 
 def calculate_probability(num_infected, num_si, infect_rate, recover_rate) -> float:
-    """Calculate the probability of an infect or a recover event happening
+    """ Calculate the probability of an infect or a recover event happening
 
     Args:
         num_infected (int): Number of infected nodes.
@@ -156,7 +156,7 @@ def infection_event(
         rng (Random): Random variable generator.
         expand (int): Number of nodes to expand with.
         susceptible (set[int]): The set of susceptible nodes.
-        infected (set[int]): The set of infected nodes.
+        infected (set[int]): The set of currently infected nodes.
         si_links (set[tuple[int, int]]): The set of SI links.
         all_infected (set[int]): The set all infect in the cascade.
         cascade_edges (list[tuple[int, int]]): The list of cascade edges.
@@ -193,6 +193,17 @@ def recovery_event(
     recovered,
     si_links
 ):
+    """ Performs a single recover event on a random chosen infected node.
+
+    Args:
+        rng (Random): Random variable generator.
+        infected (set[int]): The set of currently infected nodes.
+        recovered (set[int]): The set of recovered nodes.
+        si_links (set[tuple[int, int]]): The set of SI links.
+
+    Returns:
+        si_links (set[tuple[int, int]]): The set of SI links.
+    """
     node = rng.choice(list(infected)) # Choose random infected node that will recover
 
     infected.remove(node) # Move node from infected to recovered
