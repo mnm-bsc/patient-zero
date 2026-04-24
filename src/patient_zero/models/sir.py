@@ -43,7 +43,14 @@ def susceptible_infected_recovered(
 
     IS_TREE = nx.is_tree(G)
 
-    infect_rate, recover_rate = get_rates(G, R_0, IS_TREE)
+    infect_rate, recover_rate = get_rates(
+        graph=G, 
+        R_0=R_0, 
+        patient_zero=patient_zero, 
+        expand=expand, 
+        is_tree=IS_TREE
+    )
+    
     si_links = {(nb, patient_zero) for nb in G.neighbors(patient_zero)} # Add si links from patient zero
 
     if (IS_TREE and G.degree(patient_zero) == 1 and expand != 0): # Expands balanced tree if leaf node is infected
@@ -91,15 +98,18 @@ def susceptible_infected_recovered(
     return all_infected, cascade_edges
 
 def get_rates(
-        G: nx.Graph, 
+        graph: nx.Graph, 
         R_0: float, 
+        patient_zero: int,
+        expand: int = 0,
         is_tree: bool = False
     ):
     """ Computes the infection and recovery rate.
 
     Args:
-        G (nx.Graph): NetworkX graph.
+        graph (nx.Graph): NetworkX graph.
         R_0 (float): The basic reproduction number.
+        patient_zero (int): The source node.
         is_tree (bool, optional): True or False if the graph is a tree. Defaults to False.
 
     Returns:
@@ -109,13 +119,14 @@ def get_rates(
     """
 
     if is_tree: # Calculate average degree on balanced trees or on other networks
-        degrees = [degree for _, degree in G.degree() if degree != 1]
-        avg_degree = sum(degrees) / len(degrees)
-        # infect_rate = R_0 / expand ?????
-    else:
-        avg_degree = sum(degree for _, degree in G.degree()) / len(G)
+        avg_degree = expand
 
-    infect_rate = R_0 / (avg_degree - 1) # r_i
+    else:
+        degrees = [degree - 1 for node, degree in graph.degree() if node != patient_zero] # minus one because nodes are infected by a neighbor that they cannot infect
+        degrees.append(graph.degree(patient_zero)) # patient zero can infect all neighbors
+        avg_degree = sum(degrees) / len(degrees)
+
+    infect_rate = R_0 / avg_degree # r_i
     recover_rate = 1.0 # r_R
 
     return infect_rate, recover_rate

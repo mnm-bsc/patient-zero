@@ -7,66 +7,39 @@ from patient_zero.models import sir, infection_event, recovery_event, calculate_
 class TestSusceptibleInfectedRecovered:
     """Test SIR model"""
 
-    def create_tree(self):
+    def create_graph(self):
         """
         Creates the tree used for the test cases.
         """
-        return nx.balanced_tree(3, 2)
-
-    def test_correct_edges_where_nodes_are_infected_after_simulation(self):
-        """
-        Testing if correct edges are made after the simulation when giving a R0 of 10.
-        """
-        tree = self.create_tree()
-        patient_zero = 0
-        R_0 = 10.0
-        recovered, edges = sir(tree, patient_zero, R_0)
-        if len(recovered) == 1: 
-            assert not edges
-        else:
-            assert any(edge in edges for edge in [(0, 1), (0, 2), (0, 3)])
+        return nx.random_regular_graph(3, 100)
 
     def test_all_is_infected_when_R0_is_high(self):
         """
-        Testing if all nodes are infected with a high R0 value.
+        Testing if all nodes are infected with a high R0 value and no max value.
         """
-        tree = self.create_tree()
+        graph = self.create_graph()
         patient_zero = 0
         R_0 = 10000.0
-        infected, edges = sir(tree, patient_zero, R_0)
-        assert len(infected) == 13
-        assert sorted(edges) == sorted([(0, 1), (1, 5), (0, 3), (3, 10), (0, 2), (2, 9), (1, 6), (3, 11), (1, 4), (2, 7), (3, 12), (2, 8)])
+        infected, edges = sir(graph, patient_zero, R_0)
+        assert len(infected) == len(graph.nodes())
+        assert len(edges) == len(graph.nodes()) - 1
 
     def test_at_least_one_is_infected_after_simulation(self):
         """
         Testing if the list of infected nodes is one after a simulation with R0 value of 0.
         """
-        tree = self.create_tree()
+        graph = self.create_graph()
         patient_zero = 0
         R_0 = 0.0
-        infected, edges = sir(tree, patient_zero, R_0)
+        infected, edges = sir(graph, patient_zero, R_0)
         assert len(infected) == 1
         assert not edges
-
-    def test_if_there_can_be_more_than_one_infected_after_few_steps(self):
-        """
-        Testing if there can be more than one infected node with a high R0 value.
-        """
-        tree = self.create_tree()
-        patient_zero = 0
-        R_0 = 100.0
-        infected, edges = sir(tree, patient_zero, R_0)
-        if len(infected) == 1:
-            assert infected == 1
-        else:
-            assert len(infected) > 1
-            assert len(edges) != 0
 
     def test_infection_event(self):
         """
         Testing if the infection event correctly updates the sets and edges.
         """
-        tree = self.create_tree()
+        tree = nx.balanced_tree(3, 2)
         patient_zero = 0
         infected = {patient_zero}
         susceptible = set(tree.nodes()) - infected
@@ -86,7 +59,7 @@ class TestSusceptibleInfectedRecovered:
         """
         Testing if the recovery event correctly updates the sets and edges.
         """
-        tree = self.create_tree()
+        tree = self.create_graph()
         patient_zero = 0
         infected = {patient_zero}
         recovered = set()
@@ -179,11 +152,13 @@ class TestSusceptibleInfectedRecovered:
         Testing if the get rates function returns the correct recover rate and infect rate. 
         """
         G = nx.balanced_tree(3, 2)
-        print(G)
         R_0 = 1.0
+        patient_zero = 3
+        expand = 3
 
-        infect_rate, recover_rate = get_rates(G, R_0, is_tree=True)
+
+        infect_rate, recover_rate = get_rates(G, R_0, patient_zero, expand, is_tree=True)
 
         assert recover_rate == 1.0
-        assert infect_rate == 0.36363636363636365
+        assert infect_rate == 0.3333333333333333
 
