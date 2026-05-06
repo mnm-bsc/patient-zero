@@ -1,7 +1,7 @@
 from pathlib import Path
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 import pandas as pd
-import numpy as np
 import networkx as nx
 from patient_zero.experiments.utils import get_network_title, get_centrality_title
 from patient_zero.networks import create_balanced_tree_graph, create_k_regular_graph, create_random_graph, create_scale_free_graph, create_small_world_graph
@@ -121,42 +121,42 @@ def create_plot(name, index, grouped, by="graph"):
 
                     if name == "estimate_error":
                         ax.set_ylabel(
-                            "Estimate Error",
+                            r"$E(R_0, S)$",
                             rotation=90
                         )
 
                     elif name == "accuracy":
                         ax.set_ylabel(
-                            "Accuracy",
+                            r"$A(R_0, S)$",
                             rotation=90
                         )
 
                     elif name == "rank":
                         ax.set_ylabel(
-                            "Rank",
+                            r"$R(R_0, S)$",
                             rotation=90
                         )
 
                     elif name == "estimate_error_normalized":
                         ax.set_ylabel(
-                            "Estimate Error Normalized",
+                            r"$E(R_0, S)_{\mathrm{norm}}$",
                             rotation=90
                         )
 
                     elif name == "accuracy_normalized":
                         ax.set_ylabel(
-                            "Accuracy Normalized",
+                            r"$A(R_0, S)_{\mathrm{norm}}$",
                             rotation=90
                         )
 
                     elif name == "rank_normalized":
                         ax.set_ylabel(
-                            "Rank Normalized",
+                            r"$R(R_0, S)_{\mathrm{norm}}$",
                             rotation=90
                         )
 
                     ax.text(
-                        -0.2,
+                        -0.35,
                         0.90,
                         model,
                         rotation=0,
@@ -174,36 +174,16 @@ def create_plot(name, index, grouped, by="graph"):
                         r"$R_0$"
                     )
 
-                r0_values = sorted(
-                    df_plot["r0"].unique()
-                ) # To avoid weird p values on x axis
+                ax.set_xlim(0.0, 5.0)  # Force axis range
 
-                indices = np.linspace(
-                    0,
-                    len(r0_values)-1,
-                    10,
-                    dtype=int
-                ) # Pick 10 evenly spaced indices
+                ax.xaxis.set_major_locator(MultipleLocator(1.0))  # Tick every 1.0
 
-                r0_ticks = [
-                    r0_values[i]
-                    for i in indices
-                ]
-                
-                ax.set_xticks(
-                    r0_ticks
-                ) # Then set the ticks
+                ax.xaxis.set_major_formatter(FormatStrFormatter('%.1f'))  # Show as 0.0, 1.0, ...
 
-                ax.set_xticklabels(
-                    [
-                        f"{r:.2f}"
-                        for r in r0_ticks
-                    ],
-                    rotation=45,
-                    ha="right"
-                )
+                ax.tick_params(axis='x', rotation=45)
 
-                ax.margins(x=0)
+                if "normalized" in name or "accuracy" in name:
+                    ax.yaxis.set_major_formatter(FormatStrFormatter('%.1f'))
 
                 ax.axvline(
                     x=1.0,
@@ -249,12 +229,17 @@ def create_plot(name, index, grouped, by="graph"):
             exist_ok=True
         )
 
+        pretty_name = (
+            name.replace("_normalized", " (Normalized)")
+                .replace("_", " ")
+                .title()
+        )
+
         fig.suptitle(
-            suptitle_func(
-                figure_value
-            ),
+            f"{suptitle_func(figure_value)} - {pretty_name}",
             fontsize=24,
-            weight="bold"
+            weight="bold",
+            y=1.02
         )
 
         plt.savefig(
