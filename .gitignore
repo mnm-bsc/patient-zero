@@ -209,9 +209,9 @@ __marimo__/
 .DS_Store
 
 # Ignore data and result files from experiments
-*.pkl
-simulations/
+# *.pkl
+# simulations/
 *.csv
 
 # Ignore all plots
-*.png
+# *.png
