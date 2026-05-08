@@ -16,7 +16,7 @@ All source code is located in the `src/patient_zero` directiory. This directory 
 
 ## Running the program
 
-Note that the simulations must be run before the experiments, as the simulated cascades are serialized into `.pkl` files in the `simulations` directory, along with a JSON file describing the parameters used for each simulation. During the experiments, these binary files are parsed and reconstructed into NetworkX graphs representing the cascades.
+Note that the simulations must be run before the experiments, as the simulated cascades are serialized into `.pkl` files in the `simulations` directory, along with a JSON file describing the parameters used for each simulation. Simulation parameters can be modified in the `simulations_metadata.json` file. During the experiments, these binary files are parsed and reconstructed into NetworkX graphs representing the cascades.
 
 From the root directory:
 
