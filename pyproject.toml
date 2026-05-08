@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "patient-zero"
 version = "1.0.0"
-dependencies = ["networkx", "pandas", "matplotlib", "scipy"]
+dependencies = ["networkx", "pandas", "matplotlib"]
 
 [project.optional-dependencies]
 dev = ["pytest", "pylint"]
